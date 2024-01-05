@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="CourseContent.Core.Services.AssignmentService">
+    <Position X="6.75" Y="7.75" Width="4.25" />
+    <AssociationLine Name="_unitOfWork" Type="CourseContent.Infrastructure.UoW.Interfaces.IUnitOfWork" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="8.875" Y="9.815" />
+        <Point X="8.875" Y="11.125" />
+        <Point X="11.75" Y="11.125" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAgAAAAAAAAAAABgAAAAAAIAAIIA=</HashCode>
+      <FileName>Services\AssignmentService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_unitOfWork" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Core.Services.MaterialService">
+    <Position X="16.25" Y="7.75" Width="4.25" />
+    <AssociationLine Name="_unitOfWork" Type="CourseContent.Infrastructure.UoW.Interfaces.IUnitOfWork" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="18.375" Y="9.815" />
+        <Point X="18.375" Y="11.125" />
+        <Point X="15.5" Y="11.125" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAgAAAAAAAAAAABgAAAAAAIAAIIA=</HashCode>
+      <FileName>Services\MaterialService.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_unitOfWork" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Core.Services.OperationsContext&lt;T&gt;">
+    <Position X="11.75" Y="8.25" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAACAAAAAAAAAAAAAAEAAFAAAgAAAAAAAIA=</HashCode>
+      <FileName>Services\OperationsContext.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_crudStrategy" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="CourseContent.Core.Interfaces.IOperation&lt;T&gt;">
+    <Position X="11.75" Y="5.5" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAABgAAAAAAIAAIIA=</HashCode>
+      <FileName>Interfaces\IOperation.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="CourseContent.Infrastructure.UoW.Interfaces.IUnitOfWork">
+    <Position X="11.75" Y="11" Width="3.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
+  <Class Name="CourseContent.Infrastructure.Repositories.AssignmentfileRepository">
+    <Position X="9" Y="5.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAABAAAAAAAAAAAEAAAAAAAgAAAAAAAAAIIA=</HashCode>
+      <FileName>Repositories\AssignmentfileRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_repository" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Infrastructure.Repositories.AssignmentRepository">
+    <Position X="8.5" Y="2.25" Width="3.75" />
+    <AssociationLine Name="_contentRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.25" Y="2.812" />
+        <Point X="14.25" Y="2.812" />
+        <Point X="14.25" Y="5.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.11" Y="0.041" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAQAAAAAAAAAAEAAAAAAAgAAAAAAIAAIIA=</HashCode>
+      <FileName>Repositories\AssignmentRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_contentRepository" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Infrastructure.Repositories.MaterialfileRepository">
+    <Position X="16.5" Y="5.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAABAAAAAAAAAAAEAAAAAAAgAAAAAAAAAIIA=</HashCode>
+      <FileName>Repositories\MaterialfileRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_repository" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Infrastructure.Repositories.MaterialRepository">
+    <Position X="16.5" Y="2.25" Width="4.25" />
+    <AssociationLine Name="_contentRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="16.5" Y="2.812" />
+        <Point X="14.5" Y="2.812" />
+        <Point X="14.5" Y="5.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.427" Y="0.041" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAQAAAAAAAAAAEAAAAAAAgAAAAAAIAAIIA=</HashCode>
+      <FileName>Repositories\MaterialRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_contentRepository" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Infrastructure.Context.EducationPlatformContext">
+    <Position X="12.75" Y="12.25" Width="3.25" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AEIAAAAAAAAQAAAAAAAAAAAIEAAAAAAAAAAAABAAABA=</HashCode>
+      <FileName>Context\EducationPlatformContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CourseContent.Infrastructure.Repositories.UnitOfWork">
+    <Position X="12" Y="15.5" Width="4.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACARAAAAQAAAAAAAAAAAAAAAAAAAIAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Repositories\UnitOfWork.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dbContext" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.ContentRepository&lt;T&gt;">
+    <Position X="8.5" Y="12.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAEBAAAAAAAAAAAAAAAAAAEAAAAAAAgAAAAAAIAAIIA=</HashCode>
+      <FileName>Repositories\GenericRepositories\ContentRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dbContext" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.Repository&lt;T&gt;">
+    <Position X="17.25" Y="12.25" Width="3" />
+    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" FixedFromPoint="true">
+      <Path>
+        <Point X="17.25" Y="13.312" />
+        <Point X="16" Y="13.312" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAEBAAAAAAAAAAAAAAAAAAEAAAAAAAgAAAAAAAAAIIA=</HashCode>
+      <FileName>Repositories\GenericRepositories\Repository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_dbContext" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="CourseContent.Infrastructure.Repositories.Interfaces.Base.IRepository&lt;T&gt;">
+    <Position X="12.75" Y="7.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAEAAAAAAAgAAAAAAAAAIIA=</HashCode>
+      <FileName>Repositories\Interfaces\Base\IRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;">
+    <Position X="12.75" Y="5.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAA=</HashCode>
+      <FileName>Repositories\Interfaces\IContentRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="CourseContent.Infrastructure.Repositories.Interfaces.IUnitOfWork">
+    <Position X="12.75" Y="10" Width="3.25" />
+    <AssociationLine Name="AssignmentRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="16" Y="10.562" />
+        <Point X="20.39" Y="10.562" />
+        <Point X="20.39" Y="5.334" />
+        <Point X="16.198" Y="5.334" />
+        <Point X="16.198" Y="5.866" />
+        <Point X="16" Y="5.866" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.179" Y="0.583" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="MaterialRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="10.562" />
+        <Point X="8.487" Y="10.562" />
+        <Point X="8.487" Y="5.323" />
+        <Point X="12.597" Y="5.323" />
+        <Point X="12.597" Y="5.866" />
+        <Point X="12.75" Y="5.866" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.142" Y="0.696" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="AssignmentfileRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.Base.IRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="16" Y="10.312" />
+        <Point X="16.557" Y="10.312" />
+        <Point X="16.557" Y="9.438" />
+        <Point X="16" Y="9.438" />
+      </Path>
+    </AssociationLine>
+    <AssociationLine Name="MaterialfileRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.Base.IRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12.75" Y="10.312" />
+        <Point X="12.146" Y="10.312" />
+        <Point X="12.146" Y="9.438" />
+        <Point X="12.75" Y="9.438" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>ACAQAAAAQAAAAAAAAAAAAAAAAAAAIAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Repositories\Interfaces\IUnitOfWork.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="AssignmentRepository" />
+      <Property Name="MaterialRepository" />
+      <Property Name="AssignmentfileRepository" />
+      <Property Name="MaterialfileRepository" />
+    </ShowAsAssociation>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
