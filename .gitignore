@@ -1,4 +1,13 @@
-bin/
-obj/
+*.suo
+*.user
+*.sln.docstates
+
+[Dd]ebug/
+[Rr]elease/
+x64/
+[Bb]in/
+[Oo]bj/
+
 packages/
-.vs/
+
+Desktop.ini
