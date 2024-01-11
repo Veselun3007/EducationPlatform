@@ -1,5 +1,6 @@
 ﻿using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Infrastructure.Repositories
 {
@@ -36,6 +37,11 @@ namespace CourseContent.Infrastructure.Repositories
         public bool RemoveRange(IEnumerable<Material> entities)
         {
             return _contentRepository.RemoveRange(entities);
+        }
+
+        public async Task<bool> AddFiles(Material entity, List<IFormFile> files)
+        {
+            return await _contentRepository.AddFiles(entity, files);
         }
     }
 }

@@ -2,6 +2,7 @@ using CourseContent.Core.Interfaces;
 using CourseContent.Core.Services;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Context;
+using CourseContent.Infrastructure.Helpers;
 using CourseContent.Infrastructure.Repositories;
 using CourseContent.Infrastructure.Repositories.GenericRepositories;
 using CourseContent.Infrastructure.Repositories.Interfaces;
@@ -31,10 +32,13 @@ namespace CourseContent.Web
                 options.UseNpgsql(epConnection);
             });
 
+            builder.Services.AddScoped<FilesHelper>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            builder.Services.AddScoped<IOperation<Assignment>, AssignmentService>();
             builder.Services.AddScoped<IOperation<Material>, MaterialService>();
-            builder.Services.AddScoped<IOperation<Assignment>, AssignmentService>();     
+            builder.Services.AddScoped<OperationsContext<Assignment>>();
+            builder.Services.AddScoped<OperationsContext<Material>>();
 
             builder.Services.AddControllers();
 

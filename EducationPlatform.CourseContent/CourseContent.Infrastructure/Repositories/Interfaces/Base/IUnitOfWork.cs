@@ -7,8 +7,8 @@ namespace CourseContent.Infrastructure.Repositories.Interfaces
     {
         IContentRepository<Assignment> AssignmentRepository { get; }
         IContentRepository<Material> MaterialRepository { get; }
-        IRepository<Assignmentfile> AssignmentfileRepository { get; }
-        IRepository<Materialfile> MaterialfileRepository { get; }
+        IEntityRepository<Assignmentfile> AssignmentfileRepository { get; }
+        IEntityRepository<Materialfile> MaterialfileRepository { get; }
 
         Task<int> CompleteAsync();
     }

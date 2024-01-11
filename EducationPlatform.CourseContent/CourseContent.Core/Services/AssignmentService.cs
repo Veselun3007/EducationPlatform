@@ -12,6 +12,11 @@ namespace CourseContent.Core.Services
         public async Task<Assignment> CreateAsync(Assignment entity)
         {
             await _unitOfWork.AssignmentRepository.AddAsync(entity);
+
+            if(entity.AssignmentFiles != null)
+                await _unitOfWork.AssignmentRepository
+                    .AddFiles(entity, entity.AssignmentFiles);
+
             await _unitOfWork.CompleteAsync();
             return entity;
 
@@ -39,13 +44,24 @@ namespace CourseContent.Core.Services
         public async Task<Assignment> GetByIdAsync(int id)
         {
             var assignment = await _unitOfWork.AssignmentRepository.GetByIdAsync(id);
-            return assignment ?? throw new InvalidOperationException("Assignment not found.");
+            return assignment ?? throw new InvalidOperationException("Assignment " +
+                "not found.");
         }
 
         public async Task RemoveRangeAsync(IEnumerable<Assignment> entities)
         {
             _unitOfWork.AssignmentRepository.RemoveRange(entities);
             await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task<string?> GetFileByIdAsync(int id)
+        {
+            var assignmentfile = await _unitOfWork
+                .AssignmentfileRepository.GetByIdAsync(id);
+
+            return assignmentfile != null ? assignmentfile.AssignmentFile : 
+                throw new InvalidOperationException("AssignmentFile " +
+                "not found for the specified id.");
         }
     }
 }

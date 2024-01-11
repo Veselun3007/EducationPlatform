@@ -1,4 +1,7 @@
 ﻿using CourseContent.Domain.Interfaces;
+using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace CourseContent.Domain.Entities;
 
@@ -19,5 +22,8 @@ public class Assignment : IAggregateRoot
     public virtual ICollection<Assignmentfile>? Assignmentfiles { get; set; } = new List<Assignmentfile>();
 
     public virtual Course? Course { get; set; } = null!;
-   
+
+    [NotMapped]
+    [JsonIgnore]
+    public List<IFormFile>? AssignmentFiles { get; set; }
 }

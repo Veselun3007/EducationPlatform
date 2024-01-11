@@ -1,20 +1,54 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Entities;
+using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Context;
+using CourseContent.Infrastructure.Helpers;
 using CourseContent.Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
-    public class ContentRepository<T>(EducationPlatformContext dbContext) :
-        IContentRepository<T> where T : class, IAggregateRoot
+    public class ContentRepository<T>(EducationPlatformContext dbContext, 
+        FilesHelper filesHelper) : IContentRepository<T> where T : class, IAggregateRoot
     {
         private readonly EducationPlatformContext _dbContext = dbContext;
+        private readonly FilesHelper _filesHelper = filesHelper;
 
         public async Task<T> AddAsync(T entity)
         {
 
             await _dbContext.Set<T>().AddAsync(entity);
             return entity;
+        }
+
+        public async Task<bool> AddFiles(T entity, List<IFormFile> files)
+        {
+            foreach (var file in files)
+            {
+                var fileName = await _filesHelper.AddFileAsync(file);
+
+                if (entity is Material materialEntity)
+                {
+                    var materialFile = new Materialfile
+                    {
+                        MaterialId = materialEntity.MaterialId,
+                        MaterialFile = fileName
+                    };
+
+                    _dbContext.Set<Materialfile>().Add(materialFile);
+                }
+                else if (entity is Assignment assignmentEntity)
+                {
+                    var assignmentFile = new Assignmentfile
+                    {
+                        AssignmentId = assignmentEntity.AssignmentId,
+                        AssignmentFile = fileName
+                    };
+
+                    _dbContext.Set<Assignmentfile>().Add(assignmentFile);
+                }
+            }
+            return true;
         }
 
         public async Task<bool> DeleteAsync(int id)
