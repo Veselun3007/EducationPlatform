@@ -1,3 +1,24 @@
 {
-    "hello":"Привіт"
+    "common":{
+        "signUp": "Зареєструватися",
+        "login": "Увійти"
+    },
+    "validation":{
+
+    },
+    "glossary":{
+        "introductionTitle": "Нове слово у навчальних платформах",
+        "introductionSubtitle":"Зустрічайте нашу платформу, яка приносить задоволення від навчання",
+        "platformCapabilities": "Можливості",
+        "platformCapabilityCommunication": "Комунікація",
+        "platformCapabilityCommunicationDesc": "Наша платформа підтримує спілкування в рельному часі між викладачами та студентами",
+        "platformCapabilityAssessment": "Оцінка знань",
+        "platformCapabilityAssessmentDesc": "Для оцінки знань студентів викладачі можуть створювати завдання та тести",
+        "platformCapabilityExamination": "Перегляд матеріалів",
+        "platformCapabilityExaminationDesc": "Більша кількість матеріалів може бути переглянута онлайн без необхідності їх завантаження",
+        "developers": "Розробниики",
+        "developerSobolyev": "Соболєв Данило - Back-end",
+        "developerFedyshen": "Федишен Богдан - Back-end",
+        "developerRenhach": "Ренгач Валентин - Front-end"
+    }
 }

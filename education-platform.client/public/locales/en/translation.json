@@ -1,3 +1,24 @@
 {
-    "hello":"hello pal"
+    "common":{
+        "signUp": "Sign up",
+        "login": "login"
+    },
+    "validation":{
+
+    },
+    "glossary":{
+        "introductionTitle": "A new word in education platforms",
+        "introductionSubtitle":"Meet our platform, that delivers pleasure from learning",
+        "platformCapabilities": "Сapabilities",
+        "platformCapabilityCommunication": "Communication",
+        "platformCapabilityCommunicationDesc": "Our platform support real-time communication between teachers and students",
+        "platformCapabilityAssessment": "Knowledge assessment",
+        "platformCapabilityAssessmentDesc": "For student's knowledge assessment, teachers can create assignments and test suites",
+        "platformCapabilityExamination": "Material examination",
+        "platformCapabilityExaminationDesc": "A major part of materials can be examined online without the requirement to download it",
+        "developers": "Developers",
+        "developerSobolyev": "Sobolyev Danylo - Back-end",
+        "developerFedyshen": "Fedyshen Bohdan - Back-end",
+        "developerRenhach": "Renhach Valenyn - Front-end"
+    }
 }
