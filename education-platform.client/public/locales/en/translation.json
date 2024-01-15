@@ -17,8 +17,12 @@
         "platformCapabilityExamination": "Material examination",
         "platformCapabilityExaminationDesc": "A major part of materials can be examined online without the requirement to download it",
         "developers": "Developers",
-        "developerSobolyev": "Sobolyev Danylo - Back-end",
-        "developerFedyshen": "Fedyshen Bohdan - Back-end",
-        "developerRenhach": "Renhach Valenyn - Front-end"
+        "developerSobolyev": "Sobolyev Danylo",
+        "developerSobolyevRole": "Back-end",
+        "developerFedyshen": "Fedyshen Bohdan",
+        "developerFedyshenRole": "Back-end",
+        "developerRenhach": "Renhach Valenyn",
+        "developerRenhachRole": "Front-end",
+        "404error": "Page not found"
     }
 }

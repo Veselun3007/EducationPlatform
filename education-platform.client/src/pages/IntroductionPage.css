@@ -175,4 +175,38 @@ animation: moveInCircle 20s ease infinite;
 opacity: 1;
 }
 
+
 }
+
+
+.container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .image {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.2s cubic-bezier(.57,.18,.04,1);
+    object-fit: cover;
+  }
+
+  .overlay {
+    position: absolute;
+    top: -100%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s cubic-bezier(.57,.18,.04,1);
+  }
+
+  .container:hover .image {
+    transform: translateY(100%);
+  }
+
+  .container:hover .overlay {
+    transform: translateY(100%);
+  }

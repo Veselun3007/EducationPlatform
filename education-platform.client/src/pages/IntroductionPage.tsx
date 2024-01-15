@@ -1,20 +1,40 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { locales } from '../i18n';
-import Grid from '@mui/material/Unstable_Grid2';
-import { Button, Card, CardActions, CardContent, CardMedia, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import {
+    Button,
+    Card,
+    CardContent,
+    CardMedia,
+    IconButton,
+    Stack,
+    ToggleButton,
+    ToggleButtonGroup,
+    Typography,
+} from '@mui/material';
 import './IntroductionPage.css';
-
+import HoverImage from '../components/HoverImage';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
 const IntroductionPage = () => {
     const { t, i18n } = useTranslation();
 
-    const handleLanguageChange = (event: React.MouseEvent<HTMLElement>, newLanguage: string,) => {
+    const handleLanguageChange = (
+        event: React.MouseEvent<HTMLElement>,
+        newLanguage: string,
+    ) => {
         i18n.changeLanguage(newLanguage);
     };
 
     return (
-        <Stack direction="column" spacing={5} justifyContent="center">
+        <Stack
+            direction="column"
+            spacing={5}
+            mb={5}
+            justifyContent="center"
+            alignItems="stretch"
+        >
             <div className="gradient-bg">
                 <Stack className="content" spacing={{ xs: 4, sm: 3, md: 2 }} useFlexGap>
                     <Typography variant="h2" fontSize={58}>
@@ -24,25 +44,26 @@ const IntroductionPage = () => {
                         {t('glossary.introductionSubtitle')}
                     </Typography>
                     <Stack direction="row" spacing={5} mt={3}>
-                        <Button size="large" variant="contained" color='secondary'>
+                        <Button size="large" variant="contained" color="secondary">
                             {t('common.signUp')}
                         </Button>
-                        <Button size="large" variant="contained" >
+                        <Button size="large" variant="contained">
                             {t('common.login')}
                         </Button>
                     </Stack>
                 </Stack>
                 <div className="topBar">
                     <ToggleButtonGroup
-
                         value={i18n.language}
                         exclusive
                         onChange={handleLanguageChange}
                         aria-label="Platform"
                     >
-                        {
-                            locales.map((value, id) => (<ToggleButton key={id} value={value}>{value}</ToggleButton>))
-                        }
+                        {locales.map((value, id) => (
+                            <ToggleButton key={id} value={value}>
+                                {value}
+                            </ToggleButton>
+                        ))}
                     </ToggleButtonGroup>
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg">
@@ -71,21 +92,19 @@ const IntroductionPage = () => {
                     <div className="g5"></div>
                 </div>
             </div>
-            {/* <Button sx={{width:'5em', margin: '5em'}} size="large" variant="contained">
-                            {t('common.login')}
-                        </Button> */}
-            {/* <Grid container >
 
-            </Grid> */}
-            
-            <Typography align='center' variant='h3'>{t('glossary.platformCapabilities')}</Typography>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} justifyContent="center" alignItems="stretch">
-
-                <Card sx={{ maxWidth: 345 }}>
-                    <CardMedia
-                        component="img"
-                        image="/assets/communication.jpg"
-                    />
+            <Typography align="center" variant="h3">
+                {t('glossary.platformCapabilities')}
+            </Typography>
+            <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                spacing={3}
+                justifyContent="center"
+                alignItems="stretch"
+                alignContent="center"
+            >
+                <Card sx={{ maxWidth: 345, borderRadius:'5%' }}>
+                    <CardMedia component="img" image="/assets/communication.jpg" />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                             {t('glossary.platformCapabilityCommunication')}
@@ -95,11 +114,8 @@ const IntroductionPage = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card sx={{ maxWidth: 345 }}>
-                    <CardMedia
-                        component="img"
-                        image="/assets/assessment.jpg"
-                    />
+                <Card sx={{ maxWidth: 345, borderRadius:'5%' }}>
+                    <CardMedia component="img" image="/assets/assessment.jpg" />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                             {t('glossary.platformCapabilityAssessment')}
@@ -109,11 +125,8 @@ const IntroductionPage = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card sx={{ maxWidth: 345 }}>
-                    <CardMedia
-                        component="img"
-                        image="/assets/docs.jpg"
-                    />
+                <Card sx={{ maxWidth: 345, borderRadius:'5%' }}>
+                    <CardMedia component="img" image="/assets/docs.jpg" />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                             {t('glossary.platformCapabilityExamination')}
@@ -124,46 +137,84 @@ const IntroductionPage = () => {
                     </CardContent>
                 </Card>
             </Stack>
-            <Typography align='center' variant='h3'>{t('glossary.developers')}</Typography>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} justifyContent="center" alignItems="stretch">
-
-                <Card sx={{ maxWidth: 345 }}>
-                    <CardMedia
-                        component="img"
-                        alt = {t('glossary.developerSobolyev') + ' image'}
-                        // image="/assets/communication.jpg"
-                    />
-                    <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
+            <Typography align="center" variant="h3">
+                {t('glossary.developers')}
+            </Typography>
+            <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                spacing={3}
+                justifyContent="center"
+                alignItems="stretch"
+            >
+                <HoverImage
+                    imageSrc="/assets/Sobolyev.jpg"
+                    imageAlt={t('glossary.developerSobolyev')}
+                    backgroundColor="primary.main"
+                    sx={{ maxWidth: 345 }}
+                >
+                    <Stack direction="column" justifyContent="center">
+                        <Typography variant="h5">
                             {t('glossary.developerSobolyev')}
                         </Typography>
-                    </CardContent>
-                </Card>
-                <Card sx={{ maxWidth: 345 }}>
-                    <CardMedia
-                        component="img"
-                        alt = {t('glossary.developerFedyshen')+ ' image'}
-                        // image="/assets/assessment.jpg"
-                    />
-                    <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
+                        <Typography variant="subtitle1" fontSize={18}>
+                            {t('glossary.developerSobolyevRole')}
+                        </Typography>
+                        <Stack direction="row">
+                            <IconButton href="https://github.com/DanSoboliev">
+                                <GitHubIcon />
+                            </IconButton>
+                            <IconButton href="https://www.linkedin.com/in/dan-sobolev-57643124b/">
+                                <LinkedInIcon />
+                            </IconButton>
+                        </Stack>
+                    </Stack>
+                </HoverImage>
+                <HoverImage
+                    imageSrc="/assets/Fedyshen.jpg"
+                    imageAlt={t('glossary.developerFefyshen')}
+                    backgroundColor="primary.main"
+                    sx={{ maxWidth: 345 }}
+                >
+                    <Stack direction="column" justifyContent="center" alignItems="center">
+                        <Typography variant="h5">
                             {t('glossary.developerFedyshen')}
                         </Typography>
-                    </CardContent>
-                </Card>
-                <Card sx={{ maxWidth: 345 }}>
-                    <CardMedia
-                        component="img"
-                        alt = {t('glossary.developerRenhach')+ ' image'}
-                        //image="/assets/docs.jpg"
-                    />
-                    <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
+                        <Typography variant="subtitle1" fontSize={18}>
+                            {t('glossary.developerFedyshenRole')}
+                        </Typography>
+                        <Stack direction="row">
+                            <IconButton href="https://github.com/Veselun3007">
+                                <GitHubIcon />
+                            </IconButton>
+                            <IconButton href="https://www.linkedin.com/in/bohdan-fedyshen-74554a24b/">
+                                <LinkedInIcon />
+                            </IconButton>
+                        </Stack>
+                    </Stack>
+                </HoverImage>
+                <HoverImage
+                    imageSrc="/assets/Renhach.jpg"
+                    imageAlt={t('glossary.developerRenhach')}
+                    backgroundColor="primary.main"
+                    sx={{ maxWidth: 345 }}
+                >
+                    <Stack direction="column" justifyContent="center" alignItems="center">
+                        <Typography variant="h5">
                             {t('glossary.developerRenhach')}
                         </Typography>
-                        
-                    </CardContent>
-                </Card>
+                        <Typography variant="subtitle1" fontSize={18}>
+                            {t('glossary.developerRenhachRole')}
+                        </Typography>
+                        <Stack direction="row">
+                            <IconButton href="https://github.com/Right9lt">
+                                <GitHubIcon />
+                            </IconButton>
+                            <IconButton href="https://www.linkedin.com/in/valentyn-renhach-a45952245/">
+                                <LinkedInIcon />
+                            </IconButton>
+                        </Stack>
+                    </Stack>
+                </HoverImage>
             </Stack>
         </Stack>
     );

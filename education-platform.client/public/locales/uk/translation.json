@@ -16,9 +16,13 @@
         "platformCapabilityAssessmentDesc": "Для оцінки знань студентів викладачі можуть створювати завдання та тести",
         "platformCapabilityExamination": "Перегляд матеріалів",
         "platformCapabilityExaminationDesc": "Більша кількість матеріалів може бути переглянута онлайн без необхідності їх завантаження",
-        "developers": "Розробниики",
-        "developerSobolyev": "Соболєв Данило - Back-end",
-        "developerFedyshen": "Федишен Богдан - Back-end",
-        "developerRenhach": "Ренгач Валентин - Front-end"
+        "developers": "Розробники",
+        "developerSobolyev": "Соболєв Данило",
+        "developerSobolyevRole": "Back-end",
+        "developerFedyshen": "Федишен Богдан",
+        "developerFedyshenRole": "Back-end",
+        "developerRenhach": "Ренгач Валентин",
+        "developerRenhachRole": "Front-end",
+        "404error": "Сторінку не знайдено"
     }
 }
