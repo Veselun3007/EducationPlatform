@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { locales } from '../i18n';
+import { locales } from '../../i18n';
 import {
     Button,
     Card,
@@ -13,7 +13,7 @@ import {
     Typography,
 } from '@mui/material';
 import './IntroductionPage.css';
-import HoverImage from '../components/HoverImage';
+import HoverImage from '../../components/HoverImage/HoverImage';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 
@@ -44,10 +44,10 @@ const IntroductionPage = () => {
                         {t('glossary.introductionSubtitle')}
                     </Typography>
                     <Stack direction="row" spacing={5} mt={3}>
-                        <Button size="large" variant="contained" color="secondary">
+                        <Button size="large" variant="contained" href="/signup" color="secondary">
                             {t('common.signUp')}
                         </Button>
-                        <Button size="large" variant="contained">
+                        <Button size="large" href="/login" variant="contained">
                             {t('common.login')}
                         </Button>
                     </Stack>
@@ -103,7 +103,7 @@ const IntroductionPage = () => {
                 alignItems="stretch"
                 alignContent="center"
             >
-                <Card sx={{ maxWidth: 345, borderRadius:'5%' }}>
+                <Card sx={{ maxWidth: 345, borderRadius: '5%' }}>
                     <CardMedia component="img" image="/assets/communication.jpg" />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
@@ -114,7 +114,7 @@ const IntroductionPage = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card sx={{ maxWidth: 345, borderRadius:'5%' }}>
+                <Card sx={{ maxWidth: 345, borderRadius: '5%' }}>
                     <CardMedia component="img" image="/assets/assessment.jpg" />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
@@ -125,7 +125,7 @@ const IntroductionPage = () => {
                         </Typography>
                     </CardContent>
                 </Card>
-                <Card sx={{ maxWidth: 345, borderRadius:'5%' }}>
+                <Card sx={{ maxWidth: 345, borderRadius: '5%' }}>
                     <CardMedia component="img" image="/assets/docs.jpg" />
                     <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
