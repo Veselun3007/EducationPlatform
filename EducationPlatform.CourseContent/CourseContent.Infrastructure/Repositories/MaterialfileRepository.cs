@@ -1,5 +1,5 @@
 ﻿using CourseContent.Domain.Entities;
-using CourseContent.Infrastructure.Repositories.Interfaces.Base;
+using CourseContent.Infrastructure.Interfaces.Base;
 
 namespace CourseContent.Infrastructure.Repositories
 {

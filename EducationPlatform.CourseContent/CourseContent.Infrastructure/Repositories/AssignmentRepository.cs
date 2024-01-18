@@ -1,5 +1,5 @@
 ﻿using CourseContent.Domain.Entities;
-using CourseContent.Infrastructure.Repositories.Interfaces;
+using CourseContent.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Infrastructure.Repositories

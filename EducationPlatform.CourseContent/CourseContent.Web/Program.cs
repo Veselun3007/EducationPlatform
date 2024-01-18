@@ -1,12 +1,10 @@
 using CourseContent.Core.Interfaces;
 using CourseContent.Core.Services;
 using CourseContent.Domain.Entities;
+using CourseContent.Infrastructure;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Helpers;
-using CourseContent.Infrastructure.Repositories;
-using CourseContent.Infrastructure.Repositories.GenericRepositories;
-using CourseContent.Infrastructure.Repositories.Interfaces;
-using CourseContent.Infrastructure.Repositories.Interfaces.Base;
+using CourseContent.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 

@@ -2,7 +2,7 @@
 using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Helpers;
-using CourseContent.Infrastructure.Repositories.Interfaces;
+using CourseContent.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
