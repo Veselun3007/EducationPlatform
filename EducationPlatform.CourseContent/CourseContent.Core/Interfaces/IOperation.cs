@@ -13,5 +13,7 @@
         Task<T> GetByIdAsync(int id);
 
         Task RemoveRangeAsync(IEnumerable<T> entities);
+
+        Task<string?> GetFileByIdAsync(int id);
     }
 }
