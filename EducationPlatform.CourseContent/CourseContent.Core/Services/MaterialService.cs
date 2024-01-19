@@ -1,6 +1,6 @@
 ﻿using CourseContent.Core.Interfaces;
 using CourseContent.Domain.Entities;
-using CourseContent.Infrastructure.Repositories.Interfaces;
+using CourseContent.Infrastructure.Interfaces;
 
 namespace CourseContent.Core.Services
 {
