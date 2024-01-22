@@ -36,9 +36,6 @@ public partial class EducationPlatformContext : DbContext
             entity.Property(e => e.UserName)
                 .HasMaxLength(250)
                 .HasColumnName("user_name");
-            entity.Property(e => e.UserPassword)
-                .HasMaxLength(100)
-                .HasColumnName("user_password");
         });
 
         OnModelCreatingPartial(modelBuilder);
