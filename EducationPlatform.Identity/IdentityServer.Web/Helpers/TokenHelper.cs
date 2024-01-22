@@ -39,7 +39,7 @@ namespace IdentityServer.Web.Helpers
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:Issuer"],
                 audience: _configuration["JWT:Audience"],
-                expires: DateTime.Now.AddMinutes(ttl),
+                expires: DateTime.UtcNow.AddMinutes(ttl),
                 claims: claims,
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
                 );
