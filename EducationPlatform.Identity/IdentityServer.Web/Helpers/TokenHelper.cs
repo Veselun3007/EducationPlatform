@@ -5,9 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace IdentityServer.Core.Helpers
+namespace IdentityServer.Web.Helpers
 {
-    internal class TokenHelper
+    public class TokenHelper
     {
         private readonly IConfiguration _configuration;
         private readonly string _key;
@@ -20,26 +20,17 @@ namespace IdentityServer.Core.Helpers
             _accessTokenTtlInMinutes = _configuration["JWT:AccessTokenTtlInMinutes"] ?? throw new("JWT:AccessTokenTtlInMinutes");
         }
 
-        public Dictionary<string, string> GenerateTokens(User user)
+        public string GenerateRefreshToken()
         {
-            var _token = GenerateAccessToken(user);
-            var _refreshToken = Guid.NewGuid().ToString();
-
-            var _tokens = new Dictionary<string, string>
-            {
-                { "Jwt", _token },
-                { "Refresh", _refreshToken }
-            };
-
-            return _tokens;
+            return Guid.NewGuid().ToString();
         }
 
-        private string GenerateAccessToken(User user)
+        public string GenerateAccessToken(string userName, string userEmail)
         {
             var claims = new List<Claim>
             {
-                new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.Email, user.UserEmail)
+                new(ClaimTypes.Name, userName),
+                new(ClaimTypes.Email, userEmail)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));

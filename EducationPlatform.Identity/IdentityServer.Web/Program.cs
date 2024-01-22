@@ -1,8 +1,11 @@
+using IdentityServer.Core.Interfaces;
+using IdentityServer.Core.Services;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Context;
 using IdentityServer.Infrastructure.Helpers;
 using IdentityServer.Infrastructure.Interfaces;
+using IdentityServer.Web.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,33 +23,36 @@ namespace IdentityServer.Web
             var _configuration = builder.Configuration;
 
             builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-            var secret = _configuration["Secret:SigningKey"];
-            var isconnectionString = 
-                _configuration["EducationPlatformConnectionStrings:IdentityDbConnectionStrings"];
-            var epconnectionString = 
-                _configuration["EducationPlatformConnectionStrings:EducationPlatformContext"];
+            var _secret = _configuration["JWT:Key"];
+            var _issuer = _configuration["JWT:Issuer"];
+            var _audience = _configuration["JWT:Audience"];
+            var _identityConnectionString = _configuration["ConnectionStrings:IdentityDb"];
+            var _businessConnectionString = _configuration["ConnectionStrings:EducationPlatformDB"];
 
-            
+
             builder.Services.AddDbContext<IdentityDBContext>(options =>
             {
-                options.UseNpgsql(isconnectionString);
+                options.UseNpgsql(_identityConnectionString);
             });
 
             builder.Services.AddDbContext<EducationPlatformContext>(options =>
             {
-                options.UseNpgsql(epconnectionString);
+                options.UseNpgsql(_businessConnectionString);
             });
 
             builder.Services.AddScoped<FileHelper>();
+            builder.Services.AddScoped<TokenHelper>();
+            builder.Services.AddScoped<CryptographyHelper>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<IBusinessUserOperation, UserOperation>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(config =>
             {
-                config.Password.RequiredLength = 8;
-                config.Password.RequireDigit = true;
-                config.Password.RequireLowercase = true;
-                config.Password.RequireUppercase = true;
-                config.Password.RequireNonAlphanumeric = true;
+                //config.Password.RequiredLength = 8;
+                //config.Password.RequireDigit = true;
+                //config.Password.RequireLowercase = true;
+                //config.Password.RequireUppercase = true;
+                //config.Password.RequireNonAlphanumeric = true;
                 config.SignIn.RequireConfirmedEmail = false;
                 config.SignIn.RequireConfirmedPhoneNumber = false;
             })
@@ -62,15 +68,14 @@ namespace IdentityServer.Web
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-
-                    ValidIssuer = "BhavikCorp",
-                    ValidAudience = "TestAudience",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                    ValidIssuer = _issuer,
+                    ValidAudience = _audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret)),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.FromMinutes(5)
+                    ClockSkew = TimeSpan.Zero
                 };
             });
 
@@ -119,8 +124,10 @@ namespace IdentityServer.Web
                     var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
                     logger.LogError(exception, "An error occurred while app initialization");
                 }
-            } 
-
+            }
+            //TODO: Remove it for production
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.MapDefaultControllerRoute();
             app.UseIdentityServer();
 

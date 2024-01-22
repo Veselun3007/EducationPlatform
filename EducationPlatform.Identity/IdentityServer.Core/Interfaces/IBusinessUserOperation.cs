@@ -1,15 +1,14 @@
-﻿using IdentityServer.Web.DTOs.User;
+﻿using IdentityServer.Domain.Entities;
+using IdentityServer.Web.DTOs.User;
 
 namespace IdentityServer.Core.Interfaces
 {
     public interface IBusinessUserOperation
     {
-        Task<UserDTO> AddAsync(UserDTO entity);
+        Task<User> AddAsync(UserDTO entity);
 
-        Task<UserDTO> UpdateAsync(UserDTO entity);
+        Task<User> UpdateAsync(UserDTO entity, int id);
 
-        Task<UserDTO> DeleteAsync(UserDTO entity);
-
-        void GenerateTokens();
+        Task<bool> DeleteAsync(int id);
     }
 }

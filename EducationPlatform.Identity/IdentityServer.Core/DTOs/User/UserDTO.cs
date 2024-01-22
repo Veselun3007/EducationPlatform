@@ -17,23 +17,11 @@ namespace IdentityServer.Web.DTOs.User
         public required string UserEmail { get; set; }
 
         [Required(ErrorMessage = "Поле 'Пароль' обов'язкове")]
-        [DataType(DataType.Password)]
-        [RegularExpression(@"^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$",
-            ErrorMessage = "Пароль повинен містити принаймні одну літеру, одну цифру, один спеціальний символ, " +
-            "та бути довжиною не менше 8 символів.")]
         public required string UserPassword { get; set; }
-
-        [Required(ErrorMessage = "Поле 'Пароль' обов'язкове")]
-        [DataType(DataType.Password)]
-        [Compare("UserPassword", ErrorMessage = "Пароль та підтвердження паролю не співпадають")]
-        public required string ComfirmUserPassword { get; set; }
 
         [ValidateFile([".png", ".jpg", ".jpeg"], ErrorMessage = "Зображення має непідтримуване розширення")]
         public IFormFile? UserImage { get; set; }
 
-        public string? RefreshToken { get; set; }
-
-        public DateTime? ValidUntil { get; set; }
     }
 }
 

@@ -5,28 +5,43 @@ using IdentityServer.Web.DTOs.User;
 
 namespace IdentityServer.Core.Services
 {
-    internal class UserOperation(IUnitOfWork unitOfWork) : IBusinessUserOperation
+    public class UserOperation(IUnitOfWork unitOfWork) : IBusinessUserOperation
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public Task<UserDTO> AddAsync(UserDTO entity)
+        public async Task<User> AddAsync(UserDTO entity)
         {
-            throw new NotImplementedException();
+            var userEntity = new User
+            {
+                UserName = entity.UserName,
+                UserEmail = entity.UserEmail,
+                UserImage = entity.UserImage is not null ? await _unitOfWork.UserRepository.GetName(entity.UserImage) : null
+            };
+
+            await _unitOfWork.UserRepository.AddAsync(userEntity);
+            await _unitOfWork.CompleteAsync();
+            return userEntity;
         }
 
-        public Task<UserDTO> DeleteAsync(UserDTO entity)
+        public async Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            await _unitOfWork.UserRepository.DeleteAsync(id);
+            await _unitOfWork.CompleteAsync();
+            return true;
         }
 
-        public void GenerateTokens()
+        public async Task<User> UpdateAsync(UserDTO entity, int id)
         {
-            throw new NotImplementedException();
-        }
+            var userEntity = new User
+            {
+                UserName = entity.UserName,
+                UserEmail = entity.UserEmail,
+                UserImage = entity.UserImage is not null ? await _unitOfWork.UserRepository.GetName(entity.UserImage) : null
+            };
 
-        public Task<UserDTO> UpdateAsync(UserDTO entity)
-        {
-            throw new NotImplementedException();
+            await _unitOfWork.UserRepository.UpdateAsync(userEntity, id);
+            await _unitOfWork.CompleteAsync();
+            return userEntity;
         }
     }
 }
