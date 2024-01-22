@@ -6,35 +6,9 @@ using System.Net;
 
 namespace CourseContent.Infrastructure.Helpers
 {
-    internal static class AWSHelper
+    internal static class AwsHelper
     {
         public static readonly RegionEndpoint USEast1 = Amazon.RegionEndpoint.USEast1;
-
-        public static async Task<byte[]> GetObjectAsync(string? access_key, string? secret_key,
-            string? bucket_name, string? object_name)
-        {
-            var config = new AmazonS3Config { RegionEndpoint = USEast1 };
-
-            try
-            {
-                using var client = new AmazonS3Client(access_key, secret_key, config);
-                var request = new GetObjectRequest
-                {
-                    BucketName = bucket_name,
-                    Key = object_name
-                };
-
-                using var response = await client.GetObjectAsync(request);
-                var memoryStream = new MemoryStream();
-                await response.ResponseStream.CopyToAsync(memoryStream);
-                return memoryStream.ToArray();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                throw;
-            }
-        }
 
         public static async Task<bool> PostObjectAsync(string? access_key, string? secret_key, 
             string? bucket_name, string? object_name, IFormFile file)

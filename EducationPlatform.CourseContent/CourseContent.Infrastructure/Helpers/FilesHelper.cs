@@ -18,7 +18,7 @@ namespace CourseContent.Infrastructure.Helpers
 
                 string object_name = Guid.NewGuid().ToString() + "_" + file.FileName;
 
-                bool uploadSuccess = await AWSHelper
+                bool uploadSuccess = await AwsHelper
                     .PostObjectAsync(_configuration["AWSConfig:AccessKey"], _configuration["AWSConfig:SecretKey"],
                     _configuration["AWSConfig:BucketName"], object_name, file);
 
@@ -37,7 +37,7 @@ namespace CourseContent.Infrastructure.Helpers
         {
             try
             {
-                bool deleteSuccess = await AWSHelper
+                bool deleteSuccess = await AwsHelper
                 .DeleteObjectAsync(_configuration["AWSConfig:SecretKey"],
                 _configuration["AWSConfig:SecretKey"],
                 _configuration["AWSConfig:BucketName"], name);

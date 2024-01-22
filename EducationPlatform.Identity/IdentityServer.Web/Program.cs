@@ -1,7 +1,13 @@
 using IdentityServer.Domain.Entities;
+using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Context;
+using IdentityServer.Infrastructure.Helpers;
+using IdentityServer.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace IdentityServer.Web
 {
@@ -14,11 +20,12 @@ namespace IdentityServer.Web
             var _configuration = builder.Configuration;
 
             builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
+            var secret = _configuration["Secret:SigningKey"];
             var isconnectionString = 
                 _configuration["EducationPlatformConnectionStrings:IdentityDbConnectionStrings"];
             var epconnectionString = 
                 _configuration["EducationPlatformConnectionStrings:EducationPlatformContext"];
+
             
             builder.Services.AddDbContext<IdentityDBContext>(options =>
             {
@@ -30,6 +37,8 @@ namespace IdentityServer.Web
                 options.UseNpgsql(epconnectionString);
             });
 
+            builder.Services.AddScoped<FileHelper>();
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(config =>
             {
@@ -37,12 +46,33 @@ namespace IdentityServer.Web
                 config.Password.RequireDigit = true;
                 config.Password.RequireLowercase = true;
                 config.Password.RequireUppercase = true;
-                config.Password.RequireNonAlphanumeric = false;
+                config.Password.RequireNonAlphanumeric = true;
                 config.SignIn.RequireConfirmedEmail = false;
                 config.SignIn.RequireConfirmedPhoneNumber = false;
             })
                 .AddEntityFrameworkStores<IdentityDBContext>()
                 .AddDefaultTokenProviders();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+
+                    ValidIssuer = "BhavikCorp",
+                    ValidAudience = "TestAudience",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.FromMinutes(5)
+                };
+            });
 
             builder.Services.AddIdentityServer()
                 .AddAspNetIdentity<AppUser>()
@@ -50,28 +80,13 @@ namespace IdentityServer.Web
                 .AddInMemoryIdentityResources(Config.IdentityResources)
                 .AddInMemoryApiScopes(Config.ApiScopes)
                 .AddInMemoryClients(Config.Clients) 
-                .AddDeveloperSigningCredential()
-                .AddOperationalStore(options =>
-                {
-                    options.ConfigureDbContext = builder => builder
-                    .UseNpgsql(isconnectionString, sql => sql
-                    .MigrationsAssembly(typeof(Program).Assembly.FullName));
-                    options.EnableTokenCleanup = true;
-                    options.TokenCleanupInterval = 3600;
-                });
+                .AddDeveloperSigningCredential();
 
-           
-            builder.Services.ConfigureApplicationCookie(config =>
-            {
-                config.Cookie.Name = "EducationPlatformAuth.Identity.Cookie";
-                config.LoginPath = "/Auth/Login";
-                config.LogoutPath = "/Auth/Logout";
-            });
-            
+            builder.Services.AddAuthorization();
+
             builder.Services.AddControllers();
 
             builder.Services.AddSwaggerGen();
-
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
@@ -81,6 +96,7 @@ namespace IdentityServer.Web
                            .AllowAnyMethod();
                 });
             });
+
 
             var app = builder.Build();
 

@@ -3,9 +3,11 @@
     public class User
     {
         public int UserId { get; set; }
+
         public required string UserName { get; set; }
+
         public required string UserEmail { get; set; }
-        public required string UserPassword { get; set; }
+
         public string? UserImage { get; set; }
     }
 }

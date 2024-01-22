@@ -1,8 +1,13 @@
 ﻿using Duende.IdentityServer.Services;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Infrastructure.Context;
+using IdentityServer.Web.DTOs.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 
 namespace EducationPlatform.Identity.Controllers
@@ -23,20 +28,19 @@ namespace EducationPlatform.Identity.Controllers
         public async Task<ActionResult> Login([FromBody] LoginModel loginModel)
         {
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
-            _ = await _userManager.CheckPasswordAsync(user, loginModel.UserPassword);
 
-            if (user == null)
+            if (user is null || !await _userManager.CheckPasswordAsync(user, loginModel.UserPassword))
             {
-                ModelState.AddModelError(string.Empty, "User not found");
+                ModelState.AddModelError(string.Empty, "Invalid email or password");
                 return BadRequest(ModelState);
             }
 
-            var result = await _signInManager.PasswordSignInAsync(user.UserName, 
-                loginModel.UserPassword, false, false);
-            
+            var result = await _signInManager.PasswordSignInAsync(user.UserName, loginModel.UserPassword, false, false);
+
             if (result.Succeeded)
             {
-                return Ok(_signInManager.ClaimsFactory);
+                
+                return Ok();
             }
 
             ModelState.AddModelError(string.Empty, "Login error");
@@ -45,8 +49,9 @@ namespace EducationPlatform.Identity.Controllers
 
 
 
+
         [HttpPost("register")]
-        public async Task<ActionResult> Register([FromBody] User userModel)
+        public async Task<ActionResult> Register([FromBody] UserDTO userModel)
         {
             var user = new AppUser
             {
@@ -54,15 +59,13 @@ namespace EducationPlatform.Identity.Controllers
                 Email = userModel.UserEmail
             };
             var result = await _userManager.CreateAsync(user, userModel.UserPassword);
-            
+
             if (result.Succeeded)
             {
                 var educationUser = new User
                 {
                     UserName = userModel.UserName,
-                    UserEmail = userModel.UserEmail,
-                    UserPassword = userModel.UserPassword,
-                    UserImage = userModel.UserImage
+                    UserEmail = userModel.UserEmail
                 };
 
                 _educationPlatformContext.Users.Add(educationUser);
@@ -74,9 +77,6 @@ namespace EducationPlatform.Identity.Controllers
 
             return BadRequest(new { result.Errors });
         }
-
-
-
     }
 }
 
