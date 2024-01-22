@@ -37,10 +37,10 @@ const IntroductionPage = () => {
         >
             <div className="gradient-bg">
                 <Stack className="content" spacing={{ xs: 4, sm: 3, md: 2 }} useFlexGap>
-                    <Typography variant="h2" fontSize={58}>
+                    <Typography align="center" variant="h2" fontSize={58}>
                         {t('glossary.introductionTitle')}
                     </Typography>
-                    <Typography variant="subtitle1" fontSize={18}>
+                    <Typography align="center" variant="subtitle1" fontSize={18}>
                         {t('glossary.introductionSubtitle')}
                     </Typography>
                     <Stack direction="row" spacing={5} mt={3}>
