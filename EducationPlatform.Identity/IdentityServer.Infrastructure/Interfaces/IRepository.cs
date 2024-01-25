@@ -6,11 +6,8 @@ namespace IdentityServer.Infrastructure.Interfaces
     {
         Task<T> AddAsync(T entity);
 
-        Task<string> GetName(IFormFile file);
-
         Task<T?> UpdateAsync(T entity, int id);
 
         Task<bool> DeleteAsync(int id);
-
     }
 }

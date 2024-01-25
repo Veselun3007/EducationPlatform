@@ -4,9 +4,10 @@ namespace IdentityServer.Domain.Entities
 {
     public class AppUser : IdentityUser
     {
-        public string? Salt { get; set; }
-        public string? RefreshToken { get; set; }
+        public required string Salt { get; set; }
 
-        public DateTime? ValidUntil { get; set; }
+        public required string RefreshToken { get; set; }
+
+        public required DateTime RefreshTokenValidUntil { get; set; }
     }
 }

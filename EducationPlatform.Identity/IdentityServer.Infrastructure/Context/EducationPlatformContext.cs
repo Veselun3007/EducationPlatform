@@ -24,10 +24,10 @@ public partial class EducationPlatformContext : DbContext
 
             entity.ToTable("users");
 
-            entity.HasIndex(e => e.UserEmail, "users_user_email_key").IsUnique();
+            entity.HasIndex(e => e.Email, "users_user_email_key").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("user_id");
-            entity.Property(e => e.UserEmail)
+            entity.Property(e => e.Email)
                 .HasMaxLength(254)
                 .HasColumnName("user_email");
             entity.Property(e => e.UserImage)

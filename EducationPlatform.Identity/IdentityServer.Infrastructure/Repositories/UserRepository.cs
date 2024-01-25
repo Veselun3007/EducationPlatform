@@ -1,6 +1,5 @@
 ﻿using IdentityServer.Domain.Entities;
 using IdentityServer.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer.Infrastructure.Repositories
 {
@@ -12,11 +11,6 @@ namespace IdentityServer.Infrastructure.Repositories
         public async Task<User> AddAsync(User entity)
         {
             return await _repository.AddAsync(entity);
-        }
-
-        public async Task<string> GetName(IFormFile file)
-        {
-            return await _repository.GetName(file);
         }
 
         public async Task<User?> UpdateAsync(User entity, int id)

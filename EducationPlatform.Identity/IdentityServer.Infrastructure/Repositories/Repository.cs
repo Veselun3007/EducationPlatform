@@ -1,27 +1,17 @@
-﻿using IdentityServer.Domain.Entities;
-using IdentityServer.Infrastructure.Context;
-using IdentityServer.Infrastructure.Helpers;
+﻿using IdentityServer.Infrastructure.Context;
 using IdentityServer.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Infrastructure.Repositories
 {
-    internal class Repository<T>(EducationPlatformContext context, 
-        FileHelper filesHelper) : IRepository<T> where T : class
+    internal class Repository<T>(EducationPlatformContext context) 
+        : IRepository<T> where T : class
     {
         private readonly EducationPlatformContext _context = context;
-        private readonly FileHelper _filesHelper = filesHelper;
 
         public async Task<T> AddAsync(T entity)
         {
             await _context.Set<T>().AddAsync(entity);
             return entity;
-        }
-
-        public async Task<string> GetName(IFormFile file)
-        {
-            return await _filesHelper.AddFileAsync(file);
         }
 
         public async Task<bool> DeleteAsync(int id)

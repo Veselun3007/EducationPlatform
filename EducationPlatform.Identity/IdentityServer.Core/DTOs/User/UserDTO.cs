@@ -14,14 +14,13 @@ namespace IdentityServer.Web.DTOs.User
         [Required(ErrorMessage = "Поле 'Електронна пошта' обов'язкове")]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
             ErrorMessage = "Не коректний формат електронної пошти.")]
-        public required string UserEmail { get; set; }
+        public required string Email { get; set; }
 
         [Required(ErrorMessage = "Поле 'Пароль' обов'язкове")]
         public required string UserPassword { get; set; }
 
         [ValidateFile([".png", ".jpg", ".jpeg"], ErrorMessage = "Зображення має непідтримуване розширення")]
         public IFormFile? UserImage { get; set; }
-
     }
 }
 

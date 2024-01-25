@@ -1,6 +1,5 @@
 ﻿using IdentityServer.Domain.Entities;
 using IdentityServer.Infrastructure.Context;
-using IdentityServer.Infrastructure.Helpers;
 using IdentityServer.Infrastructure.Interfaces;
 using IdentityServer.Infrastructure.Repositories;
 
@@ -9,14 +8,12 @@ namespace IdentityServer.Infrastructure
     public class UnitOfWork : IUnitOfWork 
     {
         private readonly EducationPlatformContext _context;
-        private readonly FileHelper _filesHelper;
 
-        public UnitOfWork(EducationPlatformContext context, FileHelper fileHelper)
+        public UnitOfWork(EducationPlatformContext context)
         {
             _context = context;
-            _filesHelper = fileHelper;
 
-            UserRepository = new Repository<User>(_context, _filesHelper);
+            UserRepository = new Repository<User>(_context);
         }
         public IRepository<User> UserRepository { get; private set; }
 

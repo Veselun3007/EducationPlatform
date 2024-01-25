@@ -1,11 +1,10 @@
+using IdentityServer.Core.Helpers;
 using IdentityServer.Core.Interfaces;
 using IdentityServer.Core.Services;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Context;
-using IdentityServer.Infrastructure.Helpers;
 using IdentityServer.Infrastructure.Interfaces;
-using IdentityServer.Web.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -43,16 +42,12 @@ namespace IdentityServer.Web
             builder.Services.AddScoped<FileHelper>();
             builder.Services.AddScoped<TokenHelper>();
             builder.Services.AddScoped<CryptographyHelper>();
+            builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IBusinessUserOperation, UserOperation>();
 
             builder.Services.AddIdentity<AppUser, IdentityRole>(config =>
             {
-                //config.Password.RequiredLength = 8;
-                //config.Password.RequireDigit = true;
-                //config.Password.RequireLowercase = true;
-                //config.Password.RequireUppercase = true;
-                //config.Password.RequireNonAlphanumeric = true;
                 config.SignIn.RequireConfirmedEmail = false;
                 config.SignIn.RequireConfirmedPhoneNumber = false;
             })
@@ -70,7 +65,7 @@ namespace IdentityServer.Web
                 {
                     ValidIssuer = _issuer,
                     ValidAudience = _audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret!)),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
@@ -78,14 +73,6 @@ namespace IdentityServer.Web
                     ClockSkew = TimeSpan.Zero
                 };
             });
-
-            builder.Services.AddIdentityServer()
-                .AddAspNetIdentity<AppUser>()
-                .AddInMemoryApiResources(Config.ApiResources)
-                .AddInMemoryIdentityResources(Config.IdentityResources)
-                .AddInMemoryApiScopes(Config.ApiScopes)
-                .AddInMemoryClients(Config.Clients) 
-                .AddDeveloperSigningCredential();
 
             builder.Services.AddAuthorization();
 
@@ -125,11 +112,8 @@ namespace IdentityServer.Web
                     logger.LogError(exception, "An error occurred while app initialization");
                 }
             }
-            //TODO: Remove it for production
-            app.UseAuthentication();
-            app.UseAuthorization();
+            
             app.MapDefaultControllerRoute();
-            app.UseIdentityServer();
 
             app.Run();
         }

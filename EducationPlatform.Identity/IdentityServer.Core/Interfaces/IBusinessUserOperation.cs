@@ -1,5 +1,6 @@
 ﻿using IdentityServer.Domain.Entities;
 using IdentityServer.Web.DTOs.User;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityServer.Core.Interfaces
 {
