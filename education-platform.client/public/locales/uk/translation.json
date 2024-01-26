@@ -1,7 +1,11 @@
 {
     "common":{
         "signUp": "Зареєструватися",
-        "login": "Увійти"
+        "login": "Увійти",
+        "email": "Ел. пошта",
+        "username": "Ім'я користувача",
+        "password": "Пароль",
+        "profileImage": "Виберіть зображення профілю"
     },
     "validation":{
 
@@ -23,6 +27,8 @@
         "developerFedyshenRole": "Back-end",
         "developerRenhach": "Ренгач Валентин",
         "developerRenhachRole": "Front-end",
-        "404error": "Сторінку не знайдено"
+        "404error": "Сторінку не знайдено",
+        "signUpHeader":"Реєстрація на платформі",
+        "loginHeader":"Вхід до платформи"
     }
 }
