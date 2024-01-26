@@ -12,7 +12,6 @@ namespace IdentityServer.Infrastructure
         public UnitOfWork(EducationPlatformContext context)
         {
             _context = context;
-
             UserRepository = new Repository<User>(_context);
         }
         public IRepository<User> UserRepository { get; private set; }

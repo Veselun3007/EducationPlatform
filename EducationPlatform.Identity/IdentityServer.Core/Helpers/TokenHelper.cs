@@ -9,14 +9,26 @@ namespace IdentityServer.Core.Helpers
     public class TokenHelper
     {
         private readonly IConfiguration _configuration;
-        private readonly string _key;
-        private readonly string _accessTokenTtlInMinutes;
+        private readonly SymmetricSecurityKey _key;
+        private readonly SigningCredentials _signingCredentials;
+        private readonly DateTime _expires;
+        private readonly string _jwtKey;
+        private readonly string _accessTokenTtlInMinutes;     
+        private readonly string _issuer;
+        private readonly string _audience;
+        private readonly int _ttl;
 
         public TokenHelper(IConfiguration configuration)
         {
             _configuration = configuration;
-            _key = _configuration["JWT:Key"] ?? throw new("JWT:Key");
-            _accessTokenTtlInMinutes = _configuration["JWT:AccessTokenTtlInMinutes"] ?? throw new("JWT:AccessTokenTtlInMinutes");
+            _jwtKey = _configuration["JWT:Key"]!;
+            _accessTokenTtlInMinutes = _configuration["JWT:AccessTokenTtlInMinutes"]!;
+            _issuer = _configuration["JWT:Issuer"]!;
+            _audience = _configuration["JWT:Audience"]!;
+            _ttl = int.Parse(_accessTokenTtlInMinutes);
+            _expires = DateTime.UtcNow.AddMinutes(_ttl);
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtKey));
+            _signingCredentials = new SigningCredentials(_key, SecurityAlgorithms.HmacSha256Signature);
         }
 
         public static string GenerateRefreshToken()
@@ -31,20 +43,15 @@ namespace IdentityServer.Core.Helpers
                 new(ClaimTypes.Name, name),
                 new(ClaimTypes.Email, email)
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
-            int ttl = int.Parse(_accessTokenTtlInMinutes);
-
             var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:Issuer"],
-                audience: _configuration["JWT:Audience"],
-                expires: DateTime.Now.AddMinutes(ttl),
+                issuer: _issuer,
+                audience: _audience,
+                expires: _expires,
                 claims: claims,
-                signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
-                );
+                signingCredentials: _signingCredentials
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
     }
 }

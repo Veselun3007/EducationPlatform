@@ -30,7 +30,8 @@ namespace EducationPlatform.Identity.Controllers
         {
             var user = await _userManager.FindByEmailAsync(loginDTO.Email);
 
-            if (user is null || !CryptographyHelper.VerifyPassword(user.Salt, loginDTO.UserPassword, user.PasswordHash!))
+            if (user is null || !CryptographyHelper.VerifyPassword(user.Salt, 
+                loginDTO.UserPassword, user.PasswordHash!))
             {
                 return BadRequest("Invalid email or password");
             }
@@ -38,7 +39,8 @@ namespace EducationPlatform.Identity.Controllers
             var tokens = _userService.FromLoginToResponse(user);
 
             user.RefreshToken = tokens.RefreshToken;
-            user.RefreshTokenValidUntil = DateTime.UtcNow.AddDays(double.Parse(_configuration["JWT:RefreshTokenTtlInDays"]!));
+            user.RefreshTokenValidUntil = DateTime.UtcNow
+                .AddDays(double.Parse(_configuration["JWT:RefreshTokenTtlInDays"]!));
 
             var updateResult = await _userManager.UpdateAsync(user);
 
@@ -69,7 +71,8 @@ namespace EducationPlatform.Identity.Controllers
         [HttpPost("getAccessToken")]
         public async Task<ActionResult> GetAccessToken([FromBody] GetAccessTokenDTO tokenDTO)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == tokenDTO.RefreshToken);
+            var user = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.RefreshToken == tokenDTO.RefreshToken);
 
             if (user is null || user.RefreshTokenValidUntil <= DateTime.UtcNow)
             {

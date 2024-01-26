@@ -32,10 +32,14 @@ namespace IdentityServer.Core.Helpers
             };
             try
             {
-                PutObjectResponse response = await client.PutObjectAsync(request);
-                if (response.HttpStatusCode != HttpStatusCode.OK ||
-                    response.HttpStatusCode != HttpStatusCode.NoContent) return false;
-                return true;
+                var response = await client.PutObjectAsync(request);
+                if (response.HttpStatusCode is HttpStatusCode.OK || 
+                    response.HttpStatusCode is HttpStatusCode.NoContent)
+                {
+                    return true;
+                }
+
+                return false;
             }
             catch (Exception)
             {
@@ -65,7 +69,7 @@ namespace IdentityServer.Core.Helpers
             try
             {
                 DeleteObjectResponse response = await client.DeleteObjectAsync(request);
-                return response.DeleteMarker != null;
+                return response.DeleteMarker is not null;
             }
             catch (Exception)
             {

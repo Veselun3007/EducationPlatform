@@ -1,34 +1,50 @@
 ﻿using IdentityServer.Infrastructure.Context;
 using IdentityServer.Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Infrastructure.Repositories
 {
-    internal class Repository<T>(EducationPlatformContext context) 
-        : IRepository<T> where T : class
+    internal class Repository<T> : IRepository<T> where T : class
     {
-        private readonly EducationPlatformContext _context = context;
+        private readonly EducationPlatformContext _context;
+        private readonly DbSet<T> _dbSet;
 
-        public async Task<T> AddAsync(T entity)
+        public Repository(EducationPlatformContext context)
         {
-            await _context.Set<T>().AddAsync(entity);
+            _context = context;
+            _dbSet = _context.Set<T>();
+        }
+
+        public virtual async Task<T> AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
             return entity;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public virtual async Task<bool> DeleteAsync(int id)
         {
-            var entity = await _context.Set<T>().FindAsync(id);
+            var entity = await _dbSet.FindAsync(id);
             if (entity == null)
                 return false;
 
-            _context.Set<T>().Remove(entity);
+            _dbSet.Remove(entity);
             return true;
         }
 
-        public async Task<T?> UpdateAsync(T entity, int id)
+        public virtual void DeleteAsync(T entityToDelete)
         {
-            var existingEntity = await _context.Set<T>().FindAsync(id);
+            if (_context.Entry(entityToDelete).State is EntityState.Detached)
+            {
+                _dbSet.Attach(entityToDelete);
+            }
+            _dbSet.Remove(entityToDelete);
+        }
 
-            if (existingEntity != null)
+        public virtual async Task<T?> UpdateAsync(T entity, int id)
+        {
+            var existingEntity = await _dbSet.FindAsync(id);
+
+            if (existingEntity is not null)
             {
                 _context.Entry(existingEntity).CurrentValues.SetValues(entity);
             }

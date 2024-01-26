@@ -11,15 +11,11 @@ namespace IdentityServer.Core.Helpers
         {
             try
             {
-                if (file == null || file.Length <= 0)
-                {
-                    throw new ArgumentException("Invalid file.");
-                }
-
                 string object_name = Guid.NewGuid().ToString() + "_" + file.FileName;
 
-                bool uploadSuccess = await AwsHelper
-                    .PostObjectAsync(_configuration["AWSConfig:AccessKey"], _configuration["AWSConfig:SecretKey"],
+                bool uploadSuccess = await AwsHelper.PostObjectAsync(
+                    _configuration["AWSConfig:AccessKey"], 
+                    _configuration["AWSConfig:SecretKey"],
                     _configuration["AWSConfig:BucketName"], object_name, file);
 
                 return !uploadSuccess ? object_name : throw

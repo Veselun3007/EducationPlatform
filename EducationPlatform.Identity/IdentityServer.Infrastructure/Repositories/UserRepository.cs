@@ -22,5 +22,10 @@ namespace IdentityServer.Infrastructure.Repositories
         {
             return await _repository.DeleteAsync(id);
         }
+
+        public void DeleteAsync(User entity)
+        {
+            _repository.DeleteAsync(entity);
+        }
     }
 }

@@ -9,5 +9,7 @@ namespace IdentityServer.Infrastructure.Interfaces
         Task<T?> UpdateAsync(T entity, int id);
 
         Task<bool> DeleteAsync(int id);
+
+        void DeleteAsync(T entity);
     }
 }
