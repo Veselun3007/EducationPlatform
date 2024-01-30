@@ -8,7 +8,7 @@ namespace CourseContent.Infrastructure.Repositories
     {
         private readonly IEntityRepository<Materialfile> _repository = repository;
 
-        public async Task<Materialfile?> GetByIdAsync(int id)
+        public async Task<Materialfile> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
         }

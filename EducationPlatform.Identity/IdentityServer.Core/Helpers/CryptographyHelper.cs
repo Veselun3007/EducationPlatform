@@ -9,14 +9,15 @@ namespace IdentityServer.Core.Helpers
         {
             return Convert.ToHexString(SHA256.HashData(UTF8Encoding.UTF8.GetBytes(text + salt)));
         }
-        
-        public static bool VerifyPassword(string salt, string passwordToCheck, string password) { 
+
+        public static bool VerifyPassword(string salt, string passwordToCheck, string password)
+        {
             return Hash(passwordToCheck, salt) == password;
         }
 
         public static string GenerateSalt()
         {
             return Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-        }        
+        }
     }
 }

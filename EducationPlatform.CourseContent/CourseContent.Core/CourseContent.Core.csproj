@@ -12,4 +12,8 @@
     <ProjectReference Include="..\CourseContent.Infrastructure\CourseContent.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\Material\NewFolder\" />
+  </ItemGroup>
+
 </Project>

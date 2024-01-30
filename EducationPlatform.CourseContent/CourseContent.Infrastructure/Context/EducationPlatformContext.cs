@@ -28,11 +28,11 @@ public partial class EducationPlatformContext : DbContext
     {
         modelBuilder.Entity<Assignment>(entity =>
         {
-            entity.HasKey(e => e.AssignmentId).HasName("assignments_pkey");
+            entity.HasKey(e => e.Id).HasName("assignments_pkey");
 
             entity.ToTable("assignments");
 
-            entity.Property(e => e.AssignmentId).HasColumnName("assignment_id");
+            entity.Property(e => e.Id).HasColumnName("assignment_id");
             entity.Property(e => e.AssignmentDatePublication)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("assignment_date_publication");
@@ -55,11 +55,11 @@ public partial class EducationPlatformContext : DbContext
 
         modelBuilder.Entity<Assignmentfile>(entity =>
         {
-            entity.HasKey(e => e.AssignmentAttachedfileId).HasName("assignmentfiles_pkey");
+            entity.HasKey(e => e.Id).HasName("assignmentfiles_pkey");
 
             entity.ToTable("assignmentfiles");
 
-            entity.Property(e => e.AssignmentAttachedfileId).HasColumnName("assignment_attachedfile_id");
+            entity.Property(e => e.Id).HasColumnName("assignment_attachedfile_id");
             entity.Property(e => e.AssignmentId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("assignment_id");
@@ -75,11 +75,11 @@ public partial class EducationPlatformContext : DbContext
 
         modelBuilder.Entity<Course>(entity =>
         {
-            entity.HasKey(e => e.CourseId).HasName("courses_pkey");
+            entity.HasKey(e => e.Id).HasName("courses_pkey");
 
             entity.ToTable("courses");
 
-            entity.Property(e => e.CourseId).HasColumnName("course_id");
+            entity.Property(e => e.Id).HasColumnName("course_id");
             entity.Property(e => e.CourseDescription)
                 .HasMaxLength(255)
                 .HasColumnName("course_description");
@@ -91,14 +91,13 @@ public partial class EducationPlatformContext : DbContext
                 .HasColumnName("course_name");
         });
       
-
         modelBuilder.Entity<Material>(entity =>
         {
-            entity.HasKey(e => e.MaterialId).HasName("materials_pkey");
+            entity.HasKey(e => e.Id).HasName("materials_pkey");
 
             entity.ToTable("materials");
 
-            entity.Property(e => e.MaterialId).HasColumnName("material_id");
+            entity.Property(e => e.Id).HasColumnName("material_id");
             entity.Property(e => e.CourseId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("course_id");
@@ -117,11 +116,11 @@ public partial class EducationPlatformContext : DbContext
 
         modelBuilder.Entity<Materialfile>(entity =>
         {
-            entity.HasKey(e => e.MaterialAttachedfileId).HasName("materialfiles_pkey");
+            entity.HasKey(e => e.Id).HasName("materialfiles_pkey");
 
             entity.ToTable("materialfiles");
 
-            entity.Property(e => e.MaterialAttachedfileId).HasColumnName("material_attachedfile_id");
+            entity.Property(e => e.Id).HasColumnName("material_attachedfile_id");
             entity.Property(e => e.MaterialFile)
                 .HasColumnType("character varying")
                 .HasColumnName("material_file");

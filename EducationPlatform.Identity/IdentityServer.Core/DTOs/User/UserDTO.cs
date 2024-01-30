@@ -1,4 +1,4 @@
-﻿using IdentityServer.Core.DTOs.User;
+﻿using IdentityServer.Core.DTOs.User.Validation;
 using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,7 +7,7 @@ namespace IdentityServer.Web.DTOs.User
     public class UserDTO
     {
         [Required(ErrorMessage = "Поле 'Ім'я користувача' обов'язкове")]
-        [RegularExpression(@"^[a-zA-Zа-яА-ЯґҐєЄіІїЇ\s]+$", 
+        [RegularExpression(@"^[a-zA-Zа-яА-ЯґҐєЄіІїЇ\s]+$",
             ErrorMessage = "Допустимі тільки англійські й українські літери та пробіли.")]
         public required string UserName { get; set; }
 

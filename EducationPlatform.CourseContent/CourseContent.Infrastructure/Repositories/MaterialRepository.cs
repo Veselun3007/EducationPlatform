@@ -1,6 +1,6 @@
 ﻿using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Repositories
 {
@@ -24,12 +24,12 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.GetAllAsync();
         }
 
-        public async Task<Material?> GetByIdAsync(int id)
+        public async Task<Material> GetByIdAsync(int id)
         {
             return await _contentRepository.GetByIdAsync(id);
         }
 
-        public async Task<Material?> UpdateAsync(int id, Material entity)
+        public async Task<Material> UpdateAsync(int id, Material entity)
         {
             return await _contentRepository.UpdateAsync(id, entity);
         }
@@ -39,9 +39,14 @@ namespace CourseContent.Infrastructure.Repositories
             return _contentRepository.RemoveRange(entities);
         }
 
-        public async Task<bool> AddFiles(Material entity, List<IFormFile> files)
+        public bool AddFiles(Material entity, string file)
         {
-            return await _contentRepository.AddFiles(entity, files);
+            return _contentRepository.AddFiles(entity, file);
+        }
+
+        public IQueryable<Material> GetByCourse(Expression<Func<Material, bool>> filter)
+        {
+            return _contentRepository.GetByCourse(filter);
         }
     }
 }

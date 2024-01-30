@@ -4,7 +4,7 @@ namespace CourseContent.Domain.Entities;
 
 public class Assignmentfile : IAggregateRoot
 {
-    public int AssignmentAttachedfileId { get; set; }
+    public int Id { get; set; }
 
     public int AssignmentId { get; set; }
 

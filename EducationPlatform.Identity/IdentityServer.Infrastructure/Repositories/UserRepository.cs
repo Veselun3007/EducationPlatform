@@ -27,5 +27,10 @@ namespace IdentityServer.Infrastructure.Repositories
         {
             _repository.DeleteAsync(entity);
         }
+
+        public async Task<User> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
+        }
     }
 }

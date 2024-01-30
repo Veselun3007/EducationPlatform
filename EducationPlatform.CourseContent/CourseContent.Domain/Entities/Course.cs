@@ -4,7 +4,7 @@ namespace CourseContent.Domain.Entities;
 
 public class Course : IAggregateRoot
 {
-    public int CourseId { get; set; }
+    public int Id { get; set; }
 
     public string CourseName { get; set; } = null!;
 

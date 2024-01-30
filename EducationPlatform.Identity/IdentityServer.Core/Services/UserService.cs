@@ -1,6 +1,6 @@
-﻿using Duende.IdentityServer.Models;
-using IdentityServer.Core.DTOs.Login;
+﻿using IdentityServer.Core.DTOs.Login;
 using IdentityServer.Core.DTOs.Token;
+using IdentityServer.Core.DTOs.User;
 using IdentityServer.Core.Helpers;
 using IdentityServer.Domain.Entities;
 using IdentityServer.Web.DTOs.User;
@@ -8,7 +8,7 @@ using IdentityServer.Web.DTOs.User;
 namespace IdentityServer.Core.Services
 {
     public class UserService(
-        TokenHelper tokenHelper, 
+        TokenHelper tokenHelper,
         FileHelper fileHelper)
     {
         private readonly TokenHelper _tokenHelper = tokenHelper;
@@ -22,11 +22,11 @@ namespace IdentityServer.Core.Services
                 UserName = userDTO.UserName,
                 Email = userDTO.Email,
                 PasswordHash = CryptographyHelper.Hash(userDTO.UserPassword, salt),
-                Salt = salt,                            
+                Salt = salt,
                 RefreshToken = TokenHelper.GenerateRefreshToken(),
                 RefreshTokenValidUntil = DateTime.UtcNow.AddDays(7)
             };
-        }       
+        }
 
         public LoginResponseDTO FromUserDtoToResponse(UserDTO userDTO, string refreshToken)
         {
@@ -63,5 +63,15 @@ namespace IdentityServer.Core.Services
                 UserImage = userDTO.UserImage is not null ? await _fileHelper.AddFileAsync(userDTO.UserImage) : null
             };
         }
+
+        public async Task<UserOutDTO> FromUser(User user)
+        {
+            return new UserOutDTO
+            {
+                UserName = user.UserName,
+                UserImage = await _fileHelper.GetFileLink(user.UserImage)
+            };
+        }
+
     }
 }

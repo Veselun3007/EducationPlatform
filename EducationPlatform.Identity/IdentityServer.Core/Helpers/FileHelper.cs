@@ -3,49 +3,44 @@ using Microsoft.Extensions.Configuration;
 
 namespace IdentityServer.Core.Helpers
 {
-    public class FileHelper(IConfiguration configuration)
+    public class FileHelper
     {
-        private readonly IConfiguration _configuration = configuration;
+        private readonly IConfiguration _configuration;
+        private readonly string _accessKey;
+        private readonly string _secretKey;
+        private readonly string _buckenName;
+
+        public FileHelper(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _accessKey = _configuration["AWSConfig:AccessKey"]!;
+            _secretKey = _configuration["AWSConfig:SecretKey"]!;
+            _buckenName = _configuration["AWSConfig:BucketName"]!;
+        }
 
         public async Task<string> AddFileAsync(IFormFile file)
         {
-            try
-            {
-                string object_name = Guid.NewGuid().ToString() + "_" + file.FileName;
 
-                bool uploadSuccess = await AwsHelper.PostObjectAsync(
-                    _configuration["AWSConfig:AccessKey"], 
-                    _configuration["AWSConfig:SecretKey"],
-                    _configuration["AWSConfig:BucketName"], object_name, file);
+            string objectName = Guid.NewGuid().ToString() + "_" + file.FileName;
 
-                return !uploadSuccess ? object_name : throw
-                    new ApplicationException("File upload failed.");
+            bool uploadSuccess = await AwsHelper
+                .PostObjectAsync(_accessKey, _secretKey, _buckenName, objectName, file);
 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating file: {ex.Message}");
-                throw;
-            }
+            return (uploadSuccess) ? objectName : "File upload failed.";
         }
 
         public async Task<bool> DeleteFileAsync(string name)
         {
-            try
-            {
-                bool deleteSuccess = await AwsHelper
-                .DeleteObjectAsync(_configuration["AWSConfig:SecretKey"],
-                _configuration["AWSConfig:SecretKey"],
-                _configuration["AWSConfig:BucketName"], name);
+            var deleteSuccess = await AwsHelper.DeleteObjectAsync(_accessKey, _secretKey, _buckenName, name);
+            if (!deleteSuccess)
+                return false;
 
-                return deleteSuccess ? true : throw
-                    new ApplicationException("File delete failed.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating file: {ex.Message}");
-                throw;
-            }
+            return true;
+        }
+
+        public async Task<string> GetFileLink(string fileName)
+        {
+            return await AwsHelper.GeneratePresignedURLAsync(_accessKey, _secretKey, _buckenName, fileName, 0.05);
         }
     }
 }

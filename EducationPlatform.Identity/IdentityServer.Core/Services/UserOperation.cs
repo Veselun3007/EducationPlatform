@@ -27,6 +27,11 @@ namespace IdentityServer.Core.Services
             return true;
         }
 
+        public async Task<User> GetUserAsync(int id)
+        {
+            return await _unitOfWork.UserRepository.GetByIdAsync(id);
+        }
+
         public async Task<User> UpdateAsync(UserDTO entity, int id)
         {
             var userEntity = await _userSevice.ToUserEntity(entity);

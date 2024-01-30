@@ -1,69 +1,43 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="CourseContent.Domain.Entities.Assignment">
-    <Position X="3.5" Y="3.25" Width="3.5" />
-    <AssociationLine Name="Course" Type="CourseContent.Domain.Entities.Course" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="3.5" Y="4" />
-        <Point X="2.428" Y="4" />
-        <Point X="2.428" Y="7.34" />
-        <Point X="3.5" Y="7.34" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="Assignmentfiles" Type="CourseContent.Domain.Entities.Assignmentfile" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="7" Y="4" />
-        <Point X="8.323" Y="4" />
-        <Point X="8.323" Y="1.244" />
-        <Point X="7" Y="1.244" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.56" Y="0.06" Height="0.182" Width="2.877" />
+    <Position X="7.75" Y="4.75" Width="4" />
+    <AssociationLine Name="Assignmentfiles" Type="CourseContent.Domain.Entities.Assignmentfile">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.06" Y="0.543" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAUAAAAAAAgAAAAAICAQAAIAAAAAAAAAAAAAAgIAAA=</HashCode>
+      <HashCode>AAAWAAAAAAAAAAAAAICAQAAIAAAAAAAAAAAAAAgAAAA=</HashCode>
       <FileName>Entities\Assignment.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Course" />
-    </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Assignmentfiles" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Assignmentfile">
-    <Position X="3.5" Y="0.5" Width="3.5" />
-    <AssociationLine Name="Assignment" Type="CourseContent.Domain.Entities.Assignment" FixedToPoint="true">
-      <Path>
-        <Point X="6.5" Y="1.988" />
-        <Point X="6.5" Y="3.25" />
-      </Path>
-    </AssociationLine>
+    <Position X="7.75" Y="8.25" Width="4" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAgAAAAAAAAAQAAAAAAAAAAAAAAAAEIAAA=</HashCode>
+      <HashCode>AAACAAAAAAAgAAAAAAAAAQAAAAAAAAAAAAAAAAAIAAA=</HashCode>
       <FileName>Entities\Assignmentfile.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Assignment" />
-    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Course">
-    <Position X="3.5" Y="6.5" Width="3.5" />
+    <Position X="13.5" Y="2.75" Width="3.25" />
     <AssociationLine Name="Assignments" Type="CourseContent.Domain.Entities.Assignment">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-2.65" Y="0.108" />
+        <Position X="0.06" Y="0.585" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="Materials" Type="CourseContent.Domain.Entities.Material">
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.465" Y="0.041" Height="0.182" Width="1.218" />
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.093" Y="0.443" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AEKEAAgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AEKCAAgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Entities\Course.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -73,49 +47,35 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Material">
-    <Position X="8.75" Y="6.5" Width="3.25" />
-    <AssociationLine Name="Course" Type="CourseContent.Domain.Entities.Course" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="10.433" Y="8.565" />
-        <Point X="10.433" Y="8.94" />
-        <Point X="5.25" Y="8.94" />
-        <Point X="5.25" Y="8.18" />
-      </Path>
-    </AssociationLine>
+    <Position X="18.75" Y="4.75" Width="4" />
     <AssociationLine Name="Materialfiles" Type="CourseContent.Domain.Entities.Materialfile">
-      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-0.415" Y="1.083" Height="0.182" Width="2.468" />
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.093" Y="0.552" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAEAAAAAAAAAAAAAMQAAAAAAACAAAAAAAAAAAEAABA=</HashCode>
+      <HashCode>AAAGAAAAAAAAAAAAAMAAAAAAAACAAAAAAAAAAAEAABA=</HashCode>
       <FileName>Entities\Material.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Course" />
-    </ShowAsAssociation>
     <ShowAsCollectionAssociation>
       <Property Name="Materialfiles" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Materialfile">
-    <Position X="12.75" Y="5" Width="2.75" />
-    <AssociationLine Name="Material" Type="CourseContent.Domain.Entities.Material" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12.75" Y="5.744" />
-        <Point X="11.25" Y="5.744" />
-        <Point X="11.25" Y="6.5" />
-      </Path>
-    </AssociationLine>
+    <Position X="18.75" Y="8.25" Width="4" />
     <TypeIdentifier>
-      <HashCode>AEAAAAAAAAAAAAAAAAQAAAAgAQAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AEACAAAAAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Entities\Materialfile.cs</FileName>
     </TypeIdentifier>
-    <ShowAsAssociation>
-      <Property Name="Material" />
-    </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
+  <Interface Name="CourseContent.Domain.Interfaces.IAggregateRoot">
+    <Position X="13.5" Y="0.5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IAggregateRoot.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

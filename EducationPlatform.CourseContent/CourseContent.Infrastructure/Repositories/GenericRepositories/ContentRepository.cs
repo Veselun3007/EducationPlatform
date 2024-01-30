@@ -1,93 +1,97 @@
 ﻿using CourseContent.Domain.Entities;
 using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Context;
-using CourseContent.Infrastructure.Helpers;
 using CourseContent.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
-    public class ContentRepository<T>(EducationPlatformContext dbContext, 
-        FilesHelper filesHelper) : IContentRepository<T> where T : class, IAggregateRoot
+    public class ContentRepository<T> : IContentRepository<T> where T : class, IAggregateRoot
     {
-        private readonly EducationPlatformContext _dbContext = dbContext;
-        private readonly FilesHelper _filesHelper = filesHelper;
+        private readonly EducationPlatformContext _dbContext;
+        private readonly DbSet<T> _dbSet;
 
-        public async Task<T> AddAsync(T entity)
+        public ContentRepository(EducationPlatformContext dbContext)
         {
+            _dbContext = dbContext;
+            _dbSet = _dbContext.Set<T>();
+        }
 
-            await _dbContext.Set<T>().AddAsync(entity);
+        public virtual async Task<T> AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
             return entity;
         }
 
-        public async Task<bool> AddFiles(T entity, List<IFormFile> files)
+        public virtual async Task<bool> DeleteAsync(int id)
         {
-            foreach (var file in files)
-            {
-                var fileName = await _filesHelper.AddFileAsync(file);
-
-                if (entity is Material materialEntity)
-                {
-                    var materialFile = new Materialfile
-                    {
-                        MaterialId = materialEntity.MaterialId,
-                        MaterialFile = fileName
-                    };
-
-                    _dbContext.Set<Materialfile>().Add(materialFile);
-                }
-                else if (entity is Assignment assignmentEntity)
-                {
-                    var assignmentFile = new Assignmentfile
-                    {
-                        AssignmentId = assignmentEntity.AssignmentId,
-                        AssignmentFile = fileName
-                    };
-
-                    _dbContext.Set<Assignmentfile>().Add(assignmentFile);
-                }
-            }
-            return true;
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var entity = await _dbContext.Set<T>().FindAsync(id);
-            if (entity == null)
+            var entity = await _dbSet.FindAsync(id);
+            if (entity is null)
                 return false;
 
-            _dbContext.Set<T>().Remove(entity);
+            _dbSet.Remove(entity);
             return true;
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbContext.Set<T>().ToListAsync();
+            return await _dbSet.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id)
         {
-            return await _dbContext.Set<T>().FindAsync(id);
+            var entity = await _dbSet.FindAsync(id);
+            return entity!;
         }
 
-        public bool RemoveRange(IEnumerable<T> entities)
+        public virtual async Task<T> UpdateAsync(int id, T entity)
         {
-            _dbContext.Set<T>().RemoveRange(entities);
-            return true;
-        }
+            var existingEntity = await _dbSet.FindAsync(id);
 
-        public async Task<T?> UpdateAsync(int id, T entity)
-        {
-            var existingEntity = await _dbContext.Set<T>().FindAsync(id);
-
-            if (existingEntity != null)
+            if (existingEntity is not null)
             {
                 _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
             }
 
-            return existingEntity;
+            return existingEntity!;
         }
 
+        public virtual bool RemoveRange(IEnumerable<T> entities)
+        {
+            _dbSet.RemoveRange(entities);
+            return true;
+        }
+
+        public virtual bool AddFiles(T entity, string file)
+        {
+            if (entity is Material materialEntity)
+            {
+                var materialFile = new Materialfile
+                {
+                    MaterialId = materialEntity.Id,
+                    MaterialFile = file
+                };
+
+                _dbContext.Set<Materialfile>().Add(materialFile);
+            }
+            else if (entity is Assignment assignmentEntity)
+            {
+                var assignmentFile = new Assignmentfile
+                {
+                    AssignmentId = assignmentEntity.Id,
+                    AssignmentFile = file
+                };
+
+                _dbContext.Set<Assignmentfile>().Add(assignmentFile);
+            }
+
+            return true;
+        }
+
+        public IQueryable<T> GetByCourse(Expression<Func<T, bool>> filter)
+        {
+            return _dbSet.Where(filter);
+        }
     }
 }

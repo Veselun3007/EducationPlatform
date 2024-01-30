@@ -1,25 +1,37 @@
-﻿using CourseContent.Core.Interfaces;
+﻿using CourseContent.Core.Helpers;
+using CourseContent.Core.Interfaces;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
-    public class AssignmentService(IUnitOfWork unitOfWork) :
-        IOperation<Assignment>
+    public class AssignmentService(IUnitOfWork unitOfWork,
+        FilesHelper fileHelper) : IOperation<Assignment>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly FilesHelper _fileHelper = fileHelper;
 
-        public async Task<Assignment> CreateAsync(Assignment entity)
+        public async Task<Assignment> CreateAsync(Assignment entity, List<IFormFile> files)
         {
             await _unitOfWork.AssignmentRepository.AddAsync(entity);
-
-            if(entity.AssignmentFiles != null)
-                await _unitOfWork.AssignmentRepository
-                    .AddFiles(entity, entity.AssignmentFiles);
-
             await _unitOfWork.CompleteAsync();
+            if (files is not null)
+            {
+                await AddFilesAsync(entity, files);
+            }            
             return entity;
 
+        }
+
+        private async Task AddFilesAsync(Assignment entity, List<IFormFile> files)
+        {
+            foreach (var file in files)
+            {
+                var fileLink = await _fileHelper.AddFileAsync(file);
+                _unitOfWork.AssignmentRepository.AddFiles(entity, fileLink);
+            }
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task<Assignment> UpdateAsync(int id, Assignment entity)
@@ -44,8 +56,7 @@ namespace CourseContent.Core.Services
         public async Task<Assignment> GetByIdAsync(int id)
         {
             var assignment = await _unitOfWork.AssignmentRepository.GetByIdAsync(id);
-            return assignment ?? throw new InvalidOperationException("Assignment " +
-                "not found.");
+            return assignment!;
         }
 
         public async Task RemoveRangeAsync(IEnumerable<Assignment> entities)
@@ -59,9 +70,12 @@ namespace CourseContent.Core.Services
             var assignmentfile = await _unitOfWork
                 .AssignmentfileRepository.GetByIdAsync(id);
 
-            return assignmentfile != null ? assignmentfile.AssignmentFile : 
-                throw new InvalidOperationException("AssignmentFile " +
-                "not found for the specified id.");
+            return await _fileHelper.GetFileLink(assignmentfile.AssignmentFile!);
+        }
+
+        public IQueryable<Assignment> GetByCourse(int id)
+        {
+            return _unitOfWork.AssignmentRepository.GetByCourse(a => a.CourseId == id);
         }
     }
 }

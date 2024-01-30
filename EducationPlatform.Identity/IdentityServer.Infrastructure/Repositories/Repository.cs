@@ -15,6 +15,11 @@ namespace IdentityServer.Infrastructure.Repositories
             _dbSet = _context.Set<T>();
         }
 
+        public virtual async Task<T> GetByIdAsync(int id)
+        {
+            return await _dbSet.FindAsync(id);
+        }
+
         public virtual async Task<T> AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
@@ -24,7 +29,7 @@ namespace IdentityServer.Infrastructure.Repositories
         public virtual async Task<bool> DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
-            if (entity == null)
+            if (entity is null)
                 return false;
 
             _dbSet.Remove(entity);

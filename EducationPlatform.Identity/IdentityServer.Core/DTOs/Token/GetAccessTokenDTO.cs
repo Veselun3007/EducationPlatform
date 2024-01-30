@@ -2,6 +2,6 @@
 {
     public class GetAccessTokenDTO
     {
-        public required string RefreshToken { get; set;}
+        public required string RefreshToken { get; set; }
     }
 }

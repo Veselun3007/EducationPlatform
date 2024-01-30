@@ -89,7 +89,6 @@ namespace IdentityServer.Web
                 });
             });
 
-
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -112,7 +111,7 @@ namespace IdentityServer.Web
                     logger.LogError(exception, "An error occurred while app initialization");
                 }
             }
-            
+
             app.MapDefaultControllerRoute();
 
             app.Run();

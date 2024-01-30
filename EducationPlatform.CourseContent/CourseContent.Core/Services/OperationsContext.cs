@@ -1,4 +1,6 @@
 ﻿using CourseContent.Core.Interfaces;
+using CourseContent.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
@@ -7,27 +9,27 @@ namespace CourseContent.Core.Services
 
         private readonly IOperation<T> _crudStrategy = crudStrategy;
 
-        public async Task<T> Create(T entity)
+        public async Task<T> CreateAsync(T entity, List<IFormFile> files)
         {
-            return await _crudStrategy.CreateAsync(entity);
+            return await _crudStrategy.CreateAsync(entity, files);
         }
 
-        public async Task<bool> Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             return await _crudStrategy.DeleteAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _crudStrategy.GetAllAsync();
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetByIdAsync(int id)
         {
             return await _crudStrategy.GetByIdAsync(id);
         }
 
-        public async Task<T> Update(int id, T entity)
+        public async Task<T> UpdateAsync(int id, T entity)
         {
             return await _crudStrategy.UpdateAsync(id, entity);
         }
@@ -38,8 +40,13 @@ namespace CourseContent.Core.Services
         }
 
         public async Task<string?> GetFileById(int id)
+        {         
+            return  await _crudStrategy.GetFileByIdAsync(id);
+        }
+
+        public IQueryable<T> GetByCourse(int id)
         {
-            return await _crudStrategy.GetFileByIdAsync(id);
+            return _crudStrategy.GetByCourse(id);
         }
     }
 }

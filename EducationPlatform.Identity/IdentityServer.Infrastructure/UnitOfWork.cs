@@ -5,7 +5,7 @@ using IdentityServer.Infrastructure.Repositories;
 
 namespace IdentityServer.Infrastructure
 {
-    public class UnitOfWork : IUnitOfWork 
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly EducationPlatformContext _context;
 

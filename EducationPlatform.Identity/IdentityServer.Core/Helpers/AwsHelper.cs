@@ -6,35 +6,44 @@ using System.Net;
 
 namespace IdentityServer.Core.Helpers
 {
-    internal class AwsHelper
+    public class AwsHelper
     {
-        public static readonly RegionEndpoint USEast1 = Amazon.RegionEndpoint.USEast1;
 
-        public static async Task<bool> PostObjectAsync(string? access_key, string? secret_key,
-            string? bucket_name, string? object_name, IFormFile file)
+        private static readonly RegionEndpoint USEast1 = Amazon.RegionEndpoint.USEast1;
+
+        public static async Task<bool> PostObjectAsync(string accessKey, string secretKey,
+            string bucketName, string objectName, IFormFile file)
         {
-            AmazonS3Config config;
             try
             {
-                config = new AmazonS3Config() { RegionEndpoint = USEast1 };
+                var config = new AmazonS3Config { RegionEndpoint = USEast1 };
+                using var client = new AmazonS3Client(accessKey, secretKey, config);
+                PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
+
+                var response = await client.PutObjectAsync(request);
+
+                return (response.HttpStatusCode == HttpStatusCode.OK ||
+                        response.HttpStatusCode == HttpStatusCode.NoContent);
             }
             catch (Exception)
             {
                 return false;
             }
+        }
 
-            using var client = new AmazonS3Client(access_key, secret_key, config);
-            PutObjectRequest request = new()
-            {
-                BucketName = bucket_name,
-                Key = object_name,
-                InputStream = file.OpenReadStream(),
-            };
+        public static async Task<bool> DeleteObjectAsync(string accessKey, string secretKey,
+            string bucketName, string objectName)
+        {
             try
             {
-                var response = await client.PutObjectAsync(request);
-                if (response.HttpStatusCode is HttpStatusCode.OK || 
-                    response.HttpStatusCode is HttpStatusCode.NoContent)
+                var config = new AmazonS3Config { RegionEndpoint = USEast1 };
+                using var client = new AmazonS3Client(accessKey, secretKey, config);
+                DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
+
+                var deleteResponse = await client.DeleteObjectAsync(deleteRequest);
+
+                if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent ||
+                    deleteResponse.HttpStatusCode == HttpStatusCode.NotFound)
                 {
                     return true;
                 }
@@ -47,47 +56,59 @@ namespace IdentityServer.Core.Helpers
             }
         }
 
-        public static async Task<bool> DeleteObjectAsync(string? access_key, string? secret_key,
-            string? bucket_name, string? object_name)
+        /// <summary>
+        /// Generates a temporary link to view a file from an AWS S3 storage
+        /// </summary>
+        /// <param name="accessKey">Vault access key</param>
+        /// <param name="secretKey">Vault secret key</param>
+        /// <param name="bucketName">Storage name (AWS S3 bucket`s name)</param>
+        /// <param name="objectKey">Name of the desired file</param>
+        /// <param name="duration">Duration of the temporary link (in hours)</param>
+        /// <returns>A string value presigned URL</returns>
+        public static async Task<string> GeneratePresignedURLAsync(string accessKey, string secretKey,
+            string bucketName, string objectKey, double duration)
         {
-            AmazonS3Config config;
             try
             {
-                config = new AmazonS3Config() { RegionEndpoint = USEast1 };
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+                var config = new AmazonS3Config { RegionEndpoint = USEast1 };
+                using var client = new AmazonS3Client(accessKey, secretKey, config);
+                GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
 
-            using var client = new AmazonS3Client(access_key, secret_key, config);
-            DeleteObjectRequest request = new()
+                return await client.GetPreSignedURLAsync(request);
+            }
+            catch
             {
-                BucketName = bucket_name,
-                Key = object_name,
+                return "Fail generate operation";
+            }
+        }
+
+        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName, string objectKey, double duration)
+        {
+            return new GetPreSignedUrlRequest
+            {
+                BucketName = bucketName,
+                Key = objectKey,
+                Expires = DateTime.UtcNow.AddHours(duration),
             };
-            try
+        }
+
+        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName, string objectName)
+        {
+            return new DeleteObjectRequest
             {
-                DeleteObjectResponse response = await client.DeleteObjectAsync(request);
-                return response.DeleteMarker is not null;
-            }
-            catch (Exception)
+                BucketName = bucketName,
+                Key = objectName,
+            };
+        }
+
+        private static PutObjectRequest CreatePutObjectRequest(string bucketName, string objectName, IFormFile file)
+        {
+            return new PutObjectRequest
             {
-                GetObjectRequest get_request = new()
-                {
-                    BucketName = bucket_name,
-                    Key = object_name,
-                };
-                try
-                {
-                    using GetObjectResponse get_response = await client.GetObjectAsync(get_request);
-                    return false;
-                }
-                catch (Exception)
-                {
-                    return true;
-                }
-            }
+                BucketName = bucketName,
+                Key = objectName,
+                InputStream = file.OpenReadStream(),
+            };
         }
     }
 }

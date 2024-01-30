@@ -1,6 +1,7 @@
 ﻿using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http;
+using System.Linq.Expressions;
+using static Amazon.S3.Util.S3EventNotification;
 
 namespace CourseContent.Infrastructure.Repositories
 {
@@ -24,12 +25,12 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.GetAllAsync();
         }
 
-        public async Task<Assignment?> GetByIdAsync(int id)
+        public async Task<Assignment> GetByIdAsync(int id)
         {
             return await _contentRepository.GetByIdAsync(id);
         }
 
-        public async Task<Assignment?> UpdateAsync(int id, Assignment entity)
+        public async Task<Assignment> UpdateAsync(int id, Assignment entity)
         {
             return await _contentRepository.UpdateAsync(id, entity);
         }
@@ -39,9 +40,14 @@ namespace CourseContent.Infrastructure.Repositories
             return _contentRepository.RemoveRange(entities);
         }
 
-        public async Task<bool> AddFiles(Assignment entity, List<IFormFile> files)
+        public bool AddFiles(Assignment entity, string file)
         {
-            return await _contentRepository.AddFiles(entity, files);
+            return _contentRepository.AddFiles(entity, file);
+        }
+
+        public IQueryable<Assignment> GetByCourse(Expression<Func<Assignment, bool>> filter)
+        {
+            return _contentRepository.GetByCourse(filter);
         }
     }
 }

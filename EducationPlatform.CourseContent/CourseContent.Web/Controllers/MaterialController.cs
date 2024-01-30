@@ -1,4 +1,4 @@
-﻿using CourseContent.Core.Interfaces;
+﻿using CourseContent.Core.DTOs;
 using CourseContent.Core.Services;
 using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -14,19 +14,21 @@ namespace EducationPlatform.CourseContent.Controllers
         [Route("createMaterial")]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> CreateMaterial([FromBody] Material assignment)
+        public async Task<IActionResult> CreateMaterial([FromBody] MaterialDTO materialDto)
         {
-            var newAssignment = await _crudContext.Create(assignment);
-            return Ok(newAssignment);
+            var material = MaterialDTO.FromMaterialDto(materialDto);
+            var createdMaterial = await _crudContext.CreateAsync(material, materialDto.MaterialFiles);
+            var outMaterial = MaterialOutDTO.FromMaterial(createdMaterial);
+            return Ok(outMaterial);
         }
 
         [Route("updateMaterial/{id}")]
         [HttpPut]
         public async Task<IActionResult> UpdateMaterial(int id, Material entity)
         {
-            var updatedAssignment = await _crudContext.Update(id, entity);
+            var updatedAssignment = await _crudContext.UpdateAsync(id, entity);
 
-            if (updatedAssignment == null)
+            if (updatedAssignment is null)
             {
                 return NotFound();
             }
@@ -38,7 +40,7 @@ namespace EducationPlatform.CourseContent.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteMaterial(int id)
         {
-            await _crudContext.Delete(id);
+            await _crudContext.DeleteAsync(id);
             return Ok();
         }
 
@@ -46,9 +48,9 @@ namespace EducationPlatform.CourseContent.Controllers
         [HttpGet]
         public async Task<IActionResult> GetByIdMaterial(int id)
         {
-            var assignment = await _crudContext.GetById(id);
+            var assignment = await _crudContext.GetByIdAsync(id);
 
-            if (assignment == null)
+            if (assignment is null)
             {
                 return NotFound();
             }
@@ -56,18 +58,18 @@ namespace EducationPlatform.CourseContent.Controllers
             return Ok(assignment);
         }
 
-        [Route("getMaterials")]
+        [Route("getMaterials/{id}")]
         [HttpGet]
-        public async Task<IEnumerable<Material>> GetAllMaterial()
+        public IEnumerable<MaterialOutDTO> GetAllMaterials(int id)
         {
-            return await _crudContext.GetAll();
+            return _crudContext.GetByCourse(id).Select(MaterialOutDTO.FromMaterial);
         }
 
 
         [HttpDelete("removeMaterials")]
         public async Task<IActionResult> RemoveMaterials([FromBody] IEnumerable<Material> entities)
         {
-            if (entities == null || !entities.Any())
+            if (entities is null || !entities.Any())
             {
                 return BadRequest("No entities provided for removal.");
             }
@@ -82,7 +84,7 @@ namespace EducationPlatform.CourseContent.Controllers
         {
             var _fileName = await _crudContext.GetFileById(id);
 
-            if (_fileName == null)
+            if (_fileName is null)
             {
                 return NotFound();
             }

@@ -1,6 +1,6 @@
 ﻿using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Interfaces.Base;
-using Microsoft.AspNetCore.Http;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Interfaces
 {
@@ -8,6 +8,8 @@ namespace CourseContent.Infrastructure.Interfaces
     {
         bool RemoveRange(IEnumerable<T> entities);
 
-        Task<bool> AddFiles(T entity, List<IFormFile> files);
+        bool AddFiles(T entity, string file);
+
+        IQueryable<T> GetByCourse(Expression<Func<T, bool>> filter);
     }
 }

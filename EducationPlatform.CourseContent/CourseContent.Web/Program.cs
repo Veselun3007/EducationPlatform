@@ -1,9 +1,9 @@
+using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
 using CourseContent.Core.Services;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure;
 using CourseContent.Infrastructure.Context;
-using CourseContent.Infrastructure.Helpers;
 using CourseContent.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -16,9 +16,9 @@ namespace CourseContent.Web
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-            
+
             var _configuration = builder.Configuration;
-            string epConnection = _configuration.GetConnectionString("EducationPlatformConnection") ?? "defaultConnectionString";
+            string _epConnection = _configuration.GetConnectionString("EducationPlatformConnection") ?? "defaultConnectionString";
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
@@ -27,7 +27,7 @@ namespace CourseContent.Web
 
             builder.Services.AddDbContextPool<EducationPlatformContext>(options =>
             {
-                options.UseNpgsql(epConnection);
+                options.UseNpgsql(_epConnection);
             });
 
             builder.Services.AddScoped<FilesHelper>();

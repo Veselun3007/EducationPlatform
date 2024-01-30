@@ -1,6 +1,5 @@
 ﻿using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Context;
-using CourseContent.Infrastructure.Helpers;
 using CourseContent.Infrastructure.Interfaces;
 using CourseContent.Infrastructure.Interfaces.Base;
 using CourseContent.Infrastructure.Repositories.GenericRepositories;
@@ -10,17 +9,15 @@ namespace CourseContent.Infrastructure
     public class UnitOfWork : IUnitOfWork
     {
         private readonly EducationPlatformContext _dbContext;
-        private readonly FilesHelper _filesHelper;
 
-        public UnitOfWork(EducationPlatformContext dbContext, FilesHelper filesHelper)
+        public UnitOfWork(EducationPlatformContext dbContext)
         {
             _dbContext = dbContext;
-            _filesHelper = filesHelper;
 
-            AssignmentRepository = new ContentRepository<Assignment>(_dbContext, _filesHelper);
+            AssignmentRepository = new ContentRepository<Assignment>(_dbContext);
             AssignmentfileRepository = new EntityRepository<Assignmentfile>(_dbContext);
 
-            MaterialRepository = new ContentRepository<Material>(_dbContext, _filesHelper);
+            MaterialRepository = new ContentRepository<Material>(_dbContext);
             MaterialfileRepository = new EntityRepository<Materialfile>(_dbContext);
         }
 

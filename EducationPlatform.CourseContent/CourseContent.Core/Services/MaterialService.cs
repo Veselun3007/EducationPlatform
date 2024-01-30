@@ -1,24 +1,38 @@
-﻿using CourseContent.Core.Interfaces;
+﻿using CourseContent.Core.Helpers;
+using CourseContent.Core.Interfaces;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
-    public class MaterialService(IUnitOfWork unitOfWork) :
+    public class MaterialService(IUnitOfWork unitOfWork, FilesHelper fileHelper) :
         IOperation<Material>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly FilesHelper _fileHelper = fileHelper;
 
-        public async Task<Material> CreateAsync(Material entity)
+
+        public async Task<Material> CreateAsync(Material entity, List<IFormFile> files)
         {
             await _unitOfWork.MaterialRepository.AddAsync(entity);
-
-            if (entity.MaterialFiles != null)
-                await _unitOfWork.MaterialRepository
-                    .AddFiles(entity, entity.MaterialFiles);
-
             await _unitOfWork.CompleteAsync();
+            if (files is not null)
+            {
+                await AddFilesAsync(entity, files);
+            }
             return entity;
+
+        }
+
+        private async Task AddFilesAsync(Material entity, List<IFormFile> files)
+        {
+            foreach (var file in files)
+            {
+                var fileLink = await _fileHelper.AddFileAsync(file);
+                _unitOfWork.MaterialRepository.AddFiles(entity, fileLink);
+            }
+            await _unitOfWork.CompleteAsync();
         }
 
         public async Task<Material> UpdateAsync(int id, Material entity)
@@ -42,9 +56,8 @@ namespace CourseContent.Core.Services
 
         public async Task<Material> GetByIdAsync(int id)
         {
-            var material = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
-            return material ?? throw new InvalidOperationException("Assignment " +
-                "not found.");
+            var Material = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
+            return Material!;
         }
 
         public async Task RemoveRangeAsync(IEnumerable<Material> entities)
@@ -55,12 +68,15 @@ namespace CourseContent.Core.Services
 
         public async Task<string?> GetFileByIdAsync(int id)
         {
-            var materialfile = await _unitOfWork
+            var Materialfile = await _unitOfWork
                 .MaterialfileRepository.GetByIdAsync(id);
 
-            return materialfile != null ? materialfile.MaterialFile : 
-                throw new InvalidOperationException("MaterialFile " +
-                "not found for the specified id.");
+            return await _fileHelper.GetFileLink(Materialfile.MaterialFile!);
+        }
+
+        public IQueryable<Material> GetByCourse(int id)
+        {
+            return _unitOfWork.MaterialRepository.GetByCourse(a => a.CourseId == id);
         }
     }
 }

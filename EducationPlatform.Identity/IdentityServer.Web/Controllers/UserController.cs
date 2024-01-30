@@ -1,12 +1,15 @@
 ﻿using IdentityServer.Core.Interfaces;
+using IdentityServer.Core.Services;
 using IdentityServer.Web.DTOs.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Web.Controllers
 {
-    public class UserController(IBusinessUserOperation userOperation): Controller
+    public class UserController(IBusinessUserOperation userOperation, 
+        UserService userService) : Controller
     {
         private readonly IBusinessUserOperation _userOperation = userOperation;
+        private readonly UserService _userService = userService;
 
         [Route("updateUser/{id}")]
         [HttpPut]
@@ -28,6 +31,15 @@ namespace IdentityServer.Web.Controllers
         {
             await _userOperation.DeleteAsync(id);
             return Ok();
+        }
+
+        [Route("getUserData/{id}")]
+        [HttpGet]
+        public async Task<IActionResult> GetUserDada(int id)
+        {
+            var user = await _userOperation.GetUserAsync(id);
+            var outUser = _userService.FromUser(user);
+            return Ok(outUser);
         }
     }
 }

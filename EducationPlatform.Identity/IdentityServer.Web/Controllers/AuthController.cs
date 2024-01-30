@@ -17,7 +17,7 @@ namespace EducationPlatform.Identity.Controllers
     public class AuthController(
         UserManager<AppUser> userManager,
         UserService userService,
-        IConfiguration configuration,      
+        IConfiguration configuration,
         IBusinessUserOperation userOperation) : Controller
     {
         private readonly UserManager<AppUser> _userManager = userManager;
@@ -30,7 +30,7 @@ namespace EducationPlatform.Identity.Controllers
         {
             var user = await _userManager.FindByEmailAsync(loginDTO.Email);
 
-            if (user is null || !CryptographyHelper.VerifyPassword(user.Salt, 
+            if (user is null || !CryptographyHelper.VerifyPassword(user.Salt,
                 loginDTO.UserPassword, user.PasswordHash!))
             {
                 return BadRequest("Invalid email or password");
@@ -54,7 +54,7 @@ namespace EducationPlatform.Identity.Controllers
 
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromForm] UserDTO userDTO)
-        {           
+        {
             var user = UserService.FromUserDtoToAppUser(userDTO);
             var result = await _userManager.CreateAsync(user);
 
@@ -64,7 +64,7 @@ namespace EducationPlatform.Identity.Controllers
                 var tokens = _userService.FromUserDtoToResponse(userDTO, user.RefreshToken);
                 return Ok(tokens);
             }
-            return StatusCode(500); 
+            return StatusCode(500);
         }
 
 

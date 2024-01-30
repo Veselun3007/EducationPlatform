@@ -13,7 +13,7 @@ namespace IdentityServer.Core.Helpers
         private readonly SigningCredentials _signingCredentials;
         private readonly DateTime _expires;
         private readonly string _jwtKey;
-        private readonly string _accessTokenTtlInMinutes;     
+        private readonly string _accessTokenTtlInMinutes;
         private readonly string _issuer;
         private readonly string _audience;
         private readonly int _ttl;

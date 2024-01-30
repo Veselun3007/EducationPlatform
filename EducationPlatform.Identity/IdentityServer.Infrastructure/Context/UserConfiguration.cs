@@ -6,7 +6,7 @@ namespace IdentityServer.Infrastructure.Context
 {
     public class UserConfiguration : IEntityTypeConfiguration<AppUser>
     {
-        public void Configure(EntityTypeBuilder<AppUser> builder) 
+        public void Configure(EntityTypeBuilder<AppUser> builder)
         {
             builder.HasKey(k => k.Id);
         }

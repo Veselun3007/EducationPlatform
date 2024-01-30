@@ -1,6 +1,8 @@
-﻿using CourseContent.Core.Services;
+﻿using CourseContent.Core.DTOs;
+using CourseContent.Core.Services;
 using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourseContent.Web.Controllers
 {
@@ -14,31 +16,35 @@ namespace CourseContent.Web.Controllers
         [Route("createAssignment")]
         [HttpPost]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> CreateAssignment([FromForm] Assignment assignment)
+        public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
-            var newAssignment = await _crudContext.Create(assignment);
-            return Ok(newAssignment);
+            var newAssignment = AssignmentDTO.FromAssignmentDto(assignment);
+            var createdAssignment = await _crudContext.CreateAsync(newAssignment, assignment.AssignmentFiles);
+            var outAssignment = AssignmentOutDTO.FromAssignment(createdAssignment);
+            return Ok(outAssignment);
         }
 
         [Route("updateAssignment/{id}")]
         [HttpPut]
-        public async Task<IActionResult> UpdateAssignment(int id, [FromBody] Assignment entity)
+        public async Task<IActionResult> UpdateAssignment(int id, [FromBody] AssignmentDTO assignment)
         {
-            var updatedAssignment = await _crudContext.Update(id, entity);
+            var assignmentForPut = AssignmentDTO.FromAssignmentDto(assignment);
+            var updatedAssignment = await _crudContext.UpdateAsync(id, assignmentForPut);
 
-            if (updatedAssignment == null)
+            if (updatedAssignment is null)
             {
                 return NotFound();
             }
 
-            return Ok(updatedAssignment);
+            var outAssignment = AssignmentOutDTO.FromAssignment(updatedAssignment);
+            return Ok(outAssignment);
         }
 
         [Route("deleteAssignment/{id}")]
         [HttpDelete]
         public async Task<IActionResult> DeleteAssignment(int id)
-        {          
-            await _crudContext.Delete(id);
+        {
+            await _crudContext.DeleteAsync(id);
             return Ok();
         }
 
@@ -46,27 +52,27 @@ namespace CourseContent.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetByIdAssignment(int id)
         {
-            var assignment = await _crudContext.GetById(id);
+            var assignment = await _crudContext.GetByIdAsync(id);
 
-            if (assignment == null)
+            if (assignment is null)
             {
                 return NotFound();
             }
-
-            return Ok(assignment);
+            var outAssignment = AssignmentOutDTO.FromAssignment(assignment);
+            return Ok(outAssignment);
         }
 
-        [Route("getAllAssignment")]
+        [Route("getAllAssignment/{id}")]
         [HttpGet]
-        public async Task<IEnumerable<Assignment>> GetAllAssignment()
+        public IEnumerable<AssignmentOutDTO> GetAllAssignment(int id)
         {
-            return await _crudContext.GetAll();
+            return _crudContext.GetByCourse(id).Select(AssignmentOutDTO.FromAssignment);
         }
 
         [HttpDelete("removeAssignments")]
-        public async Task<IActionResult> RemoveMaterials([FromBody] IEnumerable<Assignment> entities)
+        public async Task<IActionResult> RemoveMaterials([FromBody] IEnumerable<Assignment> entities) //rewrite for id
         {
-            if (entities == null || !entities.Any())
+            if (entities is null || !entities.Any())
             {
                 return BadRequest("No entities provided for removal.");
             }
@@ -81,7 +87,7 @@ namespace CourseContent.Web.Controllers
         {
             var _fileName = await _crudContext.GetFileById(id);
 
-            if (_fileName == null)
+            if (_fileName is null)
             {
                 return NotFound();
             }

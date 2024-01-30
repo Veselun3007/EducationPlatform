@@ -2,116 +2,83 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="CourseContent.Core.Services.AssignmentService">
     <Position X="6.75" Y="7.75" Width="4.25" />
-    <AssociationLine Name="_unitOfWork" Type="CourseContent.Infrastructure.Repositories.Interfaces.IUnitOfWork" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="_fileHelper" Type="CourseContent.Core.Helpers.FilesHelper" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="8.875" Y="10.007" />
-        <Point X="8.875" Y="11.856" />
-        <Point X="11.75" Y="11.856" />
+        <Point X="6.938" Y="7.938" />
+        <Point X="6.375" Y="7.938" />
+        <Point X="6.375" Y="15.508" />
+        <Point X="11.75" Y="15.508" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAAAAAAAgAAAAAAAAAAABgEAAAAAIAAIIA=</HashCode>
+      <HashCode>AAEEgAAAAAAAAAAAAgAAAAAAgAAAABgEAAAAAIAAIIA=</HashCode>
       <FileName>Services\AssignmentService.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_unitOfWork" />
+      <Field Name="_fileHelper" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Core.Services.MaterialService">
     <Position X="16.25" Y="7.75" Width="4.25" />
-    <AssociationLine Name="_unitOfWork" Type="CourseContent.Infrastructure.Repositories.Interfaces.IUnitOfWork" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="_fileHelper" Type="CourseContent.Core.Helpers.FilesHelper" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="18.375" Y="10.007" />
-        <Point X="18.375" Y="11.856" />
-        <Point X="15.5" Y="11.856" />
+        <Point X="20.5" Y="7.938" />
+        <Point X="20.875" Y="7.938" />
+        <Point X="20.875" Y="15.508" />
+        <Point X="15.5" Y="15.508" />
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAAAAAAAgAAAAAAAAAAABgEAAAAAIAAIIA=</HashCode>
+      <HashCode>AAEEgAAAAAAAAAAAAgAAAAAAgAAAABgEAAAAAIAAIIA=</HashCode>
       <FileName>Services\MaterialService.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_unitOfWork" />
+      <Field Name="_fileHelper" />
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Core.Services.OperationsContext&lt;T&gt;">
-    <Position X="11.75" Y="8.25" Width="3.75" />
+    <Position X="11.75" Y="8.5" Width="3.75" />
+    <AssociationLine Name="_crudStrategy" Type="CourseContent.Core.Interfaces.IOperation&lt;T&gt;">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.11" Y="0.175" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAQAAAAAAAACAAAAAAAAAAAAAAEAIFAAAgAAAAAAAIA=</HashCode>
+      <HashCode>AAEAAAAAAAACAAAAAAAAAAAAgAAAIBgAAAAAAIAAIIA=</HashCode>
       <FileName>Services\OperationsContext.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="_crudStrategy" />
     </ShowAsAssociation>
   </Class>
+  <Class Name="CourseContent.Core.Helpers.FilesHelper">
+    <Position X="11.75" Y="14.25" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAgCAAAAAAAACAAAgAAAABAAAAAAAAAAEAIAAAAAA=</HashCode>
+      <FileName>Helpers\FilesHelper.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_configuration" />
+    </ShowAsAssociation>
+  </Class>
   <Interface Name="CourseContent.Core.Interfaces.IOperation&lt;T&gt;">
     <Position X="11.75" Y="5.5" Width="3.75" />
     <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAAAAAABgEAAAAAIAAIIA=</HashCode>
+      <HashCode>AAEAAAAAAAAAAAAAAAAAAAAAgAAAABgEAAAAAIAAIIA=</HashCode>
       <FileName>Interfaces\IOperation.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="CourseContent.Infrastructure.Repositories.Interfaces.Base.IEntityRepository&lt;T&gt;">
-    <Position X="15.5" Y="14.25" Width="3.25" />
-    <TypeIdentifier />
-  </Interface>
-  <Interface Name="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;">
-    <Position X="8.75" Y="14.25" Width="3" />
-    <InheritanceLine Type="CourseContent.Infrastructure.Repositories.Interfaces.Base.IEntityRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="17.125" Y="15.353" />
-        <Point X="17.125" Y="16.96" />
-        <Point X="10.114" Y="16.96" />
-        <Point X="10.114" Y="15.804" />
-      </Path>
-    </InheritanceLine>
-    <TypeIdentifier />
-  </Interface>
-  <Interface Name="CourseContent.Infrastructure.Repositories.Interfaces.IUnitOfWork">
+  <Interface Name="CourseContent.Infrastructure.Interfaces.IUnitOfWork">
     <Position X="11.75" Y="11.5" Width="3.75" />
-    <AssociationLine Name="AssignmentfileRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.Base.IEntityRepository&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="14.688" Y="12.603" />
-        <Point X="14.688" Y="14.802" />
-        <Point X="15.5" Y="14.802" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.081" Y="-0.18" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="MaterialRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12.687" Y="12.603" />
-        <Point X="12.687" Y="14.812" />
-        <Point X="11.75" Y="14.812" />
-      </Path>
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.033" Y="-0.17" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="AssignmentRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.IContentRepository&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="11.75" Y="12.387" />
-        <Point X="10.188" Y="12.387" />
-        <Point X="10.188" Y="14.25" />
-      </Path>
-    </AssociationLine>
-    <AssociationLine Name="MaterialfileRepository" Type="CourseContent.Infrastructure.Repositories.Interfaces.Base.IEntityRepository&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="15.5" Y="12.438" />
-        <Point X="17.125" Y="12.438" />
-        <Point X="17.125" Y="14.25" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier />
-    <ShowAsAssociation>
-      <Property Name="AssignmentfileRepository" />
-      <Property Name="MaterialRepository" />
-      <Property Name="AssignmentRepository" />
-      <Property Name="MaterialfileRepository" />
-    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="Microsoft.Extensions.Configuration.IConfiguration">
+    <Position X="11.75" Y="17.5" Width="3.75" />
+    <TypeIdentifier />
   </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

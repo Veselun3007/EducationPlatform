@@ -10,5 +10,7 @@ namespace IdentityServer.Core.Interfaces
         Task<User> UpdateAsync(UserDTO entity, int id);
 
         Task<bool> DeleteAsync(int id);
+
+        Task<User> GetUserAsync(int id);
     }
 }

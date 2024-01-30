@@ -7,7 +7,7 @@ namespace CourseContent.Infrastructure.Interfaces.Base
     {
         Task<T> AddAsync(T entity);
 
-        Task<T?> UpdateAsync(int id, T entity);
+        Task<T> UpdateAsync(int id, T entity);
 
         Task<bool> DeleteAsync(int id);
 
