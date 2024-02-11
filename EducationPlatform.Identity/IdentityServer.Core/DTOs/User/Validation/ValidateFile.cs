@@ -9,12 +9,14 @@ namespace IdentityServer.Core.DTOs.User.Validation
 
         public override bool IsValid(object? value)
         {
-            if (value is IFormFile formFile && formFile.FileName is not null)
+            if (value is not null && value is IFormFile formFile && formFile.FileName is not null)
             {
                 return _fileExtensions.Contains(Path.GetExtension(formFile.FileName));
             }
-
-            return false;
+            else
+            {
+                return true;
+            }
         }
     }
 }

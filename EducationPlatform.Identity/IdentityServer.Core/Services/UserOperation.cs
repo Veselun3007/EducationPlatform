@@ -20,14 +20,13 @@ namespace IdentityServer.Core.Services
             return userEntity;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             await _unitOfWork.UserRepository.DeleteAsync(id);
             await _unitOfWork.CompleteAsync();
-            return true;
         }
 
-        public async Task<User> GetUserAsync(int id)
+        public async Task<User?> GetUserAsync(int id)
         {
             return await _unitOfWork.UserRepository.GetByIdAsync(id);
         }

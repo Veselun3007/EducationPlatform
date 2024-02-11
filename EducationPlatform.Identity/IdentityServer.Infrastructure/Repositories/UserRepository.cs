@@ -1,5 +1,6 @@
 ﻿using IdentityServer.Domain.Entities;
 using IdentityServer.Infrastructure.Interfaces;
+using System.Linq.Expressions;
 
 namespace IdentityServer.Infrastructure.Repositories
 {
@@ -18,19 +19,19 @@ namespace IdentityServer.Infrastructure.Repositories
             return await _repository.UpdateAsync(entity, id);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            return await _repository.DeleteAsync(id);
+            await _repository.DeleteAsync(id);
         }
 
-        public void DeleteAsync(User entity)
-        {
-            _repository.DeleteAsync(entity);
-        }
-
-        public async Task<User> GetByIdAsync(int id)
+        public async Task<User?> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
+        }
+
+        public async Task<User?> FindByParamAsync(Expression<Func<User, bool>> filter)
+        {
+            return await _repository.FindByParamAsync(filter);
         }
     }
 }

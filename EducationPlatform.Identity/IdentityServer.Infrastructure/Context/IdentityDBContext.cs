@@ -1,21 +1,69 @@
 ﻿using IdentityServer.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Infrastructure.Context
 {
-    public class IdentityDBContext(DbContextOptions<IdentityDBContext> options) : IdentityDbContext<AppUser>(options)
+    public partial class IdentityDBContext : DbContext
     {
-        protected override void OnModelCreating(ModelBuilder builder)
+
+        public IdentityDBContext() { }
+
+        public IdentityDBContext(DbContextOptions<IdentityDBContext> options) : base(options) { }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            modelBuilder.Entity<AppUser>(entity =>
+            {
+                entity.HasKey(u => u.Id).HasName("users_pkey");
 
-            builder.Entity<AppUser>(entity => entity.ToTable("Users"));
-            builder.Entity<IdentityUserLogin<string>>(entity => entity.ToTable("UserLogins"));
-            builder.Entity<IdentityUserToken<string>>(entity => entity.ToTable("UserTokens"));
+                entity.ToTable("users");
 
-            builder.ApplyConfiguration(new UserConfiguration());
+                entity.Property(u => u.UserName)
+                .HasMaxLength(250)
+                .HasColumnName("user_name");
+
+                entity.HasIndex(u => u.Email, "users_user_email_key").IsUnique();
+                entity.Property(u => u.Email)
+                .HasMaxLength(254)
+                .HasColumnName("email");
+
+                entity.Property(u => u.Password)
+                .HasMaxLength(64)
+                .HasColumnName("password");
+
+                entity.Property(u => u.Salt)
+                .HasMaxLength(64)
+                .HasColumnName("salt");
+
+            });
+
+            modelBuilder.Entity<Token>(entity =>
+            {
+                entity.HasKey(u => u.Id).HasName("tokens_pkey");
+
+                entity.ToTable("tokens");
+
+                entity.Property(u => u.UserId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("user_id");
+
+                entity.HasIndex(u => u.RefreshToken, "tokens_token_refreshtoken_key").IsUnique();
+                entity.Property(u => u.RefreshToken)
+                .HasMaxLength(36)
+                .HasColumnName("refresh_token");
+
+                entity.Property(u => u.RefreshTokenValidUntil)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("refresh_token_valid_until");
+
+                entity.HasOne(d => d.AppUser).WithMany(p => p.Tokens)
+                .HasForeignKey(d => d.UserId)
+                .HasConstraintName("fk_tokens_users");
+            });
+
+            OnModelCreatingPartial(modelBuilder);
         }
+
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

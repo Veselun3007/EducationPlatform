@@ -17,7 +17,7 @@ namespace IdentityServer.Web.DTOs.User
         public required string Email { get; set; }
 
         [Required(ErrorMessage = "Поле 'Пароль' обов'язкове")]
-        public required string UserPassword { get; set; }
+        public required string Password { get; set; }
 
         [ValidateFile([".png", ".jpg", ".jpeg"], ErrorMessage = "Зображення має непідтримуване розширення")]
         public IFormFile? UserImage { get; set; }

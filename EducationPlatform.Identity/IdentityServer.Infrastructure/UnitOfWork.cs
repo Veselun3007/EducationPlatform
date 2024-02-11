@@ -7,36 +7,26 @@ namespace IdentityServer.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly EducationPlatformContext _context;
+        private readonly EducationPlatformContext _businessContext;
+        private readonly IdentityDBContext _identityContext;
 
-        public UnitOfWork(EducationPlatformContext context)
+        public UnitOfWork(EducationPlatformContext businessContext,
+            IdentityDBContext identityContext)
         {
-            _context = context;
-            UserRepository = new Repository<User>(_context);
+            _businessContext = businessContext;
+            _identityContext = identityContext;
+            UserRepository = new Repository<User>(_businessContext);
+            IdentityRepository = new Repository<AppUser>(_identityContext);
+            TokenRepository = new BaseRepository<Token>(_identityContext);
         }
+
         public IRepository<User> UserRepository { get; private set; }
+        public IRepository<AppUser> IdentityRepository { get; private set; }
+        public IBaseRepository<Token> TokenRepository { get; private set; }
 
         public async Task<int> CompleteAsync()
         {
-            return await _context.SaveChangesAsync();
-        }
-
-        private bool disposed;
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposed || !disposing)
-            {
-                return;
-            }
-
-            _context.Dispose();
-            disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            return await _businessContext.SaveChangesAsync();
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using CourseContent.Core.Interfaces;
-using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
@@ -14,14 +13,9 @@ namespace CourseContent.Core.Services
             return await _crudStrategy.CreateAsync(entity, files);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            return await _crudStrategy.DeleteAsync(id);
-        }
-
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await _crudStrategy.GetAllAsync();
+            await _crudStrategy.DeleteAsync(id);
         }
 
         public async Task<T> GetByIdAsync(int id)
@@ -39,14 +33,14 @@ namespace CourseContent.Core.Services
             await _crudStrategy.RemoveRangeAsync(entities);
         }
 
-        public async Task<string?> GetFileById(int id)
-        {         
-            return  await _crudStrategy.GetFileByIdAsync(id);
+        public async Task<string?> GetFileByIdAsync(int id)
+        {
+            return await _crudStrategy.GetFileByIdAsync(id);
         }
 
-        public IQueryable<T> GetByCourse(int id)
+        public async Task<IEnumerable<T>> GetAllByCourseAsync(int id)
         {
-            return _crudStrategy.GetByCourse(id);
+            return await _crudStrategy.GetAllByCourseAsync(id);
         }
     }
 }

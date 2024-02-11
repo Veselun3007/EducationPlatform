@@ -6,10 +6,10 @@ namespace CourseContent.Infrastructure.Interfaces
 {
     public interface IContentRepository<T> : IRepository<T> where T : IAggregateRoot
     {
-        bool RemoveRange(IEnumerable<T> entities);
+        void RemoveRange(IEnumerable<T> entities);
 
-        bool AddFiles(T entity, string file);
+        void AddFiles(T entity, string file);
 
-        IQueryable<T> GetByCourse(Expression<Func<T, bool>> filter);
+        Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter);
     }
 }

@@ -1,12 +1,10 @@
 using IdentityServer.Core.Helpers;
 using IdentityServer.Core.Interfaces;
 using IdentityServer.Core.Services;
-using IdentityServer.Domain.Entities;
 using IdentityServer.Infrastructure;
 using IdentityServer.Infrastructure.Context;
 using IdentityServer.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -43,16 +41,9 @@ namespace IdentityServer.Web
             builder.Services.AddScoped<TokenHelper>();
             builder.Services.AddScoped<CryptographyHelper>();
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IdentityOperation>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IBusinessUserOperation, UserOperation>();
-
-            builder.Services.AddIdentity<AppUser, IdentityRole>(config =>
-            {
-                config.SignIn.RequireConfirmedEmail = false;
-                config.SignIn.RequireConfirmedPhoneNumber = false;
-            })
-                .AddEntityFrameworkStores<IdentityDBContext>()
-                .AddDefaultTokenProviders();
 
             builder.Services.AddAuthentication(options =>
             {

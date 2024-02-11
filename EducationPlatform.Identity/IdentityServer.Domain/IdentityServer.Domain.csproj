@@ -6,8 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Duende.IdentityServer.AspNetIdentity" Version="6.3.7" />
-  </ItemGroup>
-
 </Project>

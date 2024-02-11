@@ -14,14 +14,9 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.AddAsync(entity);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            return await _contentRepository.DeleteAsync(id);
-        }
-
-        public async Task<IEnumerable<Material>> GetAllAsync()
-        {
-            return await _contentRepository.GetAllAsync();
+            await _contentRepository.DeleteAsync(id);
         }
 
         public async Task<Material> GetByIdAsync(int id)
@@ -34,19 +29,19 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.UpdateAsync(id, entity);
         }
 
-        public bool RemoveRange(IEnumerable<Material> entities)
+        public async Task<IEnumerable<Material>> GetAllByCourseAsync(Expression<Func<Material, bool>> filter)
         {
-            return _contentRepository.RemoveRange(entities);
+            return await _contentRepository.GetAllByCourseAsync(filter);
         }
 
-        public bool AddFiles(Material entity, string file)
+        public void RemoveRange(IEnumerable<Material> entities)
         {
-            return _contentRepository.AddFiles(entity, file);
+            _contentRepository.RemoveRange(entities);
         }
 
-        public IQueryable<Material> GetByCourse(Expression<Func<Material, bool>> filter)
+        public void AddFiles(Material entity, string file)
         {
-            return _contentRepository.GetByCourse(filter);
-        }
+            _contentRepository.AddFiles(entity, file);
+        }       
     }
 }

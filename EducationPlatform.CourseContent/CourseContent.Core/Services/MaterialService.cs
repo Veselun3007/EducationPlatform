@@ -3,80 +3,115 @@ using CourseContent.Core.Interfaces;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace CourseContent.Core.Services
 {
-    public class MaterialService(IUnitOfWork unitOfWork, FilesHelper fileHelper) :
-        IOperation<Material>
+    public class MaterialService(IUnitOfWork unitOfWork, ILogger<MaterialService> logger, 
+        FilesHelper fileHelper) : IOperation<Material>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ILogger<MaterialService> _logger = logger;
         private readonly FilesHelper _fileHelper = fileHelper;
-
 
         public async Task<Material> CreateAsync(Material entity, List<IFormFile> files)
         {
-            await _unitOfWork.MaterialRepository.AddAsync(entity);
-            await _unitOfWork.CompleteAsync();
-            if (files is not null)
+            try
             {
-                await AddFilesAsync(entity, files);
+                await _unitOfWork.MaterialRepository.AddAsync(entity);
+                await _unitOfWork.CompleteAsync();
+
+                if (files is not null)
+                {
+                    await AddFilesAsync(entity, files);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while adding Material.");
             }
             return entity;
-
         }
 
         private async Task AddFilesAsync(Material entity, List<IFormFile> files)
         {
-            foreach (var file in files)
+            try
             {
-                var fileLink = await _fileHelper.AddFileAsync(file);
-                _unitOfWork.MaterialRepository.AddFiles(entity, fileLink);
+                foreach (var file in files)
+                {
+                    var fileLink = await _fileHelper.AddFileAsync(file);
+                    _unitOfWork.MaterialRepository.AddFiles(entity, fileLink);
+                }
+                await _unitOfWork.CompleteAsync();
             }
-            await _unitOfWork.CompleteAsync();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while adding files to Material.");
+            }
         }
 
         public async Task<Material> UpdateAsync(int id, Material entity)
         {
-            await _unitOfWork.MaterialRepository.UpdateAsync(id, entity);
-            await _unitOfWork.CompleteAsync();
+            try
+            {
+                await _unitOfWork.MaterialRepository.UpdateAsync(id, entity);
+                await _unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while updating Material.");
+            }
             return entity;
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
-            await _unitOfWork.MaterialRepository.DeleteAsync(id);
-            await _unitOfWork.CompleteAsync();
-            return true;
+            try
+            {
+                await _unitOfWork.MaterialRepository.DeleteAsync(id);
+                await _unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while deleting Material.");
+            }
         }
 
-        public async Task<IEnumerable<Material>> GetAllAsync()
+        public async Task<Material?> GetByIdAsync(int id)
         {
-            return await _unitOfWork.MaterialRepository.GetAllAsync();
-        }
+            var material = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
+            if (material is null)
+                return null;
 
-        public async Task<Material> GetByIdAsync(int id)
-        {
-            var Material = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
-            return Material!;
+            return material;
         }
 
         public async Task RemoveRangeAsync(IEnumerable<Material> entities)
         {
-            _unitOfWork.MaterialRepository.RemoveRange(entities);
-            await _unitOfWork.CompleteAsync();
+            try
+            {
+                _unitOfWork.MaterialRepository.RemoveRange(entities);
+                await _unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while removing Material.");
+            }
         }
 
         public async Task<string?> GetFileByIdAsync(int id)
         {
-            var Materialfile = await _unitOfWork
-                .MaterialfileRepository.GetByIdAsync(id);
+            var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(id);
 
-            return await _fileHelper.GetFileLink(Materialfile.MaterialFile!);
+            if (materialFile is null)
+                return null;
+
+            return await _fileHelper.GetFileLink(materialFile.MaterialFile!);
         }
 
-        public IQueryable<Material> GetByCourse(int id)
+        public async Task<IEnumerable<Material>> GetAllByCourseAsync(int id)
         {
-            return _unitOfWork.MaterialRepository.GetByCourse(a => a.CourseId == id);
+            return await _unitOfWork.MaterialRepository.GetAllByCourseAsync(m => m.CourseId == id);
         }
     }
 }

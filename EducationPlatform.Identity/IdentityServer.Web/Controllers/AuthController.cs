@@ -2,12 +2,9 @@
 using IdentityServer.Core.Helpers;
 using IdentityServer.Core.Interfaces;
 using IdentityServer.Core.Services;
-using IdentityServer.Domain.Entities;
 using IdentityServer.Web.DTOs.Login;
 using IdentityServer.Web.DTOs.User;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace EducationPlatform.Identity.Controllers
@@ -15,36 +12,29 @@ namespace EducationPlatform.Identity.Controllers
     [Route("api/")]
     [ApiController]
     public class AuthController(
-        UserManager<AppUser> userManager,
         UserService userService,
-        IConfiguration configuration,
+        IdentityOperation identityOperation,
         IBusinessUserOperation userOperation) : Controller
     {
-        private readonly UserManager<AppUser> _userManager = userManager;
         private readonly UserService _userService = userService;
-        private readonly IConfiguration _configuration = configuration;
+        private readonly IdentityOperation _identityOperation = identityOperation;
         private readonly IBusinessUserOperation _userOperation = userOperation;
 
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            var user = await _userManager.FindByEmailAsync(loginDTO.Email);
+            var user = await _identityOperation.FindByEmailAsync(loginDTO.Email);
 
             if (user is null || !CryptographyHelper.VerifyPassword(user.Salt,
-                loginDTO.UserPassword, user.PasswordHash!))
+                loginDTO.UserPassword, user.Password!))
             {
                 return BadRequest("Invalid email or password");
             }
-
             var tokens = _userService.FromLoginToResponse(user);
+            var tokenForStore = UserService.FromLoginToToken(user, tokens);
+            var updateResult = await _identityOperation.AddTokenAsync(tokenForStore);
 
-            user.RefreshToken = tokens.RefreshToken;
-            user.RefreshTokenValidUntil = DateTime.UtcNow
-                .AddDays(double.Parse(_configuration["JWT:RefreshTokenTtlInDays"]!));
-
-            var updateResult = await _userManager.UpdateAsync(user);
-
-            if (updateResult.Succeeded)
+            if (updateResult)
             {
                 return Ok(tokens);
             }
@@ -52,16 +42,16 @@ namespace EducationPlatform.Identity.Controllers
             return StatusCode(500, "Login error");
         }
 
+
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromForm] UserDTO userDTO)
         {
-            var user = UserService.FromUserDtoToAppUser(userDTO);
-            var result = await _userManager.CreateAsync(user);
-
-            if (result.Succeeded)
+            var user = await _identityOperation.CreateAsync(userDTO);
+            if (user is not null)
             {
                 await _userOperation.AddAsync(userDTO);
-                var tokens = _userService.FromUserDtoToResponse(userDTO, user.RefreshToken);
+                var userToken = await _identityOperation.AddTokenAsync(user.Id);
+                var tokens = _userService.FromUserDtoToResponse(userDTO, userToken.RefreshToken);
                 return Ok(tokens);
             }
             return StatusCode(500);
@@ -71,14 +61,15 @@ namespace EducationPlatform.Identity.Controllers
         [HttpPost("getAccessToken")]
         public async Task<ActionResult> GetAccessToken([FromBody] GetAccessTokenDTO tokenDTO)
         {
-            var user = await _userManager.Users
-                .FirstOrDefaultAsync(u => u.RefreshToken == tokenDTO.RefreshToken);
+            var existToken = await _identityOperation.FindTokenByParamAsync(tokenDTO.RefreshToken);
 
-            if (user is null || user.RefreshTokenValidUntil <= DateTime.UtcNow)
+            if (existToken is null || existToken.RefreshTokenValidUntil <= DateTime.UtcNow)
             {
+                await _identityOperation.DeleteTokenAsync(existToken.Id);
                 return BadRequest("Invalid email or password");
             }
 
+            var user = await _identityOperation.FindByIdAsync(existToken.UserId);
             var token = _userService.FromRequestToResponse(user);
             return Ok(token);
         }

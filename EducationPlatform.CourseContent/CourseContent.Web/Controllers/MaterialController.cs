@@ -17,7 +17,7 @@ namespace EducationPlatform.CourseContent.Controllers
         public async Task<IActionResult> CreateMaterial([FromBody] MaterialDTO materialDto)
         {
             var material = MaterialDTO.FromMaterialDto(materialDto);
-            var createdMaterial = await _crudContext.CreateAsync(material, materialDto.MaterialFiles);
+            var createdMaterial = await _crudContext.CreateAsync(material, materialDto.MaterialFiles!);
             var outMaterial = MaterialOutDTO.FromMaterial(createdMaterial);
             return Ok(outMaterial);
         }
@@ -58,14 +58,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return Ok(assignment);
         }
 
-        [Route("getMaterials/{id}")]
-        [HttpGet]
-        public IEnumerable<MaterialOutDTO> GetAllMaterials(int id)
-        {
-            return _crudContext.GetByCourse(id).Select(MaterialOutDTO.FromMaterial);
-        }
-
-
         [HttpDelete("removeMaterials")]
         public async Task<IActionResult> RemoveMaterials([FromBody] IEnumerable<Material> entities)
         {
@@ -82,7 +74,7 @@ namespace EducationPlatform.CourseContent.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMaterialFileById(int id)
         {
-            var _fileName = await _crudContext.GetFileById(id);
+            var _fileName = await _crudContext.GetFileByIdAsync(id);
 
             if (_fileName is null)
             {
@@ -90,6 +82,14 @@ namespace EducationPlatform.CourseContent.Controllers
             }
 
             return Ok(_fileName);
+        }
+
+        [Route("getMaterials/{id}")]
+        [HttpGet]
+        public async Task<IEnumerable<MaterialOutDTO>> GetAllMaterials(int id)
+        {
+            var materials = await _crudContext.GetAllByCourseAsync(id);
+            return materials.Select(MaterialOutDTO.FromMaterial).ToList();
         }
     }
 }

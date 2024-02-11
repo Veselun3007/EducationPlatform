@@ -1,4 +1,4 @@
-﻿using CourseContent.Core.DTOs.Validation;
+﻿using CourseContent.Core.DTOs.CommonValidation;
 using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 

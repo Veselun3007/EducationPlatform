@@ -24,25 +24,9 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return entity;
         }
 
-        public virtual async Task<bool> DeleteAsync(int id)
-        {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity is null)
-                return false;
-
-            _dbSet.Remove(entity);
-            return true;
-        }
-
-        public virtual async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await _dbSet.ToListAsync();
-        }
-
         public virtual async Task<T> GetByIdAsync(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
-            return entity!;
+             return await _dbSet.FindAsync(id);
         }
 
         public virtual async Task<T> UpdateAsync(int id, T entity)
@@ -57,13 +41,23 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return existingEntity!;
         }
 
-        public virtual bool RemoveRange(IEnumerable<T> entities)
+        public async Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter)
         {
-            _dbSet.RemoveRange(entities);
-            return true;
+            return await _dbSet.Where(filter).ToListAsync();
         }
 
-        public virtual bool AddFiles(T entity, string file)
+        public virtual async Task DeleteAsync(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            _dbSet.Remove(entity!);
+        }
+
+        public virtual void RemoveRange(IEnumerable<T> entities)
+        {
+            _dbSet.RemoveRange(entities);
+        }
+
+        public virtual void AddFiles(T entity, string file)
         {
             if (entity is Material materialEntity)
             {
@@ -85,13 +79,6 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 
                 _dbContext.Set<Assignmentfile>().Add(assignmentFile);
             }
-
-            return true;
-        }
-
-        public IQueryable<T> GetByCourse(Expression<Func<T, bool>> filter)
-        {
-            return _dbSet.Where(filter);
         }
     }
 }

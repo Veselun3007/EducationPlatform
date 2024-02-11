@@ -1,28 +1,17 @@
 ﻿using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
 using System.Linq.Expressions;
-using static Amazon.S3.Util.S3EventNotification;
 
 namespace CourseContent.Infrastructure.Repositories
 {
-    public class AssignmentRepository(IContentRepository<Assignment> contentRepository) : 
+    public class AssignmentRepository(IContentRepository<Assignment> contentRepository) :
         IContentRepository<Assignment>
     {
         private readonly IContentRepository<Assignment> _contentRepository = contentRepository;
 
         public async Task<Assignment> AddAsync(Assignment entity)
         {
-           return await _contentRepository.AddAsync(entity);
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            return await _contentRepository.DeleteAsync(id);
-        }
-
-        public async Task<IEnumerable<Assignment>> GetAllAsync()
-        {
-            return await _contentRepository.GetAllAsync();
+            return await _contentRepository.AddAsync(entity);
         }
 
         public async Task<Assignment> GetByIdAsync(int id)
@@ -35,19 +24,23 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.UpdateAsync(id, entity);
         }
 
-        public bool RemoveRange(IEnumerable<Assignment> entities)
+        public async Task<IEnumerable<Assignment>> GetAllByCourseAsync(Expression<Func<Assignment, bool>> filter)
         {
-            return _contentRepository.RemoveRange(entities);
+            return await _contentRepository.GetAllByCourseAsync(filter);
+        }
+        public async Task DeleteAsync(int id)
+        {
+            await _contentRepository.DeleteAsync(id);
         }
 
-        public bool AddFiles(Assignment entity, string file)
+        public void RemoveRange(IEnumerable<Assignment> entities)
         {
-            return _contentRepository.AddFiles(entity, file);
+            _contentRepository.RemoveRange(entities);
         }
 
-        public IQueryable<Assignment> GetByCourse(Expression<Func<Assignment, bool>> filter)
+        public void AddFiles(Assignment entity, string file)
         {
-            return _contentRepository.GetByCourse(filter);
+            _contentRepository.AddFiles(entity, file);
         }
     }
 }

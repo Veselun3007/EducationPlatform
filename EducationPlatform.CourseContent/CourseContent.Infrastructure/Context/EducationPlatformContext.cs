@@ -90,7 +90,7 @@ public partial class EducationPlatformContext : DbContext
                 .HasMaxLength(128)
                 .HasColumnName("course_name");
         });
-      
+
         modelBuilder.Entity<Material>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("materials_pkey");

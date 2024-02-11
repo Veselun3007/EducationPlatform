@@ -8,12 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CourseContent.Domain\CourseContent.Domain.csproj" />
-    <ProjectReference Include="..\CourseContent.Infrastructure\CourseContent.Infrastructure.csproj" />
+    <Compile Remove="DTOs\Material\NewFolder\**" />
+    <EmbeddedResource Remove="DTOs\Material\NewFolder\**" />
+    <None Remove="DTOs\Material\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\Material\NewFolder\" />
+    <ProjectReference Include="..\CourseContent.Domain\CourseContent.Domain.csproj" />
+    <ProjectReference Include="..\CourseContent.Infrastructure\CourseContent.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

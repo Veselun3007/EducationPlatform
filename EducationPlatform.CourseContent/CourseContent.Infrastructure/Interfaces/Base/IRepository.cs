@@ -2,16 +2,13 @@
 
 namespace CourseContent.Infrastructure.Interfaces.Base
 {
-    public interface IRepository<T> : IEntityRepository<T> 
+    public interface IRepository<T> : IEntityRepository<T>
         where T : IAggregateRoot
     {
         Task<T> AddAsync(T entity);
 
         Task<T> UpdateAsync(int id, T entity);
 
-        Task<bool> DeleteAsync(int id);
-
-        Task<IEnumerable<T>> GetAllAsync();
-
+        Task DeleteAsync(int id);
     }
 }

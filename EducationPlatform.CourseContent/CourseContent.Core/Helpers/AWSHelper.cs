@@ -28,7 +28,7 @@ namespace CourseContent.Core.Helpers
             {
                 return false;
             }
-        }      
+        }
 
         public static async Task<bool> DeleteObjectAsync(string accessKey, string secretKey,
             string bucketName, string objectName)
@@ -51,7 +51,7 @@ namespace CourseContent.Core.Helpers
             }
             catch (Exception)
             {
-                return false; 
+                return false;
             }
         }
 

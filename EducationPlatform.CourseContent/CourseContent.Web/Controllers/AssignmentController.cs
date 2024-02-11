@@ -2,7 +2,6 @@
 using CourseContent.Core.Services;
 using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseContent.Web.Controllers
 {
@@ -19,7 +18,7 @@ namespace CourseContent.Web.Controllers
         public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
             var newAssignment = AssignmentDTO.FromAssignmentDto(assignment);
-            var createdAssignment = await _crudContext.CreateAsync(newAssignment, assignment.AssignmentFiles);
+            var createdAssignment = await _crudContext.CreateAsync(newAssignment, assignment.AssignmentFiles!);
             var outAssignment = AssignmentOutDTO.FromAssignment(createdAssignment);
             return Ok(outAssignment);
         }
@@ -64,9 +63,10 @@ namespace CourseContent.Web.Controllers
 
         [Route("getAllAssignment/{id}")]
         [HttpGet]
-        public IEnumerable<AssignmentOutDTO> GetAllAssignment(int id)
+        public async Task<IEnumerable<AssignmentOutDTO>> GetAllAssignment(int id)
         {
-            return _crudContext.GetByCourse(id).Select(AssignmentOutDTO.FromAssignment);
+            var assignments = await _crudContext.GetAllByCourseAsync(id);
+            return assignments.Select(AssignmentOutDTO.FromAssignment).ToList();
         }
 
         [HttpDelete("removeAssignments")]
@@ -85,7 +85,7 @@ namespace CourseContent.Web.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAssignmentFileById(int id)
         {
-            var _fileName = await _crudContext.GetFileById(id);
+            var _fileName = await _crudContext.GetFileByIdAsync(id);
 
             if (_fileName is null)
             {

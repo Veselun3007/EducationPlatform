@@ -21,8 +21,16 @@ namespace IdentityServer.Core.Services
             {
                 UserName = userDTO.UserName,
                 Email = userDTO.Email,
-                PasswordHash = CryptographyHelper.Hash(userDTO.UserPassword, salt),
+                Password = CryptographyHelper.Hash(userDTO.Password, salt),
                 Salt = salt,
+            };
+        }
+
+        public static Token ToToken(int id)
+        {
+            return new Token
+            {
+                UserId = id,
                 RefreshToken = TokenHelper.GenerateRefreshToken(),
                 RefreshTokenValidUntil = DateTime.UtcNow.AddDays(7)
             };
@@ -43,6 +51,16 @@ namespace IdentityServer.Core.Services
             {
                 AccessToken = _tokenHelper.GenerateAccessToken(user.UserName!, user.Email!),
                 RefreshToken = TokenHelper.GenerateRefreshToken()
+            };
+        }
+
+        public static Token FromLoginToToken(AppUser user, LoginResponseDTO responseDTO)
+        {
+            return new Token
+            {
+                UserId = user.Id,
+                RefreshToken = responseDTO.RefreshToken,
+                RefreshTokenValidUntil = DateTime.UtcNow.AddDays(7)
             };
         }
 
@@ -69,9 +87,8 @@ namespace IdentityServer.Core.Services
             return new UserOutDTO
             {
                 UserName = user.UserName,
-                UserImage = await _fileHelper.GetFileLink(user.UserImage)
+                UserImage = await _fileHelper.GetFileLink(user.UserImage!)
             };
         }
-
     }
 }

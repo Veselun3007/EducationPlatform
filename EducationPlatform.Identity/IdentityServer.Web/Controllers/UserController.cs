@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityServer.Web.Controllers
 {
-    public class UserController(IBusinessUserOperation userOperation, 
+    public class UserController(IBusinessUserOperation userOperation,
         UserService userService) : Controller
     {
         private readonly IBusinessUserOperation _userOperation = userOperation;
@@ -38,7 +38,7 @@ namespace IdentityServer.Web.Controllers
         public async Task<IActionResult> GetUserDada(int id)
         {
             var user = await _userOperation.GetUserAsync(id);
-            var outUser = _userService.FromUser(user);
+            var outUser = _userService.FromUser(user!);
             return Ok(outUser);
         }
     }
