@@ -26,7 +26,7 @@ namespace EducationPlatform.Identity.Controllers
             var user = await _identityOperation.FindByEmailAsync(loginDTO.Email);
 
             if (user is null || !CryptographyHelper.VerifyPassword(user.Salt,
-                loginDTO.UserPassword, user.Password!))
+                loginDTO.Password, user.Password!))
             {
                 return BadRequest("Invalid email or password");
             }
@@ -42,7 +42,6 @@ namespace EducationPlatform.Identity.Controllers
             return StatusCode(500, "Login error");
         }
 
-
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromForm] UserDTO userDTO)
         {
@@ -57,21 +56,43 @@ namespace EducationPlatform.Identity.Controllers
             return StatusCode(500);
         }
 
-
         [HttpPost("getAccessToken")]
         public async Task<ActionResult> GetAccessToken([FromBody] GetAccessTokenDTO tokenDTO)
         {
             var existToken = await _identityOperation.FindTokenByParamAsync(tokenDTO.RefreshToken);
 
-            if (existToken is null || existToken.RefreshTokenValidUntil <= DateTime.UtcNow)
+            if (existToken is null)
+            {
+                return BadRequest("Refresh token wasn`t found");
+            }
+
+            if (existToken.RefreshTokenValidUntil <= DateTime.UtcNow)
             {
                 await _identityOperation.DeleteTokenAsync(existToken.Id);
-                return BadRequest("Invalid email or password");
+                return BadRequest("Expired refresh token");
             }
 
             var user = await _identityOperation.FindByIdAsync(existToken.UserId);
+            if (user is null)
+            {
+                return BadRequest("User wasn`t found");
+            }
+
             var token = _userService.FromRequestToResponse(user);
             return Ok(token);
+        }
+
+        [HttpPost("logOut")]
+        public async Task<ActionResult> LogOut([FromBody] GetAccessTokenDTO tokenDTO)
+        {
+            var token = await _identityOperation.FindTokenByParamAsync(tokenDTO.RefreshToken);
+
+            if (token is null)
+            {
+                return BadRequest("Invalid refresh token");
+            }
+
+            return Ok(await _identityOperation.DeleteTokenAsync(token.Id));
         }
     }
 }

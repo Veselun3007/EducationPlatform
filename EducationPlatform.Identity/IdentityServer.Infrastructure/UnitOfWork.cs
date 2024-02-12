@@ -26,7 +26,10 @@ namespace IdentityServer.Infrastructure
 
         public async Task<int> CompleteAsync()
         {
-            return await _businessContext.SaveChangesAsync();
+            int businessChanges = await _businessContext.SaveChangesAsync();
+            int identityChanges = await _identityContext.SaveChangesAsync();
+
+            return businessChanges + identityChanges;
         }
     }
 }

@@ -18,6 +18,7 @@ namespace IdentityServer.Infrastructure.Context
 
                 entity.ToTable("users");
 
+                entity.Property(e => e.Id).HasColumnName("user_id");
                 entity.Property(u => u.UserName)
                 .HasMaxLength(250)
                 .HasColumnName("user_name");
@@ -42,7 +43,7 @@ namespace IdentityServer.Infrastructure.Context
                 entity.HasKey(u => u.Id).HasName("tokens_pkey");
 
                 entity.ToTable("tokens");
-
+                entity.Property(u => u.Id).HasColumnName("token_id");
                 entity.Property(u => u.UserId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("user_id");
@@ -53,7 +54,7 @@ namespace IdentityServer.Infrastructure.Context
                 .HasColumnName("refresh_token");
 
                 entity.Property(u => u.RefreshTokenValidUntil)
-                .HasColumnType("timestamp without time zone")
+                .HasColumnType("timestamp with time zone")
                 .HasColumnName("refresh_token_valid_until");
 
                 entity.HasOne(d => d.AppUser).WithMany(p => p.Tokens)

@@ -10,6 +10,6 @@ namespace IdentityServer.Web.DTOs.Login
         public required string Email { get; set; }
 
         [Required(ErrorMessage = "Поле 'Пароль' обов'язкове")]
-        public required string UserPassword { get; set; }
+        public required string Password { get; set; }
     }
 }
