@@ -1,4 +1,5 @@
-﻿using IdentityServer.Domain.Entities;
+﻿using IdentityServer.Core.DTOs.User;
+using IdentityServer.Domain.Entities;
 using IdentityServer.Web.DTOs.User;
 
 namespace IdentityServer.Core.Interfaces
@@ -11,6 +12,6 @@ namespace IdentityServer.Core.Interfaces
 
         Task DeleteAsync(int id);
 
-        Task<User?> GetUserAsync(int id);
+        Task<UserOutDTO?> GetUserAsync(int id);
     }
 }

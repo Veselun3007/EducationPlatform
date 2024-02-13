@@ -13,7 +13,7 @@ namespace IdentityServer.Web.Controllers
 
         [Route("updateUser/{id}")]
         [HttpPut]
-        public async Task<IActionResult> UpdateMaterial(int id, UserDTO entity)
+        public async Task<IActionResult> UpdateUser(int id, UserDTO entity)
         {
             var user = await _userOperation.UpdateAsync(entity, id);
 
@@ -27,7 +27,7 @@ namespace IdentityServer.Web.Controllers
 
         [Route("deleteUser/{id}")]
         [HttpDelete]
-        public async Task<IActionResult> DeleteMaterial(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
             await _userOperation.DeleteAsync(id);
             return Ok();
@@ -38,8 +38,11 @@ namespace IdentityServer.Web.Controllers
         public async Task<IActionResult> GetUserDada(int id)
         {
             var user = await _userOperation.GetUserAsync(id);
-            var outUser = _userService.FromUser(user!);
-            return Ok(outUser);
+            if(user is null)
+            {
+                return NotFound();
+            }
+            return Ok(user);
         }
     }
 }
