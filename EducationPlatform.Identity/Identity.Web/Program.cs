@@ -10,6 +10,7 @@ using Identity.Infrastructure.Context;
 using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -29,6 +30,16 @@ namespace EducationPlatform.Identity
             services.AddAWSService<IAmazonCognitoIdentityProvider>();
           
             return services;
+        }
+
+        public static (AwsOptions, DbOptions) AddVariables(this IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+
+            var awsOptions = serviceProvider.GetRequiredService<IOptions<AwsOptions>>().Value;
+            var dbOptions = serviceProvider.GetRequiredService<IOptions<DbOptions>>().Value;
+
+            return (awsOptions, dbOptions);
         }
     }
 
@@ -55,13 +66,11 @@ namespace EducationPlatform.Identity
             builder.Services.AddOptions<DbOptions>()
                  .Bind(_configuration.GetSection(nameof(DbOptions)));
 
-            var serviceProvider = builder.Services.BuildServiceProvider();
-            var awsOptions = serviceProvider.GetRequiredService<IOptions<AwsOptions>>().Value;
-            var dbOption = serviceProvider.GetRequiredService<IOptions<DbOptions>>().Value;
+            var(awsOptions, dbOptions) = builder.Services.AddVariables();
 
             builder.Services.AddDbContext<EducationPlatformContext>(options =>
             {
-                options.UseNpgsql(dbOption.ConnectionString);
+                options.UseNpgsql(dbOptions.ConnectionString);
             });
 
             builder.Services.AddScoped<IBaseDbOperation<User>, DbOperation>();

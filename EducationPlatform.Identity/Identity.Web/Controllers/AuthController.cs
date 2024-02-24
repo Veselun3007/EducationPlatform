@@ -22,8 +22,12 @@ namespace Identity.Web.Controllers
             var result = await _identityOperation.SignUpAsync(model.Email, model.Password);
             if (result.IsSuccess)
             {
-                await _userOperation.AddAsync(model, result.Value);
-                return Ok();
+                var userResult = await _userOperation.AddAsync(model, result.Value);
+                if (userResult.IsSuccess)
+                {
+                    return Ok(userResult.Value);
+                }
+                return BadRequest(userResult.Error);
             }
             return BadRequest(result.Error);
         }
