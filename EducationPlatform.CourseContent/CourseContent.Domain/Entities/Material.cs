@@ -8,6 +8,8 @@ public class Material : IAggregateRoot
 
     public int CourseId { get; set; }
 
+    public int TopicId { get; set; }
+
     public required string MaterialName { get; set; }
 
     public string? MaterialDescription { get; set; }
@@ -16,7 +18,7 @@ public class Material : IAggregateRoot
 
     public virtual Course Course { get; set; } = null!;
 
+    public virtual Topic? Topic { get; set; }
+
     public virtual ICollection<Materialfile> Materialfiles { get; set; } = new List<Materialfile>();
-
-
 }

@@ -1,7 +1,5 @@
-using Amazon.CognitoIdentityProvider;
 using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
-using Amazon.S3;
 using Identity.Core.Helpers;
 using Identity.Core.Services;
 using Identity.Domain.Config;
@@ -10,48 +8,16 @@ using Identity.Infrastructure.Context;
 using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace EducationPlatform.Identity
 {
-    public static class ServiceCollectionExtensions
-    {
-        public static IServiceCollection AddAWS(this IServiceCollection services)
-        {
-            var awsOptions = new AWSOptions()
-            {
-                Credentials = new EnvironmentVariablesAWSCredentials(),
-                Region = new EnvironmentVariableAWSRegion().Region
-            };
-            services.AddDefaultAWSOptions(awsOptions);
-            services.AddAWSService<AmazonS3Client>();
-            services.AddAWSService<IAmazonCognitoIdentityProvider>();
-          
-            return services;
-        }
-
-        public static (AwsOptions, DbOptions) AddVariables(this IServiceCollection services)
-        {
-            var serviceProvider = services.BuildServiceProvider();
-
-            var awsOptions = serviceProvider.GetRequiredService<IOptions<AwsOptions>>().Value;
-            var dbOptions = serviceProvider.GetRequiredService<IOptions<DbOptions>>().Value;
-
-            return (awsOptions, dbOptions);
-        }
-    }
-
     public class Program
     {
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var _configuration = builder.Configuration;
-
-            builder.Logging.ClearProviders();
-            builder.Logging.AddConsole();
             
             builder.Configuration.AddSystemsManager("/education-platform/Development", new AWSOptions
             {
@@ -79,6 +45,7 @@ namespace EducationPlatform.Identity
             builder.Services.AddScoped<IdentityOperation>();
 
             builder.Services.AddControllers();
+            builder.Services.AddProblemDetails();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddAuthentication(options =>
@@ -105,7 +72,7 @@ namespace EducationPlatform.Identity
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseExceptionHandler();
             app.UseAuthentication();
             app.UseAuthorization();
 

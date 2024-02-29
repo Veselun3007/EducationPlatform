@@ -9,7 +9,5 @@ namespace CourseContent.Infrastructure.Interfaces
         void RemoveRange(IEnumerable<T> entities);
 
         void AddFiles(T entity, string file);
-
-        Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter);
     }
 }

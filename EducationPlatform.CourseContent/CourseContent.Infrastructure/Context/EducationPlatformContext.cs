@@ -51,6 +51,11 @@ public partial class EducationPlatformContext : DbContext
                 .HasForeignKey(d => d.CourseId)
                 .HasConstraintName("fk_assignments_course");
 
+            entity.HasOne(d => d.Topic).WithMany(t => t.Assignments)
+                .HasForeignKey(d => d.TopicId)
+                .HasConstraintName("fk_assignments_topics");
+
+
         });
 
         modelBuilder.Entity<Assignmentfile>(entity =>
@@ -112,6 +117,10 @@ public partial class EducationPlatformContext : DbContext
             entity.HasOne(d => d.Course).WithMany(p => p.Materials)
                 .HasForeignKey(d => d.CourseId)
                 .HasConstraintName("fk_materials_course");
+
+            entity.HasOne(d => d.Topic).WithMany(t => t.Materials)
+                .HasForeignKey(d => d.TopicId)
+                .HasConstraintName("fk_materials_topics");
         });
 
         modelBuilder.Entity<Materialfile>(entity =>

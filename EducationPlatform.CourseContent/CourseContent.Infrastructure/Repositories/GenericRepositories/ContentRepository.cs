@@ -24,12 +24,12 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return entity;
         }
 
-        public virtual async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(int id)
         {
              return await _dbSet.FindAsync(id);
         }
 
-        public virtual async Task<T> UpdateAsync(int id, T entity)
+        public virtual async Task<T?> UpdateAsync(int id, T entity)
         {
             var existingEntity = await _dbSet.FindAsync(id);
 
@@ -49,7 +49,10 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
         public virtual async Task DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
-            _dbSet.Remove(entity!);
+            if(entity is not null) 
+            { 
+                _dbSet.Remove(entity);
+            }
         }
 
         public virtual void RemoveRange(IEnumerable<T> entities)

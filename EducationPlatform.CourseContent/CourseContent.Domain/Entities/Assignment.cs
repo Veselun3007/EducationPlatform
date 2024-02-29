@@ -8,6 +8,8 @@ public class Assignment : IAggregateRoot
 
     public int CourseId { get; set; }
 
+    public int TopicId { get; set; }
+
     public required string AssignmentName { get; set; }
 
     public string? AssignmentDescription { get; set; }
@@ -18,5 +20,7 @@ public class Assignment : IAggregateRoot
 
     public virtual ICollection<Assignmentfile>? Assignmentfiles { get; set; } = new List<Assignmentfile>();
 
-    public virtual Course? Course { get; set; } = null!;
+    public virtual Course Course { get; set; } = null!;
+
+    public virtual Topic? Topic { get; set; }
 }

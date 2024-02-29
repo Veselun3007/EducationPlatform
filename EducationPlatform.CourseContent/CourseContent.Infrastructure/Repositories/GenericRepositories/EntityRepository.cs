@@ -16,10 +16,10 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             _dbSet = _dbContext.Set<T>();
         }
 
-        public virtual async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
-            return entity!;
+            return entity;
         }
     }
 }

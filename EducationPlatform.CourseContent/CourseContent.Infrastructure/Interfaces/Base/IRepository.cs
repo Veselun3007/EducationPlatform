@@ -1,4 +1,5 @@
 ﻿using CourseContent.Domain.Interfaces;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Interfaces.Base
 {
@@ -7,8 +8,10 @@ namespace CourseContent.Infrastructure.Interfaces.Base
     {
         Task<T> AddAsync(T entity);
 
-        Task<T> UpdateAsync(int id, T entity);
+        Task<T?> UpdateAsync(int id, T entity);
 
         Task DeleteAsync(int id);
+
+        Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter);
     }
 }

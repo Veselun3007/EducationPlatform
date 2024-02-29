@@ -14,12 +14,12 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.AddAsync(entity);
         }
 
-        public async Task<Assignment> GetByIdAsync(int id)
+        public async Task<Assignment?> GetByIdAsync(int id)
         {
             return await _contentRepository.GetByIdAsync(id);
         }
 
-        public async Task<Assignment> UpdateAsync(int id, Assignment entity)
+        public async Task<Assignment?> UpdateAsync(int id, Assignment entity)
         {
             return await _contentRepository.UpdateAsync(id, entity);
         }

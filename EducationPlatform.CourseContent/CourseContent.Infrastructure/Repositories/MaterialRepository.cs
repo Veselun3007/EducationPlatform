@@ -19,12 +19,12 @@ namespace CourseContent.Infrastructure.Repositories
             await _contentRepository.DeleteAsync(id);
         }
 
-        public async Task<Material> GetByIdAsync(int id)
+        public async Task<Material?> GetByIdAsync(int id)
         {
             return await _contentRepository.GetByIdAsync(id);
         }
 
-        public async Task<Material> UpdateAsync(int id, Material entity)
+        public async Task<Material?> UpdateAsync(int id, Material entity)
         {
             return await _contentRepository.UpdateAsync(id, entity);
         }

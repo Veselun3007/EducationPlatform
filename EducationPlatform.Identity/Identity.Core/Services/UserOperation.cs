@@ -2,35 +2,32 @@
 using CSharpFunctionalExtensions;
 using Identity.Core.DTO.User;
 using Identity.Core.Helpers;
+using Identity.Core.Models;
 using Identity.Domain.Entities;
 using Identity.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace Identity.Core.Services
 {
     public class UserOperation(
-        IBaseDbOperation<User> dbOperation, ILogger<UserOperation> logger,
-        IdentityOperation identityOperation, FileHelper filesHelper)
+        IBaseDbOperation<User> dbOperation, IdentityOperation identityOperation, FileHelper filesHelper)
     {
         private readonly IBaseDbOperation<User> _dbOperation = dbOperation;
-        private readonly ILogger<UserOperation> _logger = logger;
         private readonly IdentityOperation _identityOperation = identityOperation;
         private readonly FileHelper _filesHelper = filesHelper;
 
-        public async Task<Result<User>> AddAsync(UserDTO entity, string id)
+        public async Task<Result<User, Error>> AddAsync(UserDTO entity, string id)
         {
-            User userEntity = await FromUserDtoToUserAsync(entity, id);
             try
             {
+                User userEntity = await FromUserDtoToUserAsync(entity, id);
+
                 await _dbOperation.AddAsync(userEntity);
-                return Result.Success(userEntity);
+                return Result.Success<User, Error>(userEntity);
             }
-            catch (Exception ex)
+            finally
             {
                 await _identityOperation.DeleteAsync(id);
-                _logger.LogInformation("An error occurred during the Add: {ErrorMessage}", ex.Message);
-                return Result.Failure<User>($"Oops, something went wrong");
             }
         }
 
@@ -52,11 +49,6 @@ namespace Identity.Core.Services
             {
                 return Result.Failure($"User with id {id} not found");
             }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Delete: {ErrorMessage}", ex.Message);
-                return Result.Failure($"Oops, something went wrong");
-            }
         }
 
         public async Task<Result<User>> UpdateAsync(UserDTO entity, string id)
@@ -74,11 +66,6 @@ namespace Identity.Core.Services
             catch (UserNotFoundException)
             {
                 return Result.Failure<User>($"User with id {id} not found");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Update: {ErrorMessage}", ex.Message);
-                return Result.Failure<User>($"Oops, something went wrong");
             }
         }
 

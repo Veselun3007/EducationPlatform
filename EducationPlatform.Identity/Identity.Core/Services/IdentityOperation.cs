@@ -1,20 +1,19 @@
 ﻿using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using CSharpFunctionalExtensions;
-using Identity.Core.DTO.Token;
+using Identity.Core.DTO.Responses;
+using Identity.Core.Models;
 using Identity.Domain.Config;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Identity.Core.Services
 {
-    public class IdentityOperation(IAmazonCognitoIdentityProvider cognitoService, ILogger<IdentityOperation> logger, IOptions<AwsOptions> option)
+    public class IdentityOperation(IAmazonCognitoIdentityProvider cognitoService, IOptions<AwsOptions> option)
     {
         private readonly IAmazonCognitoIdentityProvider _cognitoService = cognitoService;
-        private readonly ILogger<IdentityOperation> _logger = logger;
         private readonly AwsOptions _options = option.Value;
 
-        public async Task<Result<string>> SignUpAsync(string email, string password)
+        public async Task<Result<string, Error>> SignUpAsync(string email, string password)
         {
             var signUpRequest = new SignUpRequest()
             {
@@ -22,23 +21,20 @@ namespace Identity.Core.Services
                 Username = email,
                 Password = password
             };
+
             try
             {
                 var signUpResponse = await _cognitoService.SignUpAsync(signUpRequest);
-                return Result.Success(signUpResponse.UserSub);
+                return Result.Success<string, Error>(signUpResponse.UserSub);
             }
             catch (UsernameExistsException)
             {
-                return Result.Failure<string>($"User with email {email} already exists");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Sign Up: {ErrorMessage}", ex.Message);
-                return Result.Failure<string>($"Oops, something went wrong");
+                return Result.Failure<string, Error>(Errors.Identity.UsernameExist(email)); 
             }
         }
 
-        public async Task<Result<TokenResponseModel>> SignInAsync(string email, string password)
+
+        public async Task<Result<TokenResponseModel, Error>> SignInAsync(string email, string password)
         {
             Dictionary<string, string> authParams = new()
             {
@@ -55,22 +51,17 @@ namespace Identity.Core.Services
             try
             {
                 var response = await _cognitoService.InitiateAuthAsync(request);
-                return Result.Success(CreateResponse(
+                return Result.Success<TokenResponseModel, Error>(CreateResponse(
                     response.AuthenticationResult.AccessToken,
                     response.AuthenticationResult.RefreshToken));
             }
-            catch (UserNotFoundException)
+            catch (NotAuthorizedException)
             {
-                return Result.Failure<TokenResponseModel>("User wasn`t found");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Sign In: {ErrorMessage}", ex.Message);
-                return Result.Failure<TokenResponseModel>($"Oops, something went wrong");
+                return Result.Failure<TokenResponseModel, Error>(Errors.General.NotFound());
             }
         }
 
-        public async Task<Result<string>> ComfirmUserAsync(string email, string code)
+        public async Task<Result<string, Error>> ComfirmUserAsync(string email, string code)
         {
             var comfirmationRequest = new ConfirmSignUpRequest()
             {
@@ -81,24 +72,19 @@ namespace Identity.Core.Services
             try
             {
                 await _cognitoService.ConfirmSignUpAsync(comfirmationRequest);
-                return Result.Success("Email confirmed");
+                return Result.Success<string, Error>("Email confirmed");
             }
-            catch (UserNotFoundException)
+            catch (NotAuthorizedException)
             {
-                return Result.Failure<string>($"User with email {email} not found");
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
             catch (CodeMismatchException)
             {
-                return Result.Failure<string>($"Code isn`t correct");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Confirm Sign Up: {ErrorMessage}", ex.Message);
-                return Result.Failure<string>($"Oops, something went wrong");
+                return Result.Failure<string, Error>(Errors.Identity.CodeMismatch());
             }
         }
 
-        public async Task<Result<TokenResponseModel>> RefreshTokensAsync(string refreshToken)
+        public async Task<Result<TokenResponseModel, Error>> RefreshTokensAsync(string refreshToken)
         {
             var request = new AdminInitiateAuthRequest
             {
@@ -111,22 +97,17 @@ namespace Identity.Core.Services
             try
             {
                 var response = await _cognitoService.AdminInitiateAuthAsync(request);
-                return Result.Success(CreateResponse(
+                return Result.Success<TokenResponseModel, Error>(CreateResponse(
                     response.AuthenticationResult.AccessToken,
                     response.AuthenticationResult.RefreshToken));
             }
             catch (NotAuthorizedException)
             {
-                return Result.Failure<TokenResponseModel>($"User wasn`t authorize");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Refresh Tokens: {ErrorMessage}", ex.Message);
-                return Result.Failure<TokenResponseModel>($"Oops, something went wrong");
-            }
+                return Result.Failure<TokenResponseModel, Error>(Errors.General.NotAuthorized());
+            }           
         }
-
-        public async Task<Result> SignOutAsync(string accessToken)
+        
+        public async Task<Result<string, Error>> SignOutAsync(string accessToken)
         {
             var request = new GlobalSignOutRequest
             {
@@ -135,20 +116,15 @@ namespace Identity.Core.Services
             try
             {
                 var response = await _cognitoService.GlobalSignOutAsync(request);
-                return Result.Success("User successfully signed out");
+                return Result.Success<string, Error>("User successfully signed out");
             }
             catch (NotAuthorizedException)
             {
-                return Result.Failure($"User wasn`t authorize");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Sign Out: {ErrorMessage}", ex.Message);
-                return Result.Failure($"Oops, something went wrong");
+                return Result.Failure<string, Error>(Errors.General.NotAuthorized());
             }
         }
 
-        public async Task<Result> DeleteAsync(string accessToken)
+        public async Task<Result<string, Error>> DeleteAsync(string accessToken)
         {
             var request = new DeleteUserRequest
             {
@@ -157,16 +133,11 @@ namespace Identity.Core.Services
             try
             {
                 var response = await _cognitoService.DeleteUserAsync(request);
-                return Result.Success("User successfully deleted");
+                return Result.Success<string, Error>("User successfully deleted");
             }
             catch (NotAuthorizedException)
             {
-                return Result.Failure($"User wasn`t authorize");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation("An error occurred during the Delete: {ErrorMessage}", ex.Message);
-                return Result.Failure($"Oops, something went wrong");
+                return Result.Failure<string, Error>(Errors.General.NotAuthorized());
             }
         }
 

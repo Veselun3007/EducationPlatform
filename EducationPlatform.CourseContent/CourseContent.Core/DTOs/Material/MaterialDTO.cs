@@ -6,8 +6,9 @@ namespace CourseContent.Core.DTOs
 {
     public class MaterialDTO
     {
-
         public int CourseId { get; set; }
+
+        public int TopicId { get; set; }
 
         public string MaterialName { get; set; } = null!;
 
@@ -23,6 +24,7 @@ namespace CourseContent.Core.DTOs
             return new Material
             {
                 CourseId = materialDto.CourseId,
+                TopicId = materialDto.TopicId,
                 MaterialName = materialDto.MaterialName,
                 MaterialDescription = materialDto.MaterialDescription,
                 MaterialDatePublication = materialDto.MaterialDatePublication

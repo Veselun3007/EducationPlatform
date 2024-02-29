@@ -8,6 +8,8 @@ namespace CourseContent.Core.DTOs
     {
         public int CourseId { get; set; }
 
+        public int TopicId { get; set; }
+
         public required string AssignmentName { get; set; }
 
         public string? AssignmentDescription { get; set; }
@@ -24,6 +26,7 @@ namespace CourseContent.Core.DTOs
             return new Assignment
             {
                 CourseId = assignmentDto.CourseId,
+                TopicId = assignmentDto.TopicId,
                 AssignmentName = assignmentDto.AssignmentName,
                 AssignmentDescription = assignmentDto.AssignmentDescription,
                 AssignmentDatePublication = assignmentDto.AssignmentDatePublication,

@@ -1,7 +1,7 @@
-﻿using Identity.Core.DTO.Auth;
-using Identity.Core.DTO.Token;
+﻿using Identity.Core.DTO.Requests;
 using Identity.Core.DTO.User;
 using Identity.Core.Services;
+using Identity.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,9 +9,8 @@ namespace Identity.Web.Controllers
 {
     [ApiController]
     [Route("api/account")]
-    public class AuthController(
-        UserOperation userOperation,
-        IdentityOperation identityOperation) : Controller
+    public class AuthController(UserOperation userOperation,
+        IdentityOperation identityOperation) : BaseController
     {
         private readonly UserOperation _userOperation = userOperation;
         private readonly IdentityOperation _identityOperation = identityOperation;
@@ -23,46 +22,30 @@ namespace Identity.Web.Controllers
             if (result.IsSuccess)
             {
                 var userResult = await _userOperation.AddAsync(model, result.Value);
-                if (userResult.IsSuccess)
-                {
-                    return Ok(userResult.Value);
-                }
-                return BadRequest(userResult.Error);
+                return FromResult(userResult);
             }
-            return BadRequest(result.Error);
+            return FromResult(result);
         }
 
         [HttpPost("confirm")]
         public async Task<IActionResult> ComfirmUserAsync([FromForm] ConfirmEmailRequest model)
         {
             var result = await _identityOperation.ComfirmUserAsync(model.Email, model.ConfirmCode);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-            return BadRequest(result.Error);
+            return FromResult(result);
         }
 
         [HttpPost("sign-in")]
-        public async Task<IActionResult> SignInAsync([FromForm] LoginModel model)
+        public async Task<IActionResult> SignInAsync([FromForm] LoginRequest model)
         {
             var result = await _identityOperation.SignInAsync(model.Email, model.Password);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-            return BadRequest(result.Error);
+            return FromResult(result);
         }
 
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenRequestModel model)
         {
             var result = await _identityOperation.RefreshTokensAsync(model.RefreshToken);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Value);
-            }
-            return BadRequest(result.Error);
+            return FromResult(result);
         }
 
         [Authorize]
@@ -70,11 +53,7 @@ namespace Identity.Web.Controllers
         public async Task<IActionResult> SignOutAsync([FromBody] SignOutRequest model)
         {
             var result = await _identityOperation.SignOutAsync(model.AccessToken);
-            if (result.IsSuccess)
-            {
-                return Ok();
-            }
-            return BadRequest(result.Error);
+            return FromResult(result);
         }
     }
 }
