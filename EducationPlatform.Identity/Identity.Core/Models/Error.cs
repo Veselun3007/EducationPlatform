@@ -1,8 +1,6 @@
-﻿using CSharpFunctionalExtensions;
-
-namespace Identity.Core.Models
+﻿namespace Identity.Core.Models
 {
-    public sealed class Error : ValueObject
+    public sealed class Error 
     {
         public string Code { get; }
         public string Message { get; }
@@ -11,11 +9,6 @@ namespace Identity.Core.Models
         {
             Code = code;
             Message = message;
-        }
-
-        protected override IEnumerable<IComparable> GetEqualityComponents()
-        {
-            yield return Code;
         }
     }
 }

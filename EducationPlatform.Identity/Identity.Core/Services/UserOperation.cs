@@ -1,11 +1,11 @@
 ﻿using Amazon.CognitoIdentityProvider.Model;
 using CSharpFunctionalExtensions;
+using CSharpFunctionalExtensions.ValueTasks;
 using Identity.Core.DTO.User;
 using Identity.Core.Helpers;
 using Identity.Core.Models;
 using Identity.Domain.Entities;
 using Identity.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace Identity.Core.Services
 {
@@ -31,7 +31,7 @@ namespace Identity.Core.Services
             }
         }
 
-        public async Task<Result> DeleteAsync(string id)
+        public async Task<Result<string, Error>> DeleteAsync(string id)
         {
             try
             {
@@ -39,39 +39,26 @@ namespace Identity.Core.Services
                 var identityDeleteTask = _identityOperation.DeleteAsync(id);
 
                 await Task.WhenAll(dbDeleteTask, identityDeleteTask);
-                return Result.Success();
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure($"User wasn`t authorize");
+                return Result.Success<string, Error>("Delete successful");
             }
             catch (UserNotFoundException)
             {
-                return Result.Failure($"User with id {id} not found");
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 
-        public async Task<Result<User>> UpdateAsync(UserDTO entity, string id)
+        public async Task<Result<User, Error>> UpdateAsync(UserDTO entity, string id)
         {
             var userEntity = await FromUserDtoToUserAsync(entity, id);
             try
             {
                 await _dbOperation.UpdateAsync(userEntity, id);
-                return Result.Success(userEntity);
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<User>($"User wasn`t authorize");
+                return Result.Success<User, Error>(userEntity);
             }
             catch (UserNotFoundException)
             {
-                return Result.Failure<User>($"User with id {id} not found");
+                return Result.Failure<User, Error>(Errors.General.NotFound());
             }
-        }
-
-        private async Task<string> GetNameAsync(IFormFile file)
-        {
-            return await _filesHelper.AddFileAsync(file);
         }
 
         private async Task<User> FromUserDtoToUserAsync(UserDTO entity, string id)
@@ -81,7 +68,7 @@ namespace Identity.Core.Services
                 Id = id,
                 UserName = entity.UserName,
                 Email = entity.Email,
-                UserImage = entity.UserImage is not null ? await GetNameAsync(entity.UserImage) : null
+                UserImage = entity.UserImage is not null ? await _filesHelper.AddFileAsync(entity.UserImage) : null
             };
         }
     }

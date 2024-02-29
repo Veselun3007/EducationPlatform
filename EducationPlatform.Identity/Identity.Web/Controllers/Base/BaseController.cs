@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using Identity.Core.Models;
-using Identity.Web.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Web.Controllers.Base
@@ -10,13 +9,12 @@ namespace Identity.Web.Controllers.Base
 
         protected IActionResult Ok<T>(T result)
         {
-            return base.Ok(Envelope.Ok(result));
+            return base.Ok(MessageWrapper.Ok(result));
         }
 
         protected IActionResult Error(Error error)
         {
-            var problem = Envelope.Error(error);
-            return StatusCode(problem.StatusCode);
+            return StatusCode(MessageWrapper.Error(error).StatusCode);
         }
 
         protected IActionResult FromResult<T>(Result<T, Error> result)

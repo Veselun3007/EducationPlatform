@@ -29,7 +29,7 @@ namespace Identity.Core.Services
             }
             catch (UsernameExistsException)
             {
-                return Result.Failure<string, Error>(Errors.Identity.UsernameExist(email)); 
+                return Result.Failure<string, Error>(Errors.Identity.UsernameExist(email));
             }
         }
 
@@ -82,6 +82,10 @@ namespace Identity.Core.Services
             {
                 return Result.Failure<string, Error>(Errors.Identity.CodeMismatch());
             }
+            catch (ExpiredCodeException)
+            {
+                return Result.Failure<string, Error>(Errors.Identity.ExpiredCode());
+            }
         }
 
         public async Task<Result<TokenResponseModel, Error>> RefreshTokensAsync(string refreshToken)
@@ -103,41 +107,41 @@ namespace Identity.Core.Services
             }
             catch (NotAuthorizedException)
             {
-                return Result.Failure<TokenResponseModel, Error>(Errors.General.NotAuthorized());
-            }           
+                return Result.Failure<TokenResponseModel, Error>(Errors.General.NotFound());
+            }
         }
-        
+
         public async Task<Result<string, Error>> SignOutAsync(string accessToken)
         {
-            var request = new GlobalSignOutRequest
-            {
-                AccessToken = accessToken
-            };
             try
             {
-                var response = await _cognitoService.GlobalSignOutAsync(request);
+                var request = new GlobalSignOutRequest
+                {
+                    AccessToken = accessToken
+                };
+                await _cognitoService.GlobalSignOutAsync(request);
                 return Result.Success<string, Error>("User successfully signed out");
             }
             catch (NotAuthorizedException)
             {
-                return Result.Failure<string, Error>(Errors.General.NotAuthorized());
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 
         public async Task<Result<string, Error>> DeleteAsync(string accessToken)
         {
-            var request = new DeleteUserRequest
-            {
-                AccessToken = accessToken
-            };
             try
             {
+                var request = new DeleteUserRequest
+                {
+                    AccessToken = accessToken
+                };
                 var response = await _cognitoService.DeleteUserAsync(request);
                 return Result.Success<string, Error>("User successfully deleted");
             }
             catch (NotAuthorizedException)
             {
-                return Result.Failure<string, Error>(Errors.General.NotAuthorized());
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 

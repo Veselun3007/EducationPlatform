@@ -61,6 +61,8 @@ namespace EducationPlatform.Identity
                     ValidateIssuer = true,
                     ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",
                     ValidateLifetime = true,
+                    LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
+                    ClockSkew = TimeSpan.Zero,
                     ValidateAudience = false
                 };
             });
