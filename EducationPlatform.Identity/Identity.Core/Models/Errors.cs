@@ -1,4 +1,5 @@
-﻿namespace Identity.Core.Models
+﻿
+namespace Identity.Core.Models
 {
     public static class Errors
     {
@@ -12,6 +13,10 @@
 
             public static Error InvalidPassword() =>
                 new("identity.invalid.password", "Wrong password");
+
+            public static Error ExpiredCode() =>
+                new("identity.code.expired", "Code is expired");
+
         }
 
         public static class General

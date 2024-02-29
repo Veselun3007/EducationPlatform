@@ -82,6 +82,10 @@ namespace Identity.Core.Services
             {
                 return Result.Failure<string, Error>(Errors.Identity.CodeMismatch());
             }
+            catch(ExpiredCodeException)
+            {
+                return Result.Failure<string, Error>(Errors.Identity.ExpiredCode());
+            }
         }
 
         public async Task<Result<TokenResponseModel, Error>> RefreshTokensAsync(string refreshToken)

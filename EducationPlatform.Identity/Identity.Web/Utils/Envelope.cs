@@ -35,7 +35,7 @@ namespace Identity.Web.Utils
                 "identity.username.exist" => new Envelope(error.Message, 409),
                 "record.not.found" => new Envelope(error.Message, 404),
                 "not.authorized" => new Envelope(error.Message, 401),
-                "identity.code.mismatch" or "identity.invalid.password" => new Envelope(error.Message, 403),
+                "identity.code.mismatch" or "identity.invalid.password" or "identity.code.expired" => new Envelope(error.Message, 400),
                 _ => new Envelope(error.Message, statusCode),
             };
         }
