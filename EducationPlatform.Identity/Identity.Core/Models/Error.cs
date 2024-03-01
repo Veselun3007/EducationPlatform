@@ -1,6 +1,6 @@
 ﻿namespace Identity.Core.Models
 {
-    public sealed class Error 
+    public sealed class Error
     {
         public string Code { get; }
         public string Message { get; }

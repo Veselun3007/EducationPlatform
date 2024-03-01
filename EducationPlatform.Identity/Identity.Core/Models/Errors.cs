@@ -11,7 +11,7 @@
                 new("identity.code.mismatch", "Code is not correct");
 
             public static Error ExpiredCode() =>
-                new("identity.code.mismatch", "Code is expired");
+                new("identity.code.expired", "Code is expired");
         }
 
         public static class General

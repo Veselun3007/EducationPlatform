@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 
 namespace EducationPlatform.Identity
 {
+
+
     public static class ServiceExtensions
     {
         public static IServiceCollection AddAWS(this IServiceCollection services)
@@ -19,7 +21,7 @@ namespace EducationPlatform.Identity
             services.AddDefaultAWSOptions(awsOptions);
             services.AddAWSService<AmazonS3Client>();
             services.AddAWSService<IAmazonCognitoIdentityProvider>();
-          
+
             return services;
         }
 
@@ -32,5 +34,7 @@ namespace EducationPlatform.Identity
 
             return (awsOptions, dbOptions);
         }
+
+
     }
 }

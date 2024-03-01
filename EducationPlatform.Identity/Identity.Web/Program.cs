@@ -18,7 +18,7 @@ namespace EducationPlatform.Identity
         {
             var builder = WebApplication.CreateBuilder(args);
             var _configuration = builder.Configuration;
-            
+
             builder.Configuration.AddSystemsManager("/education-platform/Development", new AWSOptions
             {
                 Credentials = new EnvironmentVariablesAWSCredentials(),
@@ -26,13 +26,11 @@ namespace EducationPlatform.Identity
             });
             builder.Services.AddAWS();
 
-            builder.Services.AddOptions<AwsOptions>()
-                .Bind(_configuration.GetSection(nameof(AwsOptions)));
+            builder.Services               
+                .Configure<AwsOptions>(_configuration.GetSection(nameof(AwsOptions)))
+                .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
 
-            builder.Services.AddOptions<DbOptions>()
-                 .Bind(_configuration.GetSection(nameof(DbOptions)));
-
-            var(awsOptions, dbOptions) = builder.Services.AddVariables();
+            var (awsOptions, dbOptions) = builder.Services.AddVariables();
 
             builder.Services.AddDbContext<EducationPlatformContext>(options =>
             {
@@ -54,7 +52,7 @@ namespace EducationPlatform.Identity
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(options =>
-            {               
+            {
                 options.Authority = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}";
                 options.TokenValidationParameters = new()
                 {

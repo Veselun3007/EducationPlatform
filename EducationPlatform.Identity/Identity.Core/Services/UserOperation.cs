@@ -1,6 +1,5 @@
 ﻿using Amazon.CognitoIdentityProvider.Model;
 using CSharpFunctionalExtensions;
-using CSharpFunctionalExtensions.ValueTasks;
 using Identity.Core.DTO.User;
 using Identity.Core.Helpers;
 using Identity.Core.Models;
@@ -9,8 +8,7 @@ using Identity.Infrastructure.Interfaces;
 
 namespace Identity.Core.Services
 {
-    public class UserOperation(
-        IBaseDbOperation<User> dbOperation, IdentityOperation identityOperation, FileHelper filesHelper)
+    public class UserOperation(IBaseDbOperation<User> dbOperation, IdentityOperation identityOperation, FileHelper filesHelper)
     {
         private readonly IBaseDbOperation<User> _dbOperation = dbOperation;
         private readonly IdentityOperation _identityOperation = identityOperation;

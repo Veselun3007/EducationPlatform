@@ -26,7 +26,7 @@ namespace Identity.Infrastructure.Services
         public async Task DeleteAsync(string id)
         {
             var entity = await _dbSet.FindAsync(id);
-            if (entity is not null) 
+            if (entity is not null)
             {
                 _dbSet.Remove(entity);
             }

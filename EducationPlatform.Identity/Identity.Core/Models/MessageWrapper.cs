@@ -32,7 +32,7 @@
                 "identity.username.exist" => new MessageWrapper(error.Message, 409),
                 "record.not.found" => new MessageWrapper(error.Message, 404),
                 "not.authorized" => new MessageWrapper(error.Message, 401),
-                "identity.code.mismatch" or "identity.invalid.password" => new MessageWrapper(error.Message, 400),
+                "identity.code.mismatch" or "identity.code.expired" => new MessageWrapper(error.Message, 400),
                 _ => new MessageWrapper(error.Message, statusCode),
             };
         }

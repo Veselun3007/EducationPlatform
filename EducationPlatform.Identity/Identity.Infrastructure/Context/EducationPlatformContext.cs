@@ -23,21 +23,22 @@ namespace Identity.Infrastructure.Context
                 entity.HasIndex(e => e.Email).IsUnique()
                 .HasDatabaseName("users_user_email_key");
 
-                entity.Property(e => e.Id).HasColumnName("user_id");
+                entity.Property(e => e.Id)
+                    .HasColumnName("user_id")
+                    .HasMaxLength(36);
+                entity.Property(e => e.UserName)
+                    .HasMaxLength(250)
+                    .HasColumnName("user_name");
                 entity.Property(e => e.Email)
                     .HasMaxLength(254)
                     .HasColumnName("user_email");
                 entity.Property(e => e.UserImage)
                     .HasColumnType("character varying")
                     .HasColumnName("user_image");
-                entity.Property(e => e.UserName)
-                    .HasMaxLength(250)
-                    .HasColumnName("user_name");
             });
 
             OnModelCreatingPartial(modelBuilder);
         }
-
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }

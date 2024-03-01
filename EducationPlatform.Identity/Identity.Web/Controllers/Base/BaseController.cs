@@ -6,7 +6,6 @@ namespace Identity.Web.Controllers.Base
 {
     public class BaseController : Controller
     {
-
         protected IActionResult Ok<T>(T result)
         {
             return base.Ok(MessageWrapper.Ok(result));
