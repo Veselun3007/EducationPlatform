@@ -2,6 +2,7 @@ import React from 'react';
 import { observer } from 'mobx-react-lite';
 import NotificationProviderStore from './NotificationProviderStore';
 import { Alert, AlertColor, Snackbar } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface NotificationProviderProps {
     autoHideDuration?: number;
@@ -11,13 +12,15 @@ const store = new NotificationProviderStore();
 
 const NotificationProvider: React.FC<NotificationProviderProps> = observer(
     ({ autoHideDuration = 3000 }) => {
-        const { text, variant, isOpen, dequeueAlert } = store;
+
+        const {t} = useTranslation();
+        const { key, variant, isOpen, dequeueAlert } = store;
         if (variant == 'default') {
             return (
                 <Snackbar
                     open={isOpen}
                     autoHideDuration={autoHideDuration}
-                    message={text}
+                    message={t(key)}
                     onClose={dequeueAlert}
                 />
             );
@@ -29,7 +32,7 @@ const NotificationProvider: React.FC<NotificationProviderProps> = observer(
                     onClose={dequeueAlert}
                 >
                     <Alert severity={variant as AlertColor} sx={{ width: '100%' }}>
-                        {text}
+                        {t(key)}
                     </Alert>
                 </Snackbar>
             );

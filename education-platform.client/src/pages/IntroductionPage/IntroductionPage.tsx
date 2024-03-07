@@ -16,9 +16,11 @@ import './IntroductionPage.css';
 import HoverImage from '../../components/HoverImage/HoverImage';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import { useNavigate } from 'react-router-dom';
 
 const IntroductionPage = () => {
     const { t, i18n } = useTranslation();
+    const navigate = useNavigate();
 
     const handleLanguageChange = (
         event: React.MouseEvent<HTMLElement>,
@@ -26,6 +28,45 @@ const IntroductionPage = () => {
     ) => {
         i18n.changeLanguage(newLanguage);
     };
+
+    let actionButtons;
+    if (localStorage.getItem('accessToken')) {
+        actionButtons = (
+            <Button
+                size="large"
+                variant="contained"
+                color="secondary"
+                onClick={() => {
+                    navigate('/dashboard');
+                }}
+            >
+                {t('common.dashboard')}
+            </Button>);
+
+    } else {
+        actionButtons = (
+            <>
+                <Button
+                    size="large"
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => {
+                        navigate('/signup');
+                    }}
+                >
+                    {t('common.signUp')}
+                </Button>
+                <Button
+                    size="large"
+                    variant="contained"
+                    onClick={() => {
+                        navigate('/login');
+                    }}
+                >
+                    {t('common.login')}
+                </Button>
+            </>);
+    }
 
     return (
         <Stack
@@ -44,12 +85,7 @@ const IntroductionPage = () => {
                         {t('glossary.introductionSubtitle')}
                     </Typography>
                     <Stack direction="row" spacing={5} mt={3}>
-                        <Button size="large" variant="contained" href="/signup" color="secondary">
-                            {t('common.signUp')}
-                        </Button>
-                        <Button size="large" href="/login" variant="contained">
-                            {t('common.login')}
-                        </Button>
+                        {actionButtons}
                     </Stack>
                 </Stack>
                 <div className="topBar">
@@ -152,7 +188,7 @@ const IntroductionPage = () => {
                     backgroundColor="primary.main"
                     sx={{ maxWidth: 345 }}
                 >
-                    <Stack direction="column" justifyContent="center">
+                    <Stack direction="column" justifyContent="center" alignItems="center">
                         <Typography variant="h5">
                             {t('glossary.developerSobolyev')}
                         </Typography>

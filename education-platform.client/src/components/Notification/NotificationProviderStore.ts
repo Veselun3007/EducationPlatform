@@ -4,13 +4,13 @@ type NotificationVariants = 'default' | 'error' | 'success' | 'warning' | 'info'
 
 export default class NotificationProviderStore {
     isOpen = false;
-    text = '';
+    key = '';
     variant = 'default';
 
     constructor() {
         makeObservable(this, {
             isOpen: observable,
-            text: observable,
+            key: observable,
             variant: observable,
             enqueueAlert: action.bound,
             dequeueAlert: action.bound,
@@ -19,7 +19,7 @@ export default class NotificationProviderStore {
 
     enqueueAlert(text: string, variant: NotificationVariants = 'default') {
         this.isOpen = true;
-        this.text = text;
+        this.key = text;
         this.variant = variant;
     }
 
@@ -28,7 +28,7 @@ export default class NotificationProviderStore {
             return;
         }
         this.isOpen = false;
-        this.text = '';
+        this.key = '';
         this.variant = 'default';
     }
 }

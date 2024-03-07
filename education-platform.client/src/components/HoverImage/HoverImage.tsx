@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, SxProps, Theme, Typography } from '@mui/material';
+import { Box, SxProps, Theme } from '@mui/material';
 import './HoverImage.css';
 
 type HoverImageProps = {

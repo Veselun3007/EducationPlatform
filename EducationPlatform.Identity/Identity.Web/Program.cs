@@ -65,7 +65,16 @@ namespace EducationPlatform.Identity
                 };
             });
 
+            builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
+
             var app = builder.Build();
+
+            app.UseCors("AllowAll");
 
             if (app.Environment.IsDevelopment())
             {

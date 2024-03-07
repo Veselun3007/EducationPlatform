@@ -1,15 +1,24 @@
 {
     "common":{
-        "signUp": "Sign up",
+        "signUp": "SignUp",
         "login": "Login",
+        "dashboard": "My dashboard",
         "email": "Email",
         "username": "Username",
         "password": "Password",
-        "profileImage": "Choose profile image"
+        "userImage": "Choose image up to 1 MB",
+        "submit":"Submit",
+        "code": "Verification code"
 
     },
     "validation":{
-
+        "isRequired": "Field is required",
+        "invalidEmail": "Wrong email",
+        "invalidUserName": "Username can contaion only letterrs and spaces",
+        "weakPassword":"The password must be 8 characters long, contain upper and lower case letters, numbers, and special characters",
+        "invalidImage": "Image is not supported, use .jpg .jpeg .png instead",
+        "bigFile": "File should be less than {{size}} MB",
+        "notSize": "Value length should be {{length}} characters"
     },
     "glossary":{
         "introductionTitle": "A new word in education platforms",
@@ -30,6 +39,17 @@
         "developerRenhachRole": "Front-end",
         "404error": "Page not found",
         "signUpHeader":"Sign Up to platform",
-        "loginHeader":"Login to platform"
+        "loginHeader":"Login to platform",
+        "haveAccount":"Have account?",
+        "noAccount": "No account?",
+        "confirmUserHeader": "User confirmation",
+        "confirmUser": "Input code that you got via email",
+        "loginToContinue" : "Login to continue",
+        "somethingWentWrong": "Oops, something went wrong. Try again later",
+        "userExists": "User already exists",
+        "userNotFound": "User not found",
+        "wrongLoginCredentials": "Wrong email or password",
+        "confiramtionCodeExpiredOrWrong": "Code is wrong or expired",
+        "wrongEmail": "Wrong email"
     }
 }
