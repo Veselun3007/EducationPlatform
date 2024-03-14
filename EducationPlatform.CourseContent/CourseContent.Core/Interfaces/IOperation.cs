@@ -1,21 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Interfaces
 {
-    public interface IOperation<T>
+    public interface IOperation<T, Error, E, F> : IBaseOperation<T, Error, E>
     {
-        Task<T> CreateAsync(T entity, List<IFormFile> files);
+        Task<Result<string, Error>> RemoveRangeAsync(List<int> entities);
 
-        Task<T> UpdateAsync(int id, T entity);      
+        Task<Result<string, Error>> GetFileByIdAsync(int id);
 
-        Task<T?> GetByIdAsync(int id);
+        Task<Result<F, Error>> AddFileAsync(IFormFile formFile, int id);
 
-        Task DeleteAsync(int id);
-
-        Task RemoveRangeAsync(IEnumerable<T> entities);
-
-        Task<string?> GetFileByIdAsync(int id);
-
-        Task<IEnumerable<T>> GetAllByCourseAsync(int courseId);
+        Task<Result<string, Error>> DeleteFileAsync(int id);
     }
 }

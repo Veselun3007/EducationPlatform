@@ -8,14 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="DTOs\Material\NewFolder\**" />
-    <EmbeddedResource Remove="DTOs\Material\NewFolder\**" />
-    <None Remove="DTOs\Material\NewFolder\**" />
+    <ProjectReference Include="..\CourseContent.Domain\CourseContent.Domain.csproj" />
+    <ProjectReference Include="..\CourseContent.Infrastructure\CourseContent.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CourseContent.Domain\CourseContent.Domain.csproj" />
-    <ProjectReference Include="..\CourseContent.Infrastructure\CourseContent.Infrastructure.csproj" />
+    <Folder Include="Models\Config\" />
+    <Folder Include="Models\ErrorModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSharpFunctionalExtensions" Version="2.41.0" />
   </ItemGroup>
 
 </Project>

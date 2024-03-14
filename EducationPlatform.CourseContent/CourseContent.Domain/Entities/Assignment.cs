@@ -18,7 +18,7 @@ public class Assignment : IAggregateRoot
 
     public required DateTime AssignmentDeadline { get; set; }
 
-    public virtual ICollection<Assignmentfile>? Assignmentfiles { get; set; } = new List<Assignmentfile>();
+    public virtual ICollection<Assignmentfile> Assignmentfiles { get; set; } = new List<Assignmentfile>();
 
     public virtual Course Course { get; set; } = null!;
 

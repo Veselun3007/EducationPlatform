@@ -21,5 +21,20 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             var entity = await _dbSet.FindAsync(id);
             return entity;
         }
+
+        public virtual async Task<T> AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            return entity;
+        }
+
+        public virtual async Task DeleteAsync(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity is not null)
+            {
+                _dbSet.Remove(entity);
+            }
+        }
     }
 }

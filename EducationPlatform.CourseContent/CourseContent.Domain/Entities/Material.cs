@@ -14,7 +14,7 @@ public class Material : IAggregateRoot
 
     public string? MaterialDescription { get; set; }
 
-    public required DateTime MaterialDatePublication { get; set; } 
+    public required DateTime MaterialDatePublication { get; set; }
 
     public virtual Course Course { get; set; } = null!;
 

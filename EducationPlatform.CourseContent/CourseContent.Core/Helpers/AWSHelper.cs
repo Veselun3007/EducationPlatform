@@ -1,5 +1,4 @@
-﻿using Amazon;
-using Amazon.S3;
+﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using System.Net;
@@ -8,77 +7,38 @@ namespace CourseContent.Core.Helpers
 {
     internal class AwsHelper
     {
-        private static readonly RegionEndpoint USEast1 = Amazon.RegionEndpoint.USEast1;
-
-        public static async Task<bool> PostObjectAsync(string accessKey, string secretKey,
-            string bucketName, string objectName, IFormFile file)
+        public static async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
         {
-            try
-            {
-                var config = new AmazonS3Config { RegionEndpoint = USEast1 };
-                using var client = new AmazonS3Client(accessKey, secretKey, config);
-                PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
+            using var client = new AmazonS3Client();
+            PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
 
-                var response = await client.PutObjectAsync(request);
+            var response = await client.PutObjectAsync(request);
 
-                return (response.HttpStatusCode == HttpStatusCode.OK ||
-                        response.HttpStatusCode == HttpStatusCode.NoContent);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return (response.HttpStatusCode == HttpStatusCode.OK ||
+                    response.HttpStatusCode == HttpStatusCode.NoContent);
         }
 
-        public static async Task<bool> DeleteObjectAsync(string accessKey, string secretKey,
-            string bucketName, string objectName)
+        public static async Task<bool> DeleteObjectAsync(string bucketName, string objectName)
         {
-            try
+            using var client = new AmazonS3Client();
+            DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
+
+            var deleteResponse = await client.DeleteObjectAsync(deleteRequest);
+
+            if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent ||
+                deleteResponse.HttpStatusCode == HttpStatusCode.NotFound)
             {
-                var config = new AmazonS3Config { RegionEndpoint = USEast1 };
-                using var client = new AmazonS3Client(accessKey, secretKey, config);
-                DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
-
-                var deleteResponse = await client.DeleteObjectAsync(deleteRequest);
-
-                if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent ||
-                    deleteResponse.HttpStatusCode == HttpStatusCode.NotFound)
-                {
-                    return true;
-                }
-
-                return false;
+                return true;
             }
-            catch (Exception)
-            {
-                return false;
-            }
+            return false;
         }
 
-        /// <summary>
-        /// Generates a temporary link to view a file from an AWS S3 storage
-        /// </summary>
-        /// <param name="accessKey">Vault access key</param>
-        /// <param name="secretKey">Vault secret key</param>
-        /// <param name="bucketName">Storage name (AWS S3 bucket`s name)</param>
-        /// <param name="objectKey">Name of the desired file</param>
-        /// <param name="duration">Duration of the temporary link (in hours)</param>
-        /// <returns>A string value presigned URL</returns>
-        public static async Task<string> GeneratePresignedURLAsync(string accessKey, string secretKey,
-            string bucketName, string objectKey, double duration)
+        public static async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)
         {
-            try
-            {
-                var config = new AmazonS3Config { RegionEndpoint = USEast1 };
-                using var client = new AmazonS3Client(accessKey, secretKey, config);
-                GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
+            using var client = new AmazonS3Client();
+            GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
 
-                return await client.GetPreSignedURLAsync(request);
-            }
-            catch
-            {
-                return "Fail generate operation";
-            }
+            return await client.GetPreSignedURLAsync(request);
         }
 
         private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName, string objectKey, double duration)

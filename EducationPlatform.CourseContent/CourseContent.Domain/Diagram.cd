@@ -8,7 +8,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAWAAAAAAAAAAAAAICAQAAIAAAAAAAAAAAAAAgAAAA=</HashCode>
+      <HashCode>AAAWAAAAAAAAAAAAAICAQAAKAAAAAAAAAAAAACgAAAA=</HashCode>
       <FileName>Entities\Assignment.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -28,12 +28,12 @@
     <Position X="13.5" Y="2.75" Width="3.25" />
     <AssociationLine Name="Assignments" Type="CourseContent.Domain.Entities.Assignment">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.06" Y="0.585" />
+        <Position X="-2.518" Y="1.208" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="Materials" Type="CourseContent.Domain.Entities.Material">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.093" Y="0.443" />
+        <Position X="-0.012" Y="1.238" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -54,7 +54,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAGAAAAAAAAAAAAAMAAAAAAAACAAAAAAAAAAAEAABA=</HashCode>
+      <HashCode>AAAGAAAAAAAAAAAAAMAAAAACAACAAAAAAAAAACEAABA=</HashCode>
       <FileName>Entities\Material.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -68,6 +68,23 @@
       <HashCode>AEACAAAAAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Entities\Materialfile.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Domain.Entities.Topic">
+    <Position X="13.5" Y="5.25" Width="3.25" />
+    <AssociationLine Name="Materials" Type="CourseContent.Domain.Entities.Material">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.11" Y="0.06" Height="0.182" Width="1.732" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AEIGAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Topic.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Assignments" />
+      <Property Name="Materials" />
+    </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="CourseContent.Domain.Interfaces.IAggregateRoot">

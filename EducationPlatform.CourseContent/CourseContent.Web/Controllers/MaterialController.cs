@@ -1,95 +1,103 @@
-﻿using CourseContent.Core.DTOs;
-using CourseContent.Core.Services;
-using CourseContent.Domain.Entities;
+﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Responses;
+using CourseContent.Core.Interfaces;
+using CourseContent.Web.Controllers.Base;
+using Identity.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EducationPlatform.CourseContent.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/material")]
     [ApiController]
-    public class MaterialController(OperationsContext<Material> crudContext) : Controller
+    public class MaterialController(IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO> operation) : BaseController
     {
-        private readonly OperationsContext<Material> _crudContext = crudContext;
-
-        [Route("createMaterial")]
+        private readonly IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO> _operation = operation;
+        
         [HttpPost]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> CreateMaterial([FromBody] MaterialDTO materialDto)
+        [Authorize]
+        [Route("create")]
+        public async Task<IActionResult> CreateMaterial([FromForm] MaterialDTO material)
         {
-            var material = MaterialDTO.FromMaterialDto(materialDto);
-            var createdMaterial = await _crudContext.CreateAsync(material, materialDto.MaterialFiles!);
-            var outMaterial = MaterialOutDTO.FromMaterial(createdMaterial);
-            return Ok(outMaterial);
+            var result = await _operation.CreateAsync(material);
+            return FromResult(result);
         }
 
-        [Route("updateMaterial/{id}")]
         [HttpPut]
-        public async Task<IActionResult> UpdateMaterial(int id, Material entity)
+        [Authorize]
+        [Route("update/{id}")]
+        public async Task<IActionResult> UpdateMaterial(int id, [FromBody] MaterialDTO material)
         {
-            var updatedAssignment = await _crudContext.UpdateAsync(id, entity);
-
-            if (updatedAssignment is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(updatedAssignment);
+            var result = await _operation.UpdateAsync(material, id);
+            return FromResult(result);
         }
 
-        [Route("deleteMaterial/{id}")]
         [HttpDelete]
+        [Authorize]
+        [Route("delete/{id}")]
         public async Task<IActionResult> DeleteMaterial(int id)
         {
-            await _crudContext.DeleteAsync(id);
-            return Ok();
+            var result = await _operation.DeleteAsync(id);
+            return FromResult(result);
         }
 
-        [Route("getMaterialById/{id}")]
         [HttpGet]
+        [Authorize]
+        [Route("getById/{id}")]
         public async Task<IActionResult> GetByIdMaterial(int id)
         {
-            var assignment = await _crudContext.GetByIdAsync(id);
-
-            if (assignment is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(assignment);
+            var result = await _operation.GetByIdAsync(id);
+            return FromResult(result);
         }
 
-        [HttpDelete("removeMaterials")]
-        public async Task<IActionResult> RemoveMaterials([FromBody] IEnumerable<Material> entities)
+        [HttpGet]
+        [Authorize]
+        [Route("getAll/{id}")]
+        public async Task<IEnumerable<MaterialOutDTO>> GetAllMaterial(int id)
         {
-            if (entities is null || !entities.Any())
+            return await _operation.GetAllByCourseAsync(id);
+        }
+
+        [HttpDelete]
+        [Authorize]
+        [Route("removeList")]
+        public async Task<IActionResult> RemoveMaterials([FromBody] List<int> entities)
+        {
+            if (entities.Count == 0)
             {
                 return BadRequest("No entities provided for removal.");
             }
 
-            await _crudContext.RemoveRangeAsync(entities);
-            return Ok("Entities successfully removed.");
+            var result = await _operation.RemoveRangeAsync(entities);
+            return FromResult(result);
         }
 
-        [Route("getMaterialFileById/{id}")]
         [HttpGet]
+        [Authorize]
+        [Route("getFileById/{id}")]
         public async Task<IActionResult> GetMaterialFileById(int id)
         {
-            var _fileName = await _crudContext.GetFileByIdAsync(id);
-
-            if (_fileName is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(_fileName);
+            var result = await _operation.GetFileByIdAsync(id);
+            return FromResult(result);
         }
 
-        [Route("getMaterials/{id}")]
-        [HttpGet]
-        public async Task<IEnumerable<MaterialOutDTO>> GetAllMaterials(int id)
+        [HttpDelete]
+        [Authorize]
+        [Route("deleteFileById/{id}")]
+        public async Task<IActionResult> DeleteMaterialFileById(int id)
         {
-            var materials = await _crudContext.GetAllByCourseAsync(id);
-            return materials.Select(MaterialOutDTO.FromMaterial).ToList();
+            var result = await _operation.DeleteFileAsync(id);
+            return FromResult(result);
         }
+
+        [HttpPost]
+        [Authorize]
+        [Route("addFileById/{id}")]
+        public async Task<IActionResult> AddMaterialFileById([FromForm] IFormFile file, int id)
+        {
+            var result = await _operation.AddFileAsync(file, id);
+            return FromResult(result);
+        }
+
     }
 }

@@ -1,5 +1,4 @@
-﻿using Amazon.CognitoIdentityProvider.Model;
-using CSharpFunctionalExtensions;
+﻿using CSharpFunctionalExtensions;
 using Identity.Core.DTO.User;
 using Identity.Core.Helpers;
 using Identity.Core.Models;
@@ -8,7 +7,8 @@ using Identity.Infrastructure.Interfaces;
 
 namespace Identity.Core.Services
 {
-    public class UserOperation(IBaseDbOperation<User> dbOperation, IdentityOperation identityOperation, FileHelper filesHelper)
+    public class UserOperation(IBaseDbOperation<User> dbOperation, 
+        IdentityOperation identityOperation, FileHelper filesHelper)
     {
         private readonly IBaseDbOperation<User> _dbOperation = dbOperation;
         private readonly IdentityOperation _identityOperation = identityOperation;
@@ -39,7 +39,7 @@ namespace Identity.Core.Services
                 await Task.WhenAll(dbDeleteTask, identityDeleteTask);
                 return Result.Success<string, Error>("Delete successful");
             }
-            catch (UserNotFoundException)
+            catch (KeyNotFoundException)
             {
                 return Result.Failure<string, Error>(Errors.General.NotFound());
             }
@@ -53,7 +53,7 @@ namespace Identity.Core.Services
                 await _dbOperation.UpdateAsync(userEntity, id);
                 return Result.Success<User, Error>(userEntity);
             }
-            catch (UserNotFoundException)
+            catch (KeyNotFoundException)
             {
                 return Result.Failure<User, Error>(Errors.General.NotFound());
             }
