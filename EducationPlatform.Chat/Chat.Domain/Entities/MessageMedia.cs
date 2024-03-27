@@ -6,7 +6,7 @@ namespace EPChat.Domain.Entities
     {
         public int Id { get; set; }
 
-        public int MaterialId { get; set; }
+        public int MessageId { get; set; }
 
         public string? MediaLink { get; set; }
     }

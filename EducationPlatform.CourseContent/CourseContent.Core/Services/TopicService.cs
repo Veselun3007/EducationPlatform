@@ -53,7 +53,6 @@ namespace CourseContent.Core.Services
             }
         }
 
-        #region *** Read ***
         public async Task<Result<TopicOutDTO, Error>> GetByIdAsync(int id)
         {
             var entity = await _unitOfWork.TopicRepository.GetByIdAsync(id);
@@ -70,6 +69,5 @@ namespace CourseContent.Core.Services
                 .GetAllByCourseAsync(m => m.CourseId == courseId);
             return topics.Select(TopicOutDTO.FromTopic).ToList();
         }
-        #endregion
     }
 }

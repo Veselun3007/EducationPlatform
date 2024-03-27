@@ -1,5 +1,6 @@
 using EPChat.Core.Interfaces;
 using EPChat.Core.Services;
+using EPChat.Domain.Entities;
 using EPChat.Infrastructure;
 using EPChat.Infrastructure.Contexts;
 using EPChat.Infrastructure.Interfaces;
@@ -31,8 +32,8 @@ namespace EducationPlatform.Chat
             });
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IMessageOperation, MessageOperationServices>();
-            builder.Services.AddScoped<IMessageQuery, MessageQueryService>();
+            builder.Services.AddScoped<IOperation<Message, MessageMedia>, MessageOperationServices>();
+            builder.Services.AddScoped<IMessageQuery<Message>, MessageQueryService>();
 
             builder.Services.AddControllers();
 

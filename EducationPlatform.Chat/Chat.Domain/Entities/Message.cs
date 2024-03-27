@@ -1,7 +1,4 @@
 ﻿using EPChat.Domain.Interfaces;
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace EPChat.Domain.Entities
 {
@@ -30,9 +27,5 @@ namespace EPChat.Domain.Entities
         public virtual ICollection<MessageReader> Readers { get; set; } = new List<MessageReader>();
 
         public virtual Message? ReplyToMessage { get; set; }
-
-        [NotMapped]
-        [JsonIgnore]
-        public List<IFormFile>? AttachedFiles { get; set; }
     }
 }

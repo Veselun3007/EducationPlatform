@@ -14,83 +14,76 @@ namespace CourseContent.Web.Controllers
     {
         private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO> _operation = operation;
 
-        [HttpPost]
         [Authorize]
-        [Route("create")]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
             var result = await _operation.CreateAsync(assignment);
             return FromResult(result);
         }
 
-        [HttpPut]
         [Authorize]
-        [Route("update/{id}")]
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateAssignment(int id, [FromBody] AssignmentDTO assignment)
         {
             var result = await _operation.UpdateAsync(assignment, id);
             return FromResult(result);
         }
 
-        [HttpDelete]
         [Authorize]
-        [Route("delete/{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteAssignment(int id)
         {
             var result = await _operation.DeleteAsync(id);
             return FromResult(result);
         }
 
-        [HttpGet]
         [Authorize]
-        [Route("getById/{id}")]
+        [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdAssignment(int id)
         {
             var result = await _operation.GetByIdAsync(id);
             return FromResult(result);
         }
 
-        [HttpGet]
         [Authorize]
-        [Route("getAll/{id}")]
+        [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<AssignmentOutDTO>> GetAllAssignment(int id)
         {
             return await _operation.GetAllByCourseAsync(id);
         }
 
+        [Authorize]
         [HttpDelete("removeList")]
         public async Task<IActionResult> RemoveAssignments([FromBody] List<int> entities)
         {
             if (entities.Count == 0)
             {
-                return BadRequest("No entities provided for removal.");
+                return BadRequest("No entities provided for removal");
             }
 
             var result = await _operation.RemoveRangeAsync(entities);
             return FromResult(result);
         }
 
-        [HttpGet]
         [Authorize]
-        [Route("getFileById/{id}")]
+        [HttpGet("getFileById/{id}")]
         public async Task<IActionResult> GetAssignmentFileById(int id)
         {
             var result = await _operation.GetFileByIdAsync(id);
             return FromResult(result);
         }
 
-        [HttpDelete]
         [Authorize]
-        [Route("deleteFileById/{id}")]
+        [HttpDelete("deleteFileById/{id}")]
         public async Task<IActionResult> DeleteAssignmentFileById(int id)
         {
             var result = await _operation.DeleteFileAsync(id);
             return FromResult(result);
         }
 
-        [HttpPost]
         [Authorize]
-        [Route("addFileById/{id}")]
+        [HttpPost("addFileById/{id}")]
         public async Task<IActionResult> AddAssignmentFileById([FromForm] IFormFile file, int id)
         {
             var result = await _operation.AddFileAsync(file, id);

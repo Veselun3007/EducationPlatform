@@ -1,11 +1,9 @@
-﻿using EPChat.Domain.Entities;
-
-namespace EPChat.Core.Interfaces
+﻿namespace EPChat.Core.Interfaces
 {
-    public interface IMessageQuery
+    public interface IMessageQuery<T>
     {
-        IEnumerable<Message> GetFirstPackMessage(int chatId);
+        Task<IEnumerable<T>> GetFirstPackMessageAsync(int chatId);
 
-        IEnumerable<Message> GetNextPackMessage(int chatId, int oldestMessageId);
+        Task<IEnumerable<T>> GetNextPackMessageAsync(int chatId, int oldestMessageId);
     }
 }
