@@ -43,11 +43,13 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                var Material = MaterialDTO.FromMaterialDto(entity);
-                await _unitOfWork.MaterialRepository.UpdateAsync(id, Material);
+                var material = MaterialDTO.FromMaterialDto(entity);
+                material.IsEdited = true;
+                material.EditedTime = DateTime.UtcNow;
+                await _unitOfWork.MaterialRepository.UpdateAsync(id, material);
                 await _unitOfWork.CompleteAsync();
 
-                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(Material));
+                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(material));
             }
             catch (KeyNotFoundException)
             {
@@ -113,9 +115,6 @@ namespace CourseContent.Core.Services
             return Result.Success<MaterialfileOutDTO, Error>(MaterialfileOutDTO.FromMaterialFile(addedFile));
         }
 
-
-        #region *** Read ***
-
         public async Task<Result<MaterialOutDTO, Error>> GetByIdAsync(int id)
         {
             var entity = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
@@ -144,7 +143,5 @@ namespace CourseContent.Core.Services
                 .GetAllByCourseAsync(m => m.CourseId == id);
             return materials.Select(MaterialOutDTO.FromMaterial).ToList();
         }
-
-        #endregion
     }
 }

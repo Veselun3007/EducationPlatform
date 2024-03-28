@@ -12,7 +12,7 @@ namespace EPChat.Domain.Entities
 
         public virtual Chat? Chat { get; set; }
 
-        public virtual User? User { get; set; }
+        public virtual ChatsUser? ChatsUser { get; set; }
 
         public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
 

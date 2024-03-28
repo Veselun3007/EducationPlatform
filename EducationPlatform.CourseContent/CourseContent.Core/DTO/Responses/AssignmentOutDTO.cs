@@ -12,6 +12,16 @@ namespace CourseContent.Core.DTO.Responses
 
         public DateTime AssignmentDeadline { get; set; }
 
+        public int MaxMark { get; set; }
+
+        public int MinMark { get; set; }
+
+        public bool IsRequired { get; set; }
+
+        public bool IsEdited { get; set; }
+
+        public DateTime? EditedTime { get; set; }
+
         public ICollection<AssignmentfileOutDTO>? Assignmentfiles { get; set; }
 
         public static AssignmentOutDTO FromAssignment(Assignment assignment)
@@ -22,6 +32,10 @@ namespace CourseContent.Core.DTO.Responses
                 AssignmentDescription = assignment.AssignmentDescription,
                 AssignmentDatePublication = assignment.AssignmentDatePublication,
                 AssignmentDeadline = assignment.AssignmentDeadline,
+                MaxMark = assignment.MaxMark,
+                MinMark = assignment.MinMark,
+                IsRequired = assignment.IsRequired,
+                EditedTime = assignment.EditedTime,
                 Assignmentfiles = assignment
                     .Assignmentfiles.Select(af => AssignmentfileOutDTO
                     .FromAssignmentFile(af)).ToList()

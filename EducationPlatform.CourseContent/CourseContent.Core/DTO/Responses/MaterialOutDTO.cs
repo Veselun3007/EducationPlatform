@@ -1,5 +1,4 @@
-﻿using CourseContent.Core.DTO.CommonValidation;
-using CourseContent.Domain.Entities;
+﻿using CourseContent.Domain.Entities;
 
 namespace CourseContent.Core.DTO.Responses
 {
@@ -11,7 +10,10 @@ namespace CourseContent.Core.DTO.Responses
 
         public DateTime MaterialDatePublication { get; set; }
 
-        [ValidateFile([".png", ".jpg", ".jpeg", ".doc", ".pdf", ".docx"], ErrorMessage = "Зображення має непідтримуване розширення")]
+        public bool IsEdited { get; set; }
+
+        public DateTime? EditedTime { get; set; }
+
         public ICollection<MaterialfileOutDTO>? Materialfiles { get; set; }
 
         public static MaterialOutDTO FromMaterial(Material material)
@@ -21,6 +23,8 @@ namespace CourseContent.Core.DTO.Responses
                 MaterialName = material.MaterialName,
                 MaterialDescription = material.MaterialDescription,
                 MaterialDatePublication = material.MaterialDatePublication,
+                IsEdited = material.IsEdited,
+                EditedTime = material.EditedTime,
                 Materialfiles = material.Materialfiles.Select(mf => MaterialfileOutDTO
                     .FromMaterialFile(mf)).ToList()
             };

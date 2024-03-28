@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="CourseContent.Domain.Entities.Assignment">
-    <Position X="7.75" Y="4.75" Width="4" />
+    <Position X="6.75" Y="4.75" Width="4" />
     <AssociationLine Name="Assignmentfiles" Type="CourseContent.Domain.Entities.Assignmentfile">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.06" Y="0.543" />
+        <Position X="-3.065" Y="0.035" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAWAAAAAAAAAAAAAICAQAAKAAAAAAAAAAAAACgAAAA=</HashCode>
+      <HashCode>AAAWAEAAAAAAAAAAAICAQAAqAAAAAAAAgBAAACiAAAA=</HashCode>
       <FileName>Entities\Assignment.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -17,7 +17,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Assignmentfile">
-    <Position X="7.75" Y="8.25" Width="4" />
+    <Position X="6.75" Y="9.25" Width="4" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAgAAAAAAAAAQAAAAAAAAAAAAAAAAAIAAA=</HashCode>
       <FileName>Entities\Assignmentfile.cs</FileName>
@@ -47,14 +47,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Material">
-    <Position X="18.75" Y="4.75" Width="4" />
+    <Position X="19.75" Y="4.75" Width="4" />
     <AssociationLine Name="Materialfiles" Type="CourseContent.Domain.Entities.Materialfile">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="0.093" Y="0.552" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAGAAAAAAAAAAAAAMAAAAACAACAAAAAAAAAACEAABA=</HashCode>
+      <HashCode>AAAGAEAAAAAAAAAAAMAAAAACAACAAAAAABAAACEAABA=</HashCode>
       <FileName>Entities\Material.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -63,7 +63,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Materialfile">
-    <Position X="18.75" Y="8.25" Width="4" />
+    <Position X="19.75" Y="8.25" Width="4" />
     <TypeIdentifier>
       <HashCode>AEACAAAAAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Entities\Materialfile.cs</FileName>
@@ -74,7 +74,12 @@
     <Position X="13.5" Y="5.25" Width="3.25" />
     <AssociationLine Name="Materials" Type="CourseContent.Domain.Entities.Material">
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.11" Y="0.06" Height="0.182" Width="1.732" />
+        <Position X="0.11" Y="0.06" Height="0.182" Width="2.632" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Assignments" Type="CourseContent.Domain.Entities.Assignment">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="0.11" Y="0.06" Height="0.182" Width="2.618" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -82,8 +87,8 @@
       <FileName>Entities\Topic.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
-      <Property Name="Assignments" />
       <Property Name="Materials" />
+      <Property Name="Assignments" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>

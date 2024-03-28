@@ -15,11 +15,7 @@ namespace EPChat.Core.DTO.Request
 
         public DateTime CreatedIn { get; set; } = DateTime.Now;
 
-        public bool HasAttachment { get; set; } = false;
-
-        public bool IsEdit { get; set; } = false;
-
-        public bool IsDeleted { get; set; } = false;
+        public bool? HasAttachment { get; set; } 
 
         public virtual Message? ReplyToMessage { get; set; }
 

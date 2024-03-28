@@ -2,7 +2,7 @@
 
 namespace EPChat.Domain.Entities
 {
-    public class User : IEntity
+    public class ChatsUser : IEntity
     {
         public int Id { get; set; }
 

@@ -42,7 +42,9 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                var assignment = AssignmentDTO.FromAssignmentDto(entity);
+                var assignment = AssignmentDTO.FromAssignmentDto(entity);               
+                assignment.IsEdited = true;
+                assignment.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);
                 await _unitOfWork.CompleteAsync();
 
@@ -110,8 +112,6 @@ namespace CourseContent.Core.Services
             return Result.Success<AssignmentfileOutDTO, Error>(AssignmentfileOutDTO.FromAssignmentFile(addedFile));
         }
 
-        #region *** Read ***
-
         public async Task<Result<AssignmentOutDTO, Error>> GetByIdAsync(int id)
         {
 
@@ -141,6 +141,5 @@ namespace CourseContent.Core.Services
                 .GetAllByCourseAsync(m => m.CourseId == id);
             return assignments.Select(AssignmentOutDTO.FromAssignment).ToList();
         }
-        #endregion
     }
 }
