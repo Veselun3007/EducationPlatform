@@ -7,7 +7,7 @@ using Identity.Infrastructure.Interfaces;
 
 namespace Identity.Core.Services
 {
-    public class UserOperation(IBaseDbOperation<User> dbOperation, 
+    public class UserOperation(IBaseDbOperation<User> dbOperation,
         IdentityOperation identityOperation, FileHelper filesHelper)
     {
         private readonly IBaseDbOperation<User> _dbOperation = dbOperation;
@@ -21,7 +21,7 @@ namespace Identity.Core.Services
                 User userEntity = await FromUserDtoToUserAsync(entity, id);
 
                 await _dbOperation.AddAsync(userEntity);
-                return Result.Success<User, Error>(userEntity);
+                return CSharpFunctionalExtensions.Result.Success<User, Error>(userEntity);
             }
             finally
             {
@@ -57,6 +57,29 @@ namespace Identity.Core.Services
             {
                 return Result.Failure<User, Error>(Errors.General.NotFound());
             }
+        }
+
+
+        public async Task<Result<UserOutDTO, Error>> GetByIdAsync(string id)
+        {
+
+            var entity = await _dbOperation.GetByIdAsync(id);
+            if (entity is null)
+            {
+                return Result.Failure<UserOutDTO, Error>(Errors.General.NotFound());
+            }
+            return Result.Success<UserOutDTO, Error>(await FromUser(entity));
+        }
+
+        private async Task<UserOutDTO> FromUser(User entity)
+        {
+            return new UserOutDTO
+            {
+                UserName = entity.UserName,
+                Email = entity.Email,
+                UserImage = entity.UserImage != null ? await _filesHelper
+                                                .GetFileLink(entity.UserImage) : null
+            };
         }
 
         private async Task<User> FromUserDtoToUserAsync(UserDTO entity, string id)

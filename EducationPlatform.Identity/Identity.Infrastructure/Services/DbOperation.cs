@@ -33,6 +33,11 @@ namespace Identity.Infrastructure.Services
             await _context.SaveChangesAsync();
         }
 
+        public async Task<User?> GetByIdAsync(string id)
+        {       
+            return await _dbSet.FindAsync(id);
+        }
+
         public async Task<User?> UpdateAsync(User entity, string id)
         {
             var existingEntity = await _dbSet.FindAsync(id);

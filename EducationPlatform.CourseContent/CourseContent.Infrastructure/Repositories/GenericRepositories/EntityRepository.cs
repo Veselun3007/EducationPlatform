@@ -18,8 +18,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 
         public virtual async Task<T?> GetByIdAsync(int id)
         {
-            var entity = await _dbSet.FindAsync(id);
-            return entity;
+            return await _dbSet.FindAsync(id);
         }
 
         public virtual async Task<T> AddAsync(T entity)
