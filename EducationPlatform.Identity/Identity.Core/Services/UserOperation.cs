@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
-using Identity.Core.DTO.User;
+using Identity.Core.DTO.Requests;
+using Identity.Core.DTO.Responses;
 using Identity.Core.Helpers;
 using Identity.Core.Models;
 using Identity.Domain.Entities;
@@ -14,14 +15,14 @@ namespace Identity.Core.Services
         private readonly IdentityOperation _identityOperation = identityOperation;
         private readonly FileHelper _filesHelper = filesHelper;
 
-        public async Task<Result<User, Error>> AddAsync(UserDTO entity, string id)
+        public async Task<Result<UserOutDTO, Error>> AddAsync(UserDTO entity, string id)
         {
             try
             {
                 User userEntity = await FromUserDtoToUserAsync(entity, id);
 
                 await _dbOperation.AddAsync(userEntity);
-                return CSharpFunctionalExtensions.Result.Success<User, Error>(userEntity);
+                return Result.Success<UserOutDTO, Error>(await FromUser(userEntity));
             }
             finally
             {
@@ -45,17 +46,17 @@ namespace Identity.Core.Services
             }
         }
 
-        public async Task<Result<User, Error>> UpdateAsync(UserDTO entity, string id)
+        public async Task<Result<UserOutDTO, Error>> UpdateAsync(UserDTO entity, string id)
         {
             var userEntity = await FromUserDtoToUserAsync(entity, id);
             try
             {
                 await _dbOperation.UpdateAsync(userEntity, id);
-                return Result.Success<User, Error>(userEntity);
+                return Result.Success<UserOutDTO, Error>(await FromUser(userEntity));
             }
             catch (KeyNotFoundException)
             {
-                return Result.Failure<User, Error>(Errors.General.NotFound());
+                return Result.Failure<UserOutDTO, Error>(Errors.General.NotFound());
             }
         }
 
@@ -77,7 +78,7 @@ namespace Identity.Core.Services
             {
                 UserName = entity.UserName,
                 Email = entity.Email,
-                UserImage = entity.UserImage != null ? await _filesHelper
+                UserImage = entity.UserImage is not null ? await _filesHelper
                                                 .GetFileLink(entity.UserImage) : null
             };
         }
@@ -89,7 +90,8 @@ namespace Identity.Core.Services
                 Id = id,
                 UserName = entity.UserName,
                 Email = entity.Email,
-                UserImage = entity.UserImage is not null ? await _filesHelper.AddFileAsync(entity.UserImage) : null
+                UserImage = entity.UserImage is not null ? await _filesHelper
+                                                .AddFileAsync(entity.UserImage) : null
             };
         }
     }

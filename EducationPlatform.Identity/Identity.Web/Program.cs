@@ -9,6 +9,7 @@ using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace EducationPlatform.Identity
 {
@@ -26,7 +27,7 @@ namespace EducationPlatform.Identity
             });
             builder.Services.AddAWS();
 
-            builder.Services               
+            builder.Services
                 .Configure<AwsOptions>(_configuration.GetSection(nameof(AwsOptions)))
                 .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
 
@@ -46,6 +47,7 @@ namespace EducationPlatform.Identity
             builder.Services.AddProblemDetails();
             builder.Services.AddSwaggerGen();
 
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

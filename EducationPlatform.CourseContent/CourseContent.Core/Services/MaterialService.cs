@@ -73,6 +73,10 @@ namespace CourseContent.Core.Services
 
         public async Task<Result<string, Error>> RemoveRangeAsync(List<int> entities)
         {
+            if (entities.Count == 0)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotRecords());
+            }
             await _unitOfWork.MaterialRepository.RemoveRange(entities);
             await _unitOfWork.CompleteAsync();
             return Result.Success<string, Error>("Deleted was successful");

@@ -1,4 +1,4 @@
-﻿using Identity.Core.DTO.User;
+﻿using Identity.Core.DTO.Requests;
 using Identity.Core.Services;
 using Identity.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
@@ -11,27 +11,30 @@ namespace Identity.Web.Controllers
     public class UserController(UserOperation operation) : BaseController
     {
         private readonly UserOperation _operation = operation;
-      
+
         [Authorize]
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateUserAsync(string id, UserDTO entity)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateUserAsync(UserDTO entity)
         {
+            var id = User.FindFirst("sub")!.Value;
             var result = await _operation.UpdateAsync(entity, id);
             return FromResult(result);
         }
-       
+
         [Authorize]
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteUserAsync(string id)
+        [HttpDelete("delete")]
+        public async Task<IActionResult> DeleteUserAsync()
         {
+            var id = User.FindFirst("sub")!.Value;
             var result = await _operation.DeleteAsync(id);
             return FromResult(result);
         }
 
         [Authorize]
-        [HttpGet("get/{id}")]
-        public async Task<IActionResult> GetUserByIdAsync(string id)
+        [HttpGet("get")]
+        public async Task<IActionResult> GetUserByIdAsync()
         {
+            var id = User.FindFirst("sub")!.Value;
             var result = await _operation.GetByIdAsync(id);
             return FromResult(result);
         }

@@ -57,11 +57,6 @@ namespace CourseContent.Web.Controllers
         [HttpDelete("removeList")]
         public async Task<IActionResult> RemoveAssignments([FromBody] List<int> entities)
         {
-            if (entities.Count == 0)
-            {
-                return BadRequest("No entities provided for removal");
-            }
-
             var result = await _operation.RemoveRangeAsync(entities);
             return FromResult(result);
         }

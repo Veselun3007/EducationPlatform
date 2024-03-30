@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Identity.Core.DTO.User
+﻿namespace Identity.Core.DTO.Responses
 {
     public class UserOutDTO
     {
