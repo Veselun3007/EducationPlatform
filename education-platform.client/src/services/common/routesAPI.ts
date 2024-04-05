@@ -6,5 +6,5 @@ export const CONFIRM_USER = AUTH_BASE_ROUTE + '/account/confirm';
 export const REFRESH_TOKEN = AUTH_BASE_ROUTE + '/account/refresh';
 export const SIGNOUT = AUTH_BASE_ROUTE + '/account/sign-out';
 
-export const UPDATE_USER = AUTH_BASE_ROUTE + '/userManagement/update/'
-export const DELETE_USER = AUTH_BASE_ROUTE + '/userManagement/delete/'
+export const UPDATE_USER = AUTH_BASE_ROUTE + '/userManagement/update/';
+export const DELETE_USER = AUTH_BASE_ROUTE + '/userManagement/delete/';

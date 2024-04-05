@@ -79,7 +79,7 @@ export default class AuthService {
                 if (error.response) {
                     switch (error.response.status) {
                         case 401:
-                            this.clearTokens()
+                            this.clearTokens();
                             break;
                         default:
                             throw new ServiceError('glossary.somethingWentWrong');
@@ -90,16 +90,16 @@ export default class AuthService {
         }
     }
 
-    get UserId(): string{
+    get UserId(): string {
         const accessToken = localStorage.getItem('accessToken');
-        if(accessToken){
-            return JSON.parse(window.atob(accessToken.split('.')[1])).sub 
+        if (accessToken) {
+            return JSON.parse(window.atob(accessToken.split('.')[1])).sub;
         }
 
         return '';
     }
 
-    clearTokens(): void{
+    clearTokens(): void {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
     }

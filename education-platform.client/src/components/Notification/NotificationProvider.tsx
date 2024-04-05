@@ -12,8 +12,7 @@ const store = new NotificationProviderStore();
 
 const NotificationProvider: React.FC<NotificationProviderProps> = observer(
     ({ autoHideDuration = 3000 }) => {
-
-        const {t} = useTranslation();
+        const { t } = useTranslation();
         const { key, variant, isOpen, dequeueAlert } = store;
         if (variant == 'default') {
             return (
