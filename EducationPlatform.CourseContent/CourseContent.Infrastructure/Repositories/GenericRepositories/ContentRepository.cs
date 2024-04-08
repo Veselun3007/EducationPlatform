@@ -26,7 +26,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 
         public virtual async Task<T?> GetByIdAsync(int id)
         {
-             return await _dbSet.FindAsync(id);
+            return await _dbSet.FindAsync(id);
         }
 
         public virtual async Task<T?> UpdateAsync(int id, T entity)
@@ -38,7 +38,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
                 _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
             }
 
-            return existingEntity!;
+            return existingEntity;
         }
 
         public async Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter)
@@ -49,15 +49,18 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
         public virtual async Task DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
-            if(entity is not null) 
-            { 
+            if (entity is not null)
+            {
                 _dbSet.Remove(entity);
             }
         }
 
-        public virtual void RemoveRange(IEnumerable<T> entities)
+        public virtual async Task RemoveRange(List<int> entities)
         {
-            _dbSet.RemoveRange(entities);
+            foreach (var entity in entities)
+            {
+                await DeleteAsync(entity);
+            }
         }
 
         public virtual void AddFiles(T entity, string file)

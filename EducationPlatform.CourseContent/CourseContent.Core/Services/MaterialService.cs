@@ -1,117 +1,151 @@
-﻿using CourseContent.Core.Helpers;
+﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Responses;
+using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
+using CSharpFunctionalExtensions;
+using Identity.Core.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace CourseContent.Core.Services
 {
-    public class MaterialService(IUnitOfWork unitOfWork, ILogger<MaterialService> logger, 
-        FilesHelper fileHelper) : IOperation<Material>
+    public class MaterialService(IUnitOfWork unitOfWork, FileHelper fileHelper) : IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO>
     {
+
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly ILogger<MaterialService> _logger = logger;
-        private readonly FilesHelper _fileHelper = fileHelper;
+        private readonly FileHelper _fileHelper = fileHelper;
 
-        public async Task<Material> CreateAsync(Material entity, List<IFormFile> files)
+        public async Task<Result<MaterialOutDTO, Error>> CreateAsync(MaterialDTO entity)
         {
-            try
-            {
-                await _unitOfWork.MaterialRepository.AddAsync(entity);
-                await _unitOfWork.CompleteAsync();
+            var Material = MaterialDTO.FromMaterialDto(entity);
+            await _unitOfWork.MaterialRepository.AddAsync(Material);
+            await _unitOfWork.CompleteAsync();
 
-                if (files is not null)
-                {
-                    await AddFilesAsync(entity, files);
-                }
-            }
-            catch (Exception ex)
+            if (entity.MaterialFiles is not null)
             {
-                _logger.LogError(ex, "An error occurred while adding Material.");
+                await AddFilesAsync(Material, entity.MaterialFiles);
             }
-            return entity;
+            return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(Material));
         }
 
         private async Task AddFilesAsync(Material entity, List<IFormFile> files)
         {
-            try
+            foreach (var file in files)
             {
-                foreach (var file in files)
-                {
-                    var fileLink = await _fileHelper.AddFileAsync(file);
-                    _unitOfWork.MaterialRepository.AddFiles(entity, fileLink);
-                }
-                await _unitOfWork.CompleteAsync();
+                var fileLink = await _fileHelper.AddFileAsync(file);
+                _unitOfWork.MaterialRepository.AddFiles(entity, fileLink);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while adding files to Material.");
-            }
+            await _unitOfWork.CompleteAsync();
         }
 
-        public async Task<Material> UpdateAsync(int id, Material entity)
+        public async Task<Result<MaterialOutDTO, Error>> UpdateAsync(MaterialDTO entity, int id)
         {
             try
             {
-                await _unitOfWork.MaterialRepository.UpdateAsync(id, entity);
+                var material = MaterialDTO.FromMaterialDto(entity);
+                material.IsEdited = true;
+                material.EditedTime = DateTime.UtcNow;
+                await _unitOfWork.MaterialRepository.UpdateAsync(id, material);
                 await _unitOfWork.CompleteAsync();
+
+                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(material));
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LogError(ex, "An error occurred while updating Material.");
+                return Result.Failure<MaterialOutDTO, Error>(Errors.General.NotFound());
             }
-            return entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<Result<string, Error>> DeleteAsync(int id)
         {
             try
             {
                 await _unitOfWork.MaterialRepository.DeleteAsync(id);
                 await _unitOfWork.CompleteAsync();
+                return Result.Success<string, Error>("Deleted was successful");
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LogError(ex, "An error occurred while deleting Material.");
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 
-        public async Task<Material?> GetByIdAsync(int id)
+        public async Task<Result<string, Error>> RemoveRangeAsync(List<int> entities)
         {
-            var material = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
-            if (material is null)
-                return null;
-
-            return material;
+            if (entities.Count == 0)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotRecords());
+            }
+            await _unitOfWork.MaterialRepository.RemoveRange(entities);
+            await _unitOfWork.CompleteAsync();
+            return Result.Success<string, Error>("Deleted was successful");
         }
 
-        public async Task RemoveRangeAsync(IEnumerable<Material> entities)
+
+        public async Task<Result<string, Error>> DeleteFileAsync(int id)
         {
             try
             {
-                _unitOfWork.MaterialRepository.RemoveRange(entities);
+                var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(id);
+                if (materialFile is not null && materialFile.MaterialFile is not null)
+                {
+                    await _fileHelper.DeleteFileAsync(materialFile.MaterialFile);
+                }
+
+                await _unitOfWork.MaterialfileRepository.DeleteAsync(id);
                 await _unitOfWork.CompleteAsync();
+
+                return Result.Success<string, Error>("Deleted was successful");
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LogError(ex, "An error occurred while removing Material.");
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 
-        public async Task<string?> GetFileByIdAsync(int id)
+
+        public async Task<Result<MaterialfileOutDTO, Error>> AddFileAsync(IFormFile file, int id)
         {
-            var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(id);
+            var fileLink = await _fileHelper.AddFileAsync(file);
+            Materialfile materialfile = new()
+            {
+                MaterialId = id,
+                MaterialFile = fileLink
+            };
+            var addedFile = await _unitOfWork.MaterialfileRepository.AddAsync(materialfile);
+            await _unitOfWork.CompleteAsync();
 
-            if (materialFile is null)
-                return null;
-
-            return await _fileHelper.GetFileLink(materialFile.MaterialFile!);
+            return Result.Success<MaterialfileOutDTO, Error>(MaterialfileOutDTO.FromMaterialFile(addedFile));
         }
 
-        public async Task<IEnumerable<Material>> GetAllByCourseAsync(int id)
+        public async Task<Result<MaterialOutDTO, Error>> GetByIdAsync(int id)
         {
-            return await _unitOfWork.MaterialRepository.GetAllByCourseAsync(m => m.CourseId == id);
+            var entity = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
+            if (entity is null)
+            {
+                return Result.Failure<MaterialOutDTO, Error>(Errors.General.NotFound());
+            }
+            return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(entity));
+        }
+
+        public async Task<Result<string, Error>> GetFileByIdAsync(int id)
+        {
+            var MaterialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(id);
+
+            if (MaterialFile is null || MaterialFile.MaterialFile is null)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+            return Result.Success<string, Error>(await _fileHelper
+                .GetFileLink(MaterialFile.MaterialFile));
+        }
+
+        public async Task<IEnumerable<MaterialOutDTO>> GetAllByCourseAsync(int id)
+        {
+            var materials = await _unitOfWork.MaterialRepository
+                .GetAllByCourseAsync(m => m.CourseId == id);
+            return materials.Select(MaterialOutDTO.FromMaterial).ToList();
         }
     }
 }

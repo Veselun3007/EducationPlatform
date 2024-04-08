@@ -7,5 +7,7 @@
         Task<T?> UpdateAsync(T entity, string id);
 
         Task DeleteAsync(string id);
+
+        Task<T?> GetByIdAsync(string id);
     }
 }

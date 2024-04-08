@@ -6,63 +6,61 @@ using System.Linq.Expressions;
 
 namespace EPChat.Infrastructure.Repositories
 {
-    internal class Repository<T>(ChatDBContext context) : 
-        IRepository<T> where T : class, IEntity
+    internal class Repository<T> : IRepository<T> where T : class, IEntity
     {
-        private readonly ChatDBContext _context = context;
-        private DbSet<T> DbSet => _context.Set<T>();
 
-        public IQueryable<T> Get()
+        private readonly ChatDBContext _context;
+        private readonly DbSet<T> _dbSet;
+
+        internal Repository(ChatDBContext context)
         {
-            return DbSet;
+            _context = context;
+            _dbSet = _context.Set<T>();
         }
 
-        public IQueryable<T> Get(Expression<Func<T, bool>> filter)
+        public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter)
         {
-            return DbSet.Where(filter);
+            return await _dbSet.Where(filter).ToListAsync();
         }
 
-        public T? Find(params object[] keyValues)
+        public async Task<T> AddAsync(T entity)
         {
-            var entity = DbSet.Find(keyValues);
-
+            await _dbSet.AddAsync(entity);
             return entity;
         }
 
-        public void Add(T entity)
+        public async Task<T?> UpdateAsync(int id, T entity)
         {
-            DbSet.Add(entity);
+            var existingEntity = await _dbSet.FindAsync(id);
+
+            if (existingEntity is not null)
+            {
+                _context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            }
+
+            return existingEntity;
         }
 
-        public void Update(T entityToUpdate)
+        public async Task DeleteAsync(int id)
         {
-            if (_context.Entry(entityToUpdate).State == EntityState.Detached)
+            var entity = await _dbSet.FindAsync(id);
+            if (entity is not null)
             {
-                DbSet.Attach(entityToUpdate);
-                _context.Entry(entityToUpdate).State = EntityState.Modified;
+                _dbSet.Remove(entity);
             }
         }
 
-        public void Delete(params object[] keyValues)
+        public async Task RemoveRangeAsync(List<int> entities)
         {
-            T? entityToDelete = Find(keyValues);
-            if(entityToDelete != null)
-                Delete(entityToDelete);
+            foreach (var entity in entities)
+            {
+                await DeleteAsync(entity);
+            }
         }
 
-        public void Delete(T entityToDelete)
+        public async Task<T?> GetByIdAsync(int id)
         {
-            DbSet.Remove(entityToDelete);
-        }
-
-        public void DeleteRange(IEnumerable<T> entityToDelete)
-        {
-            DbSet.RemoveRange(entityToDelete);
-        }
-
-        public async Task<T?> GetById(int id)
-        {
-            return await DbSet.FirstAsync(e => e.Id == id);
+            return await _dbSet.FirstAsync(e => e.Id == id);
         }
     }
 }

@@ -19,12 +19,15 @@ namespace CourseContent.Infrastructure
 
             MaterialRepository = new ContentRepository<Material>(_dbContext);
             MaterialfileRepository = new EntityRepository<Materialfile>(_dbContext);
+
+            TopicRepository = new Repository<Topic>(_dbContext);
         }
 
         public IContentRepository<Assignment> AssignmentRepository { get; private set; }
         public IContentRepository<Material> MaterialRepository { get; private set; }
         public IEntityRepository<Assignmentfile> AssignmentfileRepository { get; private set; }
         public IEntityRepository<Materialfile> MaterialfileRepository { get; private set; }
+        public IRepository<Topic> TopicRepository { get; private set; }
 
         public async Task<int> CompleteAsync()
         {

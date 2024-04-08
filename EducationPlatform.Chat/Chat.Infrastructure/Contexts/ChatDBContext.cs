@@ -12,7 +12,7 @@ namespace EPChat.Infrastructure.Contexts
 
         public DbSet<Chat> Chats { get; set; }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<ChatsUser> ChatsUsers { get; set; }
 
         public DbSet<ChatMember> ChatMembers { get; set; }
 
@@ -20,6 +20,6 @@ namespace EPChat.Infrastructure.Contexts
 
         public DbSet<MessageMedia> MessagesMedia { get; set; }
 
-        public DbSet<MessageReader> MessageReaders { get; set; }
+        //public DbSet<MessageReader> MessageReaders { get; set; }
     }
 }

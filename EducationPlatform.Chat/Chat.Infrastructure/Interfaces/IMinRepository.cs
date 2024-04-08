@@ -4,6 +4,8 @@ namespace EPChat.Infrastructure.Interfaces
 {
     public interface IMinRepository<T> where T : class, IEntity
     {
-        Task<T?> GetById(int id);
+        Task<T?> GetByIdAsync(int id);
+
+        Task<T> AddAsync(T entity);
     }
 }

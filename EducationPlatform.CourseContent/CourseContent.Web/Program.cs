@@ -1,12 +1,19 @@
+using Amazon.Extensions.NETCore.Setup;
+using Amazon.Runtime;
+using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Requests.AssignmentDTO;
+using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
 using CourseContent.Core.Services;
-using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces;
+using EducationPlatform.Identity;
+using Identity.Core.Models;
+using Identity.Domain.Config;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 
 namespace CourseContent.Web
 {
@@ -15,46 +22,69 @@ namespace CourseContent.Web
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            builder.Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-
             var _configuration = builder.Configuration;
-            string _epConnection = _configuration.GetConnectionString("EducationPlatformConnection") ?? "defaultConnectionString";
 
-            builder.Services.AddControllers().AddJsonOptions(options =>
+            builder.Configuration.AddSystemsManager("/education-platform/Development", new AWSOptions
             {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
+                Credentials = new EnvironmentVariablesAWSCredentials(),
+                Region = new EnvironmentVariableAWSRegion().Region,
             });
+            builder.Services.AddAWS();
+
+            builder.Services
+                .Configure<AwsOptions>(_configuration.GetSection(nameof(AwsOptions)))
+                .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
+
+            var (awsOptions, dbOptions) = builder.Services.AddVariables();
 
             builder.Services.AddDbContextPool<EducationPlatformContext>(options =>
             {
-                options.UseNpgsql(_epConnection);
+                options.UseNpgsql(dbOptions.ConnectionString);
             });
 
-            builder.Services.AddScoped<FilesHelper>();
+            builder.Services.AddScoped<FileHelper>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddScoped<IOperation<Assignment>, AssignmentService>();
-            builder.Services.AddScoped<IOperation<Material>, MaterialService>();
-            builder.Services.AddScoped<OperationsContext<Assignment>>();
-            builder.Services.AddScoped<OperationsContext<Material>>();
+            builder.Services.AddScoped<IBaseOperation<TopicOutDTO, Error, TopicDTO>, TopicService>();
+            builder.Services.AddScoped<IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO>, AssignmentService>();
+            builder.Services.AddScoped<IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO>, MaterialService>();
+
 
             builder.Services.AddControllers();
-
+            builder.Services.AddProblemDetails();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddCors(options =>
+            builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.AllowAnyOrigin()
-                           .AllowAnyHeader()
-                           .AllowAnyMethod();
-                });
-            });
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            }));
 
             builder.Services.AddEndpointsApiExplorer();
 
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.Authority = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}";
+                options.TokenValidationParameters = new()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",
+                    ValidateLifetime = true,
+                    LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateAudience = false
+                };
+            });
+
             var app = builder.Build();
+
+            app.UseCors("AllowAll");
 
             if (app.Environment.IsDevelopment())
             {
@@ -63,7 +93,8 @@ namespace CourseContent.Web
             }
 
             app.UseHttpsRedirection();
-
+            app.UseExceptionHandler();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();

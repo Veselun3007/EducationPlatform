@@ -1,117 +1,150 @@
-﻿using CourseContent.Core.Helpers;
+﻿using CourseContent.Core.DTO.Requests.AssignmentDTO;
+using CourseContent.Core.DTO.Responses;
+using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
+using CSharpFunctionalExtensions;
+using Identity.Core.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace CourseContent.Core.Services
 {
-    public class AssignmentService(IUnitOfWork unitOfWork,
-        ILogger<AssignmentService> logger, FilesHelper fileHelper) : IOperation<Assignment>
+    public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) : IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
-        private readonly ILogger<AssignmentService> _logger = logger;
-        private readonly FilesHelper _fileHelper = fileHelper;
+        private readonly FileHelper _fileHelper = fileHelper;
 
-        public async Task<Assignment> CreateAsync(Assignment entity, List<IFormFile> files)
+        public async Task<Result<AssignmentOutDTO, Error>> CreateAsync(AssignmentDTO entity)
         {
-            try
+            var assignment = AssignmentDTO.FromAssignmentDto(entity);
+            await _unitOfWork.AssignmentRepository.AddAsync(assignment);
+            await _unitOfWork.CompleteAsync();
+
+            if (entity.AssignmentFiles is not null)
             {
-                await _unitOfWork.AssignmentRepository.AddAsync(entity);
-                await _unitOfWork.CompleteAsync();
-                if (files is not null && files.Count > 0)
-                {
-                    await AddFilesAsync(entity, files);
-                }
+                await AddFilesAsync(assignment, entity.AssignmentFiles);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while adding Assignment.");
-            }
-            return entity;
+            return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(assignment));
         }
 
         private async Task AddFilesAsync(Assignment entity, List<IFormFile> files)
         {
-            try
+            foreach (var file in files)
             {
-                foreach (var file in files)
-                {
-                    var fileLink = await _fileHelper.AddFileAsync(file);
-                    _unitOfWork.AssignmentRepository.AddFiles(entity, fileLink);
-                }
-                await _unitOfWork.CompleteAsync();
+                var fileLink = await _fileHelper.AddFileAsync(file);
+                _unitOfWork.AssignmentRepository.AddFiles(entity, fileLink);
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while adding files to Assignment.");
-            }
+            await _unitOfWork.CompleteAsync();
         }
 
-        public async Task<Assignment> UpdateAsync(int id, Assignment entity)
+        public async Task<Result<AssignmentOutDTO, Error>> UpdateAsync(AssignmentDTO entity, int id)
         {
             try
             {
-                await _unitOfWork.AssignmentRepository.UpdateAsync(id, entity);
+                var assignment = AssignmentDTO.FromAssignmentDto(entity);               
+                assignment.IsEdited = true;
+                assignment.EditedTime = DateTime.UtcNow;
+                await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);
                 await _unitOfWork.CompleteAsync();
+
+                return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(assignment));
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LogError(ex, "An error occurred while updating Assignment.");
+                return Result.Failure<AssignmentOutDTO, Error>(Errors.General.NotFound());
             }
-            return entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task<Result<string, Error>> DeleteAsync(int id)
         {
             try
             {
                 await _unitOfWork.AssignmentRepository.DeleteAsync(id);
                 await _unitOfWork.CompleteAsync();
+                return Result.Success<string, Error>("Deleted was successful");
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LogError(ex, "An error occurred while deleting Assignment.");
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 
-        public async Task<Assignment?> GetByIdAsync(int id)
+        public async Task<Result<string, Error>> RemoveRangeAsync(List<int> entities)
         {
-            var assignment = await _unitOfWork.AssignmentRepository.GetByIdAsync(id);
-            if (assignment is null)
-                return null;
+            if (entities.Count == 0)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotRecords());
+            }
 
-            return assignment;
+            await _unitOfWork.AssignmentRepository.RemoveRange(entities);
+            await _unitOfWork.CompleteAsync();
+            return Result.Success<string, Error>("Deleted was successful");
         }
 
-        public async Task RemoveRangeAsync(IEnumerable<Assignment> entities)
+        public async Task<Result<string, Error>> DeleteFileAsync(int id)
         {
             try
             {
-                _unitOfWork.AssignmentRepository.RemoveRange(entities);
+                var assignmentFile = await _unitOfWork.AssignmentfileRepository.GetByIdAsync(id);
+                if (assignmentFile is not null && assignmentFile.AssignmentFile is not null)
+                {
+                    await _fileHelper.DeleteFileAsync(assignmentFile.AssignmentFile);
+                }
+
+                await _unitOfWork.AssignmentfileRepository.DeleteAsync(id);
                 await _unitOfWork.CompleteAsync();
+
+                return Result.Success<string, Error>("Deleted was successful");
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException)
             {
-                _logger.LogError(ex, "An error occurred while removing Assignment.");
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 
-        public async Task<string?> GetFileByIdAsync(int id)
+        public async Task<Result<AssignmentfileOutDTO, Error>> AddFileAsync(IFormFile file, int id)
         {
-            var assignmentfile = await _unitOfWork
-                .AssignmentfileRepository.GetByIdAsync(id);
+            var fileLink = await _fileHelper.AddFileAsync(file);
+            Assignmentfile assignmentFile = new ()
+            {
+                AssignmentId = id,
+                AssignmentFile = fileLink
+            };
+            var addedFile = await _unitOfWork.AssignmentfileRepository.AddAsync(assignmentFile);
+            await _unitOfWork.CompleteAsync();
 
-            if (assignmentfile is null)
-                return null;
-
-            return await _fileHelper.GetFileLink(assignmentfile.AssignmentFile!);
+            return Result.Success<AssignmentfileOutDTO, Error>(AssignmentfileOutDTO.FromAssignmentFile(addedFile));
         }
 
-        public async Task<IEnumerable<Assignment>> GetAllByCourseAsync(int id)
+        public async Task<Result<AssignmentOutDTO, Error>> GetByIdAsync(int id)
         {
-            return await _unitOfWork.AssignmentRepository.GetAllByCourseAsync(a => a.CourseId == id);
+
+            var entity = await _unitOfWork.AssignmentRepository.GetByIdAsync(id);
+            if (entity is null)
+            {
+                return Result.Failure<AssignmentOutDTO, Error>(Errors.General.NotFound());
+            }
+            return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(entity));
+        }
+
+        public async Task<Result<string, Error>> GetFileByIdAsync(int id)
+        {
+            var assignmentFile = await _unitOfWork.AssignmentfileRepository.GetByIdAsync(id);
+
+            if (assignmentFile is null || assignmentFile.AssignmentFile is null)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+            return Result.Success<string, Error>(await _fileHelper
+                .GetFileLink(assignmentFile.AssignmentFile));
+        }
+
+        public async Task<IEnumerable<AssignmentOutDTO>> GetAllByCourseAsync(int id)
+        {
+            var assignments = await _unitOfWork.AssignmentRepository
+                .GetAllByCourseAsync(m => m.CourseId == id);
+            return assignments.Select(AssignmentOutDTO.FromAssignment).ToList();
         }
     }
 }

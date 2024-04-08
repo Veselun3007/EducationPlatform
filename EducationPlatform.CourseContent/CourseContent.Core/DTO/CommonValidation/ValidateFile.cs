@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace CourseContent.Core.DTOs.CommonValidation
+namespace CourseContent.Core.DTO.CommonValidation
 {
 
     internal class ValidateFile(string[] fileExtensions) : ValidationAttribute

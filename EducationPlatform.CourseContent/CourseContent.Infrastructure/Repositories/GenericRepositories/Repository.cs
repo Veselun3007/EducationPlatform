@@ -54,6 +54,5 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
                 _dbSet.Remove(entity);
             }
         }
-
     }
 }

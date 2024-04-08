@@ -34,14 +34,14 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.GetAllByCourseAsync(filter);
         }
 
-        public void RemoveRange(IEnumerable<Material> entities)
+        public async Task RemoveRange(List<int> entities)
         {
-            _contentRepository.RemoveRange(entities);
+            await _contentRepository.RemoveRange(entities);
         }
 
         public void AddFiles(Material entity, string file)
         {
             _contentRepository.AddFiles(entity, file);
-        }       
+        }
     }
 }

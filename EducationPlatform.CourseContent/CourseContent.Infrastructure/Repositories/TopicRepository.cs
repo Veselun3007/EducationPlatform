@@ -20,7 +20,7 @@ namespace CourseContent.Infrastructure.Repositories
 
         public async Task<IEnumerable<Topic>> GetAllByCourseAsync(Expression<Func<Topic, bool>> filter)
         {
-            return await _repository.GetAllByCourseAsync(filter); 
+            return await _repository.GetAllByCourseAsync(filter);
         }
 
         public async Task<Topic?> GetByIdAsync(int id)

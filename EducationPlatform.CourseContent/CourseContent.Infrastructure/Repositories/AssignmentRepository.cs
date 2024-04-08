@@ -33,9 +33,9 @@ namespace CourseContent.Infrastructure.Repositories
             await _contentRepository.DeleteAsync(id);
         }
 
-        public void RemoveRange(IEnumerable<Assignment> entities)
+        public async Task RemoveRange(List<int> entities)
         {
-            _contentRepository.RemoveRange(entities);
+            await _contentRepository.RemoveRange(entities);
         }
 
         public void AddFiles(Assignment entity, string file)

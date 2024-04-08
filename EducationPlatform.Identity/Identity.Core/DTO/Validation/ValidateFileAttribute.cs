@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
-namespace Identity.Core.DTO.User
+namespace Identity.Core.DTO.Validation
 {
     internal class ValidateFile(string[] fileExtensions) : ValidationAttribute
     {

@@ -5,40 +5,54 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace EPChat.Web.Hubs
 {
-    public class ChatHub(IMessageOperation messageOperation, 
-        IMessageQuery messageQuery) : Hub
+    public class ChatHub(IOperation<Message, MessageMedia> messageOperation, 
+        IMessageQuery<Message> messageQuery) : Hub
     {
-
-        private readonly IMessageOperation _messageOperation = messageOperation;
-        private readonly IMessageQuery _messageQuery = messageQuery;
+        private readonly IOperation<Message, MessageMedia> _messageOperation = messageOperation;
+        private readonly IMessageQuery<Message> _messageQuery = messageQuery;
 
         public async Task SendMessage(Message message)
-        {          
-            await Clients.All.SendAsync("ReceiveMessage", message);
+        {
+            await Clients.Group(message.ChatId.ToString())
+                .SendAsync("ReceiveMessage", 
+                    await _messageOperation.AddAsync(message));
         }
 
-        /*public async Task GetFirstPackMessage()
+        public async Task GetFirstPackMessage(int courseId)
+        { 
+            await Clients.Caller.SendAsync("ReceiveMessages", 
+                await _messageQuery.GetFirstPackMessageAsync(courseId));
+        }
+
+        public async Task GetNextPackMessage(int courseId, int oldestMessageId)
         {
-            var messages = _messageQuery.GetFirstPackMessage();
+            var messages = await _messageQuery
+                .GetNextPackMessageAsync(courseId, oldestMessageId);
+
             await Clients.Caller.SendAsync("ReceiveMessages", messages);
         }
 
-        public async Task GetNextPackMessage(int oldestMessageId)
+        public async Task DeleteMessage(int chatId, int messageId, 
+            DeleteOptionsEnum deleteOptions)
         {
-            var messages = _messageQuery.GetNextPackMessage(oldestMessageId);
-            await Clients.Caller.SendAsync("ReceiveMessages", messages);
-        }*/
+            var deletedMessage = await _messageOperation
+                .DeleteAsync(messageId, deleteOptions);
 
-        public async Task DeleteMessage(int messageId, DeleteOptionsEnum deleteOptions)
-        {
-            var deletedMessage = await _messageOperation.DeleteMessage(messageId, deleteOptions);
-            await Clients.All.SendAsync("BroadCastDeleteMessage", Context.ConnectionId, deletedMessage);
+            await Clients.Group(chatId.ToString())
+                .SendAsync("BroadCastDeleteMessage", 
+                    Context.ConnectionId, deletedMessage);
         }
 
-        public async Task DeleteMessageRange(IEnumerable<Message> entitiesToDelete, DeleteOptionsEnum deleteOptions)
+        public async Task DeleteMessageRange(int chatId, 
+            List<int> entitiesToDelete, 
+            DeleteOptionsEnum deleteOptions)
         {
-            var deletedMessage = _messageOperation.DeleteRange(entitiesToDelete, deleteOptions);
-            await Clients.All.SendAsync("BroadCastDeleteMessage", Context.ConnectionId, deletedMessage);
+            var deletedMessage = _messageOperation
+                .RemoveRangeAsync(entitiesToDelete, deleteOptions);
+
+            await Clients.Group(chatId.ToString())
+                .SendAsync("BroadCastDeleteMessage", 
+                    Context.ConnectionId, deletedMessage);
         }
     }
 }

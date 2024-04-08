@@ -2,97 +2,120 @@
 using EPChat.Domain.Entities;
 using EPChat.Domain.Enums;
 using EPChat.Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 namespace EPChat.Core.Services
 {
-    public class MessageOperationServices(IUnitOfWork unitOfWork) : IMessageOperation
+    public class MessageOperationServices(IUnitOfWork unitOfWork) : IOperation<Message, MessageMedia>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public void Add(Message message)
+        public async Task<Message> AddAsync(Message message)
         {
-            _unitOfWork.MessageRepository.Add(message);
-            CompleteChange();
+            var entity = await _unitOfWork.MessageRepository.AddAsync(message);
+            await _unitOfWork.ComplectAsync();
+            return entity;
         }
 
-        public void Edit(Message message)
+        public async Task<Message?> EditAsync(int id, Message message)
         {
-            message.IsDeleted = true;
-            _unitOfWork.MessageRepository.Update(message);
-            CompleteChange();
+            message.IsEdit = true;
+            var entity = await _unitOfWork.MessageRepository.UpdateAsync(id, message);
+            await _unitOfWork.ComplectAsync();
+            return entity;
         }
 
-        public async Task<bool> DeleteMessage(int messageId,
-            DeleteOptionsEnum deleteOptions)
+        public async Task<MessageMedia?> GetMediaByIdAsync(int id)
         {
-            var message = await _unitOfWork.MessageRepository
-                .Get(m => m.Id == messageId)
-                .FirstOrDefaultAsync();
+            return await _unitOfWork.MessageMediaRepository.GetByIdAsync(id);
+        }
+
+        public async Task<bool> DeleteAsync(int messageId, DeleteOptionsEnum deleteOptions)
+        {
+            var message = await _unitOfWork.MessageRepository.GetByIdAsync(messageId);
 
             return message switch
             {
                 null => false,
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForEveryone => DeleteForEveryone(messageId),
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForMe => DeleteForMe(message),
+                _ when deleteOptions is DeleteOptionsEnum.DeleteForEveryone => await DeleteForEveryone(message),
+                _ when deleteOptions is DeleteOptionsEnum.DeleteForMe => await DeleteForMe(message),
                 _ => false
             };
         }
 
-        public bool DeleteRange(IEnumerable<Message> entitiesToDelete, DeleteOptionsEnum deleteOptions)
+        private async Task<bool> DeleteForEveryone(Message message)
+        {
+            try
+            {
+                await _unitOfWork.MessageRepository.DeleteAsync(message.Id);
+                await _unitOfWork.ComplectAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> DeleteForMe(Message message)
+        {
+            try
+            {
+                message.IsDeleted = true;
+                await _unitOfWork.MessageRepository.UpdateAsync(message.Id, message);
+                await _unitOfWork.ComplectAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> RemoveRangeAsync(List<int> entitiesToDelete, DeleteOptionsEnum deleteOptions)
         {
             return deleteOptions switch
             {
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForEveryone => DeleteForEveryoneRange(entitiesToDelete),
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForMe => DeleteForMeRange(entitiesToDelete),
+                _ when deleteOptions is DeleteOptionsEnum.DeleteForEveryone => await DeleteForEveryoneRange(entitiesToDelete),
+                _ when deleteOptions is DeleteOptionsEnum.DeleteForMe => await DeleteForMeRange(entitiesToDelete),
                 _ => false
             };
         }
 
-        public async Task<MessageMedia?> GetByIdAsync(int id)
+        private async Task<bool> DeleteForEveryoneRange(List<int> entitiesToDelete)
         {
-            return await _unitOfWork.MessageMediaRepository.GetById(id);
-        }
-
-        #region *** Additional Methods ***
-        private bool DeleteForEveryone(int messageId)
-        {
-            _unitOfWork.MessageRepository.Delete(messageId);
-            CompleteChange();
-            return true;
-        }
-
-        private bool DeleteForMe(Message message)
-        {
-            message.IsDeleted = true;
-            _unitOfWork.MessageRepository.Update(message);
-            CompleteChange();
-            return true;
-        }
-
-        private bool DeleteForEveryoneRange(IEnumerable<Message> entitiesToDelete)
-        {
-            _unitOfWork.MessageRepository.DeleteRange(entitiesToDelete);
-            CompleteChange();
-            return true;
-        }
-
-        private bool DeleteForMeRange(IEnumerable<Message> entitiesToDelete)
-        {
-            foreach (var message in entitiesToDelete)
+            try
             {
-                message.IsDeleted = true;
-                _unitOfWork.MessageRepository.Update(message);
+                await _unitOfWork.MessageRepository.RemoveRangeAsync(entitiesToDelete);
+                await _unitOfWork.ComplectAsync();
+                return true;
             }
-            CompleteChange();
-            return true;
+            catch
+            {
+                return false;
+            }
         }
 
-        private void CompleteChange()
+        private async Task<bool> DeleteForMeRange(List<int> entitiesToDelete)
         {
-            _unitOfWork.ComplectAsync();
-            _unitOfWork.Dispose();
+            try
+            {
+                foreach (var id in entitiesToDelete)
+                {
+                    var message = await _unitOfWork.MessageRepository.GetByIdAsync(id);
+
+                    if (message is not null)
+                    {
+                        message.IsDeleted = true;
+                        await _unitOfWork.MessageRepository.UpdateAsync(message.Id, message);
+                    }
+                }
+                await _unitOfWork.ComplectAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
-        #endregion
     }
 }

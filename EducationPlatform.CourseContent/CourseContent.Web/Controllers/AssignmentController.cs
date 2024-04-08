@@ -1,98 +1,88 @@
-﻿using CourseContent.Core.DTOs;
-using CourseContent.Core.Services;
-using CourseContent.Domain.Entities;
+﻿using CourseContent.Core.DTO.Requests.AssignmentDTO;
+using CourseContent.Core.DTO.Responses;
+using CourseContent.Core.Interfaces;
+using CourseContent.Web.Controllers.Base;
+using Identity.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseContent.Web.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/assignment")]
     [ApiController]
-    public class AssignmentController(OperationsContext<Assignment> crudContext) : Controller
+    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO> operation) : BaseController
     {
+        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO> _operation = operation;
 
-        private readonly OperationsContext<Assignment> _crudContext = crudContext;
-
-        [Route("createAssignment")]
-        [HttpPost]
-        [Consumes("multipart/form-data")]
+        [Authorize]
+        [HttpPost("create")]
         public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
-            var newAssignment = AssignmentDTO.FromAssignmentDto(assignment);
-            var createdAssignment = await _crudContext.CreateAsync(newAssignment, assignment.AssignmentFiles!);
-            var outAssignment = AssignmentOutDTO.FromAssignment(createdAssignment);
-            return Ok(outAssignment);
+            var result = await _operation.CreateAsync(assignment);
+            return FromResult(result);
         }
 
-        [Route("updateAssignment/{id}")]
-        [HttpPut]
+        [Authorize]
+        [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateAssignment(int id, [FromBody] AssignmentDTO assignment)
         {
-            var assignmentForPut = AssignmentDTO.FromAssignmentDto(assignment);
-            var updatedAssignment = await _crudContext.UpdateAsync(id, assignmentForPut);
-
-            if (updatedAssignment is null)
-            {
-                return NotFound();
-            }
-
-            var outAssignment = AssignmentOutDTO.FromAssignment(updatedAssignment);
-            return Ok(outAssignment);
+            var result = await _operation.UpdateAsync(assignment, id);
+            return FromResult(result);
         }
 
-        [Route("deleteAssignment/{id}")]
-        [HttpDelete]
+        [Authorize]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteAssignment(int id)
         {
-            await _crudContext.DeleteAsync(id);
-            return Ok();
+            var result = await _operation.DeleteAsync(id);
+            return FromResult(result);
         }
 
-        [Route("getAssignmentById/{id}")]
-        [HttpGet]
+        [Authorize]
+        [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdAssignment(int id)
         {
-            var assignment = await _crudContext.GetByIdAsync(id);
-
-            if (assignment is null)
-            {
-                return NotFound();
-            }
-            var outAssignment = AssignmentOutDTO.FromAssignment(assignment);
-            return Ok(outAssignment);
+            var result = await _operation.GetByIdAsync(id);
+            return FromResult(result);
         }
 
-        [Route("getAllAssignment/{id}")]
-        [HttpGet]
+        [Authorize]
+        [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<AssignmentOutDTO>> GetAllAssignment(int id)
         {
-            var assignments = await _crudContext.GetAllByCourseAsync(id);
-            return assignments.Select(AssignmentOutDTO.FromAssignment).ToList();
+            return await _operation.GetAllByCourseAsync(id);
         }
 
-        [HttpDelete("removeAssignments")]
-        public async Task<IActionResult> RemoveMaterials([FromBody] IEnumerable<Assignment> entities) //rewrite for id
+        [Authorize]
+        [HttpDelete("removeList")]
+        public async Task<IActionResult> RemoveAssignments([FromBody] List<int> entities)
         {
-            if (entities is null || !entities.Any())
-            {
-                return BadRequest("No entities provided for removal.");
-            }
-
-            await _crudContext.RemoveRangeAsync(entities);
-            return Ok("Entities successfully removed.");
+            var result = await _operation.RemoveRangeAsync(entities);
+            return FromResult(result);
         }
 
-        [Route("getAssignmentFileById/{id}")]
-        [HttpGet]
+        [Authorize]
+        [HttpGet("getFileById/{id}")]
         public async Task<IActionResult> GetAssignmentFileById(int id)
         {
-            var _fileName = await _crudContext.GetFileByIdAsync(id);
+            var result = await _operation.GetFileByIdAsync(id);
+            return FromResult(result);
+        }
 
-            if (_fileName is null)
-            {
-                return NotFound();
-            }
+        [Authorize]
+        [HttpDelete("deleteFileById/{id}")]
+        public async Task<IActionResult> DeleteAssignmentFileById(int id)
+        {
+            var result = await _operation.DeleteFileAsync(id);
+            return FromResult(result);
+        }
 
-            return Ok(_fileName);
+        [Authorize]
+        [HttpPost("addFileById/{id}")]
+        public async Task<IActionResult> AddAssignmentFileById([FromForm] IFormFile file, int id)
+        {
+            var result = await _operation.AddFileAsync(file, id);
+            return FromResult(result);
         }
     }
 }

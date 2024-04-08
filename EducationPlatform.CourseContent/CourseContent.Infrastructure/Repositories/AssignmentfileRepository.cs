@@ -8,6 +8,17 @@ namespace CourseContent.Infrastructure.Repositories
     {
         private readonly IEntityRepository<Assignmentfile> _repository = repository;
 
+
+        public async Task<Assignmentfile> AddAsync(Assignmentfile entity)
+        {
+            return await _repository.AddAsync(entity);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _repository.DeleteAsync(id);
+        }
+
         public async Task<Assignmentfile?> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);

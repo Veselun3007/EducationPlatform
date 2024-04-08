@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Identity.Core.DTO.Validation;
+using Microsoft.AspNetCore.Http;
 
-namespace Identity.Core.DTO.User
+namespace Identity.Core.DTO.Requests
 {
     public class UserDTO
     {

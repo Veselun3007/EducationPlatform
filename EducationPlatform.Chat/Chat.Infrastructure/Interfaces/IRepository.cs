@@ -5,22 +5,12 @@ namespace EPChat.Infrastructure.Interfaces
 {
     public interface IRepository<T> : IMinRepository<T> where T : class, IEntity
     {
+        Task DeleteAsync(int id);
 
-        IQueryable<T> Get();
+        Task<T?> UpdateAsync(int id, T entity);
 
-        IQueryable<T> Get(Expression<Func<T, bool>> filter);
+        Task RemoveRangeAsync(List<int> entities);       
 
-        T? Find(params object[] keyValues);
-
-        void Add(T entity);
-
-        void Update(T entityToUpdate);
-
-        void Delete(params object[] keyValues);
-
-        void Delete(T entityToDelete);
-
-        void DeleteRange(IEnumerable<T> entityToDelete);
-
+        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter);
     }
 }

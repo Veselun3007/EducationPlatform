@@ -33,16 +33,41 @@ public partial class EducationPlatformContext : DbContext
             entity.ToTable("assignments");
 
             entity.Property(e => e.Id).HasColumnName("assignment_id");
+
             entity.Property(e => e.AssignmentDatePublication)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("assignment_date_publication");
+
             entity.Property(e => e.AssignmentDeadline)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("assignment_deadline");
-            entity.Property(e => e.AssignmentDescription).HasColumnName("assignment_description");
+
+            entity.Property(e => e.AssignmentDescription)
+            .HasColumnName("assignment_description");
+
             entity.Property(e => e.AssignmentName)
                 .HasMaxLength(255)
                 .HasColumnName("assignment_name");
+
+            entity.Property(e => e.MaxMark)
+                .HasColumnName("max_mark")
+                .IsRequired(); 
+
+            entity.Property(e => e.MinMark)
+                .HasColumnName("min_mark")
+                .IsRequired(); 
+
+            entity.Property(e => e.IsRequired)
+                .HasColumnName("is_required")
+                .IsRequired();
+
+            entity.Property(e => e.IsEdited)
+                .HasColumnName("is_edited");                
+
+            entity.Property(e => e.EditedTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("edited_time");
+
             entity.Property(e => e.CourseId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("course_id");
@@ -103,16 +128,28 @@ public partial class EducationPlatformContext : DbContext
             entity.ToTable("materials");
 
             entity.Property(e => e.Id).HasColumnName("material_id");
+
             entity.Property(e => e.CourseId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("course_id");
+
             entity.Property(e => e.MaterialDatePublication)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("material_date_publication");
-            entity.Property(e => e.MaterialDescription).HasColumnName("material_description");
+
+            entity.Property(e => e.MaterialDescription)
+                .HasColumnName("material_description");
+
             entity.Property(e => e.MaterialName)
                 .HasMaxLength(255)
                 .HasColumnName("material_name");
+
+            entity.Property(e => e.IsEdited)
+                .HasColumnName("is_edited");
+
+            entity.Property(e => e.EditedTime)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("edited_time");
 
             entity.HasOne(d => d.Course).WithMany(p => p.Materials)
                 .HasForeignKey(d => d.CourseId)
