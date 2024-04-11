@@ -88,7 +88,7 @@ namespace Identity.Core.Services
             }
         }
 
-        public async Task<Result<TokenResponseModel, Error>> RefreshTokensAsync(string refreshToken)
+        public async Task<Result<string, Error>> RefreshTokensAsync(string refreshToken)
         {
             var request = new AdminInitiateAuthRequest
             {
@@ -101,13 +101,11 @@ namespace Identity.Core.Services
             try
             {
                 var response = await _cognitoService.AdminInitiateAuthAsync(request);
-                return Result.Success<TokenResponseModel, Error>(CreateResponse(
-                    response.AuthenticationResult.AccessToken,
-                   refreshToken));
+                return Result.Success<string, Error>(response.AuthenticationResult.AccessToken);
             }
             catch (NotAuthorizedException)
             {
-                return Result.Failure<TokenResponseModel, Error>(Errors.General.NotFound());
+                return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
 
