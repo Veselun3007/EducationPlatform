@@ -32,8 +32,8 @@ namespace EducationPlatform.Chat
             });
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IOperation<Message, MessageMedia>, MessageOperationServices>();
-            builder.Services.AddScoped<IMessageQuery<Message>, MessageQueryService>();
+            builder.Services.AddScoped<IOperation<Message, MessageMedia>, OperationServices>();
+            builder.Services.AddScoped<IQuery<Message, ChatMember>, QueryService>();
 
             builder.Services.AddControllers();
 

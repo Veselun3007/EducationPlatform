@@ -16,4 +16,8 @@
     <Folder Include="Models\Config\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.307.1" />
+  </ItemGroup>
+
 </Project>

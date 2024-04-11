@@ -6,10 +6,27 @@ using Microsoft.AspNetCore.SignalR;
 namespace EPChat.Web.Hubs
 {
     public class ChatHub(IOperation<Message, MessageMedia> messageOperation, 
-        IMessageQuery<Message> messageQuery) : Hub
+        IQuery<Message, ChatMember> messageQuery) : Hub
     {
         private readonly IOperation<Message, MessageMedia> _messageOperation = messageOperation;
-        private readonly IMessageQuery<Message> _messageQuery = messageQuery;
+        private readonly IQuery<Message, ChatMember> _messageQuery = messageQuery;
+
+        public async Task AddUsersToGroup(int chatId)
+        {
+            var chatMembers = await _messageQuery
+                .GetMembersAsync(cm => cm.ChatId == chatId);
+
+            foreach (var chatMember in chatMembers)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, chatMember.ChatId.ToString());
+            }
+        }
+
+        public async Task JoinRoom(int chatId)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, chatId.ToString());
+        }
+
 
         public async Task SendMessage(Message message)
         {

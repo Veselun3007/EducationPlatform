@@ -1,7 +1,7 @@
 ﻿using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.S3;
-using Identity.Domain.Config;
+using EPChat.Core.Models.Config;
 using Microsoft.Extensions.Options;
 
 namespace EducationPlatform.Identity

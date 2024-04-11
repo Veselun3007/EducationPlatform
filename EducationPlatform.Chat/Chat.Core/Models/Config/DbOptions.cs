@@ -1,7 +1,7 @@
-﻿namespace Identity.Domain.Config
+﻿namespace EPChat.Core.Models.Config
 {
     public class DbOptions
     {
-        public string ConnectionString { get; set; } = String.Empty;
+        public string ConnectionStringMongo { get; set; } = String.Empty;
     }
 }

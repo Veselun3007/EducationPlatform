@@ -24,9 +24,10 @@ namespace Identity.Core.Services
                 await _dbOperation.AddAsync(userEntity);
                 return Result.Success<UserOutDTO, Error>(await FromUser(userEntity));
             }
-            finally
+            catch
             {
                 await _identityOperation.DeleteAsync(id);
+                return Result.Failure<UserOutDTO, Error>(Errors.General.DbError());
             }
         }
 

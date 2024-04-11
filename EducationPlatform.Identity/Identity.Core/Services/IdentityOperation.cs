@@ -128,15 +128,16 @@ namespace Identity.Core.Services
             }
         }
 
-        public async Task<Result<string, Error>> DeleteAsync(string accessToken)
+        public async Task<Result<string, Error>> DeleteAsync(string id)
         {
             try
             {
-                var request = new DeleteUserRequest
+                var request = new AdminDeleteUserRequest
                 {
-                    AccessToken = accessToken
+                    UserPoolId = _options.UserPoolId,
+                    Username = id
                 };
-                var response = await _cognitoService.DeleteUserAsync(request);
+                var response = await _cognitoService.AdminDeleteUserAsync(request);
                 return Result.Success<string, Error>("User successfully deleted");
             }
             catch (NotAuthorizedException)

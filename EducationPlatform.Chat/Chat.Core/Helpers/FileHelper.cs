@@ -1,4 +1,4 @@
-﻿using Identity.Domain.Config;
+﻿using EPChat.Core.Models.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 

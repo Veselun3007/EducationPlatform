@@ -26,5 +26,14 @@ namespace EPChat.Infrastructure.Repositories
             await _dbSet.AddAsync(entity);
             return entity;
         }
+
+        public async Task DeleteAsync(int id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity is not null)
+            {
+                _dbSet.Remove(entity);
+            }
+        }
     }
 }

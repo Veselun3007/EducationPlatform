@@ -16,7 +16,7 @@ namespace Identity.Web.Controllers
         [HttpPut("update")]
         public async Task<IActionResult> UpdateUserAsync(UserDTO entity)
         {
-            var id = User.FindFirst("sub")!.Value;
+            var id = User.FindFirst("username")!.Value;
             var result = await _operation.UpdateAsync(entity, id);
             return FromResult(result);
         }
@@ -25,7 +25,7 @@ namespace Identity.Web.Controllers
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUserAsync()
         {
-            var id = User.FindFirst("sub")!.Value;
+            var id = User.FindFirst("username")!.Value;
             var result = await _operation.DeleteAsync(id);
             return FromResult(result);
         }
@@ -34,7 +34,7 @@ namespace Identity.Web.Controllers
         [HttpGet("get")]
         public async Task<IActionResult> GetUserByIdAsync()
         {
-            var id = User.FindFirst("sub")!.Value;
+            var id = User.FindFirst("username")!.Value;
             var result = await _operation.GetByIdAsync(id);
             return FromResult(result);
         }

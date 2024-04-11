@@ -1,4 +1,4 @@
-﻿namespace Identity.Domain.Config
+﻿namespace EPChat.Core.Models.Config
 {
     public class AwsOptions
     {
