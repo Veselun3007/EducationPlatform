@@ -41,8 +41,8 @@ const IntroductionPage = () => {
                 }}
             >
                 {t('common.dashboard')}
-            </Button>);
-
+            </Button>
+        );
     } else {
         actionButtons = (
             <>
@@ -65,7 +65,8 @@ const IntroductionPage = () => {
                 >
                     {t('common.login')}
                 </Button>
-            </>);
+            </>
+        );
     }
 
     return (

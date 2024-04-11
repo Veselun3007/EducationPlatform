@@ -103,7 +103,7 @@ namespace Identity.Core.Services
                 var response = await _cognitoService.AdminInitiateAuthAsync(request);
                 return Result.Success<TokenResponseModel, Error>(CreateResponse(
                     response.AuthenticationResult.AccessToken,
-                    response.AuthenticationResult.RefreshToken));
+                   refreshToken));
             }
             catch (NotAuthorizedException)
             {

@@ -8,7 +8,11 @@
         "password": "Password",
         "userImage": "Choose image up to 1 MB",
         "submit":"Submit",
-        "code": "Verification code"
+        "code": "Verification code",
+        "settings": "Settings",
+        "logout": "Log out",
+        "commonSettings": "Common",
+        "userSettings":"User"
 
     },
     "validation":{
@@ -50,6 +54,14 @@
         "userNotFound": "User not found",
         "wrongLoginCredentials": "Wrong email or password",
         "confiramtionCodeExpiredOrWrong": "Code is wrong or expired",
-        "wrongEmail": "Wrong email"
+        "wrongEmail": "Wrong email",
+        "courseDescription": "Course description",
+        "educationPlatform": "Education platform",
+        "signOutSuccess": "You logged off your account",
+        "appLanguage": "App language",
+        "editUser":"Edit user",
+        "deleteUser": "Delete user",
+        "editSuccess":"Changes were applied",
+        "deleteUserSuccess":"User was deleted successfully"  
     }
 }

@@ -3,6 +3,7 @@ using Identity.Core.Services;
 using Identity.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Identity.Web.Controllers
 {
@@ -14,7 +15,7 @@ namespace Identity.Web.Controllers
 
         [Authorize]
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateUserAsync(UserDTO entity)
+        public async Task<IActionResult> UpdateUserAsync(UserUpdateDTO entity)
         {
             var id = User.FindFirst("username")!.Value;
             var result = await _operation.UpdateAsync(entity, id);

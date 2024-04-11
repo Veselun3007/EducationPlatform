@@ -8,8 +8,11 @@
         "password": "Пароль",
         "userImage": "Виберіть зображення до 1 МБ",
         "submit":"Підтвердити",
-        "code": "Код підтвердження"
-
+        "code": "Код підтвердження",
+        "settings": "Налаштування",
+        "logout": "Вийти з акаунту",
+        "commonSettings": "Загальні",
+        "userSettings":"Користувач"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -50,6 +53,14 @@
         "userNotFound": "Користувача не знайдено",
         "wrongLoginCredentials": "Невірна пошта чи пароль",
         "confiramtionCodeExpiredOrWrong": "Час дії коду сплив або він невірний",
-        "wrongEmail": "Невірна пошта"
+        "wrongEmail": "Невірна пошта",
+        "courseDescription": "Опис курсу",
+        "educationPlatform": "Освітня платформа",
+        "signOutSuccess": "Ви вийшли з акаунту",
+        "appLanguage": "Мова застосунку",
+        "editUser":"Редагування користувача",
+        "deleteUser": "Видалення користувача",
+        "editSuccess":"Зміни застосовано",
+        "deleteUserSuccess":"Користувача видалено"
     }
 }

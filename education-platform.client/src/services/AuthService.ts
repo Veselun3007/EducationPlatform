@@ -73,14 +73,18 @@ export default class AuthService {
     async signOut(): Promise<void> {
         try {
             const data = new SignOutModel(localStorage.getItem('accessToken'));
-            await httpClient.postForm(SIGNOUT, data);
+            await httpClient.post(SIGNOUT, data);
+            this.clearTokens();
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
                     switch (error.response.status) {
                         case 401:
-                            this.clearTokens()
-                            break;
+                            this.clearTokens();
+                            return;
+                        case 404:
+                            this.clearTokens();
+                            return;
                         default:
                             throw new ServiceError('glossary.somethingWentWrong');
                     }
@@ -90,16 +94,16 @@ export default class AuthService {
         }
     }
 
-    get UserId(): string{
+    get UserId(): string {
         const accessToken = localStorage.getItem('accessToken');
-        if(accessToken){
-            return JSON.parse(window.atob(accessToken.split('.')[1])).sub 
+        if (accessToken) {
+            return JSON.parse(window.atob(accessToken.split('.')[1])).sub;
         }
 
         return '';
     }
 
-    clearTokens(): void{
+    clearTokens(): void {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
     }

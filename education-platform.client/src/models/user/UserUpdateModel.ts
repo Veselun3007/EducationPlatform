@@ -6,19 +6,19 @@ import ValidationError from '../../helpers/validation/ValidationError';
 export default class UserUpdateModel {
     public email: string;
     public userName: string;
-    public password: string;
+    // public password: string;
     public userImage?: File;
 
-    constructor(email: string, userName: string, password: string, userImage?: File) {
+    constructor(email: string, userName: string, userImage?: File) {
         makeObservable(this, {
             email: observable,
-            password: observable,
+            // password: observable,
             userName: observable,
             userImage: observable,
         });
 
         this.email = email;
-        this.password = password;
+        // this.password = password;
         this.userName = userName;
         this.userImage = userImage;
     }
@@ -30,12 +30,12 @@ export default class UserUpdateModel {
         return emailValidator.errors;
     }
 
-    validatePassword(): ValidationError[] {
-        const passwordValidator = new StringValidator(this.password);
-        passwordValidator.required();
-        passwordValidator.isStrongPassword();
-        return passwordValidator.errors;
-    }
+    // validatePassword(): ValidationError[] {
+    //     const passwordValidator = new StringValidator(this.password);
+    //     passwordValidator.required();
+    //     passwordValidator.isStrongPassword();
+    //     return passwordValidator.errors;
+    // }
 
     validateUserName(): ValidationError[] {
         const userNameValidator = new StringValidator(this.userName);
