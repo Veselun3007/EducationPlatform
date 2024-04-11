@@ -24,9 +24,10 @@ namespace Identity.Core.Services
                 await _dbOperation.AddAsync(userEntity);
                 return Result.Success<UserOutDTO, Error>(await FromUser(userEntity));
             }
-            finally
+            catch
             {
                 await _identityOperation.DeleteAsync(id);
+                return Result.Failure<UserOutDTO, Error>(Errors.General.DbError());
             }
         }
 
@@ -46,9 +47,9 @@ namespace Identity.Core.Services
             }
         }
 
-        public async Task<Result<UserOutDTO, Error>> UpdateAsync(UserDTO entity, string id)
+        public async Task<Result<UserOutDTO, Error>> UpdateAsync(UserUpdateDTO entity, string id)
         {
-            var userEntity = await FromUserDtoToUserAsync(entity, id);
+            var userEntity = await FromUserUpdateDtoToUserAsync(entity, id);
             try
             {
                 await _dbOperation.UpdateAsync(userEntity, id);
@@ -84,6 +85,18 @@ namespace Identity.Core.Services
         }
 
         private async Task<User> FromUserDtoToUserAsync(UserDTO entity, string id)
+        {
+            return new User
+            {
+                Id = id,
+                UserName = entity.UserName,
+                Email = entity.Email,
+                UserImage = entity.UserImage is not null ? await _filesHelper
+                                                .AddFileAsync(entity.UserImage) : null
+            };
+        }
+
+        private async Task<User> FromUserUpdateDtoToUserAsync(UserUpdateDTO entity, string id)
         {
             return new User
             {

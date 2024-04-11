@@ -4,8 +4,9 @@ import TokenResponseModel from '../../models/auth/TokenResponseModel';
 
 const httpClient = axios.create();
 
-httpClient.defaults.headers.common['Authorization'] =
-    'Bearer' + localStorage.getItem('accessToken');
+
+// httpClient.defaults.headers.common['Authorization'] =
+//     'Bearer ' + localStorage.getItem('accessToken');
 
 async function refreshToken() {
     const tokens = (
@@ -17,6 +18,14 @@ async function refreshToken() {
     localStorage.setItem('accessToken', tokens.accessToken);
     localStorage.setItem('refreshToken', tokens.refreshToken);
 }
+
+httpClient.interceptors.request.use((config)=>{
+    const token = localStorage.getItem('accessToken');
+    if(token){
+        config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+})
 
 httpClient.interceptors.response.use(
     (response) => response,

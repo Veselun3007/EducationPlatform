@@ -10,7 +10,9 @@
         "submit":"Підтвердити",
         "code": "Код підтвердження",
         "settings": "Налаштування",
-        "logout": "Вийти з акаунту"
+        "logout": "Вийти з акаунту",
+        "commonSettings": "Загальні",
+        "userSettings":"Користувач"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -54,6 +56,11 @@
         "wrongEmail": "Невірна пошта",
         "courseDescription": "Опис курсу",
         "educationPlatform": "Освітня платформа",
-        "signOutSuccess": "Ви вийшли з акаунту"
+        "signOutSuccess": "Ви вийшли з акаунту",
+        "appLanguage": "Мова застосунку",
+        "editUser":"Редагування користувача",
+        "deleteUser": "Видалення користувача",
+        "editSuccess":"Зміни застосовано",
+        "deleteUserSuccess":"Користувача видалено"
     }
 }

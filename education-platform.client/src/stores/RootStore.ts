@@ -26,6 +26,6 @@ export default class RootStore {
         this.loginPageStore = new LoginPageStore(this, this.authService);
         this.confirmUserPageStore = new ConfirmUserPageStore(this, this.authService);
         this.dashboardPageStore = new DashboardPageStore(this, this.authService);
-        this.userStore = new UserStore(this, this.authService)
+        this.userStore = new UserStore(this, this.authService, this.userService)
     }
 }

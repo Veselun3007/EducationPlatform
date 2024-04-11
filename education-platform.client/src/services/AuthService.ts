@@ -73,14 +73,18 @@ export default class AuthService {
     async signOut(): Promise<void> {
         try {
             const data = new SignOutModel(localStorage.getItem('accessToken'));
-            await httpClient.postForm(SIGNOUT, data);
+            await httpClient.post(SIGNOUT, data);
+            this.clearTokens();
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
                     switch (error.response.status) {
                         case 401:
                             this.clearTokens();
-                            break;
+                            return;
+                        case 404:
+                            this.clearTokens();
+                            return;
                         default:
                             throw new ServiceError('glossary.somethingWentWrong');
                     }

@@ -10,7 +10,9 @@
         "submit":"Submit",
         "code": "Verification code",
         "settings": "Settings",
-        "logout": "Log out"
+        "logout": "Log out",
+        "commonSettings": "Common",
+        "userSettings":"User"
 
     },
     "validation":{
@@ -55,6 +57,11 @@
         "wrongEmail": "Wrong email",
         "courseDescription": "Course description",
         "educationPlatform": "Education platform",
-        "signOutSuccess": "You logged off your account"
+        "signOutSuccess": "You logged off your account",
+        "appLanguage": "App language",
+        "editUser":"Edit user",
+        "deleteUser": "Delete user",
+        "editSuccess":"Changes were applied",
+        "deleteUserSuccess":"User was deleted successfully"  
     }
 }

@@ -12,12 +12,16 @@
 
             public static Error ExpiredCode() =>
                 new("identity.code.expired", "Code is expired");
+
         }
 
         public static class General
         {
             public static Error NotFound() =>
                 new("record.not.found", "No object with this key was found");
+
+            public static Error DbError() =>
+                new("db.error", "Something went wrong while adding to the database");
         }
     }
 }

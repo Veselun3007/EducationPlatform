@@ -9,7 +9,7 @@ export default class UserUpdateModel {
     // public password: string;
     public userImage?: File;
 
-    constructor(email: string, userName: string, password: string, userImage?: File) {
+    constructor(email: string, userName: string, userImage?: File) {
         makeObservable(this, {
             email: observable,
             // password: observable,

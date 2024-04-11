@@ -30,13 +30,25 @@ function stringAvatar(name: string | undefined) {
             children: `img`,
         };
     }
-    return {
-        sx: {
-            bgcolor: stringToColor(name),
-        },
-        children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-    };
-}
+    const nameSplit = name.split(' ');
+    if (nameSplit.length >= 2) {
+        return {
+            sx: {
+                bgcolor: stringToColor(name),
+            },
+            children: `${nameSplit[0][0]}${nameSplit[1][0]}`,
+        };
+    }
+    else{
+        return {
+            sx: {
+                bgcolor: stringToColor(name),
+            },
+            children: `${nameSplit[0][0]}`,
+        };
+    }
+    }
+    
 
 const ColoredAvatar: React.FC<AvatarProps> = ({ ...props }) => {
     const stringProps = stringAvatar(props.alt);
