@@ -10,7 +10,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
-    public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) : IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO>
+    public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
+        IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly FileHelper _fileHelper = fileHelper;
@@ -25,6 +26,10 @@ namespace CourseContent.Core.Services
             {
                 await AddFilesAsync(assignment, entity.AssignmentFiles);
             }
+            if (entity.AssignmentLinks is not null)
+            {
+                await AddLinksAsync(assignment, entity.AssignmentLinks);
+            }
             return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(assignment));
         }
 
@@ -33,7 +38,16 @@ namespace CourseContent.Core.Services
             foreach (var file in files)
             {
                 var fileLink = await _fileHelper.AddFileAsync(file);
-                _unitOfWork.AssignmentRepository.AddFiles(entity, fileLink);
+                _unitOfWork.AssignmentRepository.AddFile(entity, fileLink);
+            }
+            await _unitOfWork.CompleteAsync();
+        }
+
+        private async Task AddLinksAsync(Assignment entity, List<string> links)
+        {
+            foreach (var link in links)
+            {
+                _unitOfWork.AssignmentRepository.AddLink(entity, link);
             }
             await _unitOfWork.CompleteAsync();
         }
@@ -103,6 +117,20 @@ namespace CourseContent.Core.Services
             }
         }
 
+        public async Task<Result<string, Error>> DeleteLinkAsync(int linkId)
+        {
+            try
+            {
+                await _unitOfWork.AssignmentfileRepository.DeleteAsync(linkId);
+                await _unitOfWork.CompleteAsync();                            
+                return Result.Success<string, Error>("Deleted was successful");
+            }
+            catch (KeyNotFoundException)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+        }
+
         public async Task<Result<AssignmentfileOutDTO, Error>> AddFileAsync(IFormFile file, int id)
         {
             var fileLink = await _fileHelper.AddFileAsync(file);
@@ -115,6 +143,26 @@ namespace CourseContent.Core.Services
             await _unitOfWork.CompleteAsync();
 
             return Result.Success<AssignmentfileOutDTO, Error>(AssignmentfileOutDTO.FromAssignmentFile(addedFile));
+        }
+
+        public async Task<Result<string, Error>> AddLinkAsync(string link, int id)
+        {
+            Assignmentlink assignmentLink = new()
+            {
+                AssignmentId = id,
+                AssignmentLink = link
+            };
+            var addedLink = await _unitOfWork.AssignmentlinkRepository.AddAsync(assignmentLink);
+            await _unitOfWork.CompleteAsync();
+
+            if (addedLink.AssignmentLink is not null)
+            {
+                return Result.Success<string, Error>(addedLink.AssignmentLink);
+            }
+            else
+            {
+                return Result.Failure<string, Error>(Errors.General.NotAdded());
+            }
         }
 
         public async Task<Result<AssignmentOutDTO, Error>> GetByIdAsync(int id)
@@ -145,6 +193,17 @@ namespace CourseContent.Core.Services
             var assignments = await _unitOfWork.AssignmentRepository
                 .GetAllByCourseAsync(m => m.CourseId == id);
             return assignments.Select(AssignmentOutDTO.FromAssignment).ToList();
+        }
+
+        public async Task<Result<string, Error>> GetLinkByIdAsync(int linkId)
+        {
+            var assignmentLink = await _unitOfWork.AssignmentlinkRepository.GetByIdAsync(linkId);
+
+            if (assignmentLink is null || assignmentLink.AssignmentLink is null)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+            return Result.Success<string, Error>(assignmentLink.AssignmentLink);
         }
     }
 }

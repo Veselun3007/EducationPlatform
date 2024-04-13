@@ -63,7 +63,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             }
         }
 
-        public virtual void AddFiles(T entity, string file)
+        public virtual void AddFile(T entity, string file)
         {
             if (entity is Material materialEntity)
             {
@@ -84,6 +84,30 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
                 };
 
                 _dbContext.Set<Assignmentfile>().Add(assignmentFile);
+            }
+        }
+
+        public virtual void AddLink(T entity, string link)
+        {
+            if (entity is Material materialEntity)
+            {
+                var materialLink = new Materiallink
+                {
+                    MaterialId = materialEntity.Id,
+                    MaterialLink = link
+                };
+
+                _dbContext.Set<Materiallink>().Add(materialLink);
+            }
+            else if (entity is Assignment assignmentEntity)
+            {
+                var assignmentLink = new Assignmentlink
+                {
+                    AssignmentId = assignmentEntity.Id,
+                    AssignmentLink = link
+                };
+
+                _dbContext.Set<Assignmentlink>().Add(assignmentLink);
             }
         }
     }

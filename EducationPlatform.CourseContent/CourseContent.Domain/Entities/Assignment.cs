@@ -30,6 +30,8 @@ public class Assignment : IAggregateRoot
 
     public virtual ICollection<Assignmentfile> Assignmentfiles { get; set; } = new List<Assignmentfile>();
 
+    public virtual ICollection<Assignmentlink> Assignmentlinks { get; set; } = new List<Assignmentlink>();
+
     public virtual Course Course { get; set; } = null!;
 
     public virtual Topic? Topic { get; set; }

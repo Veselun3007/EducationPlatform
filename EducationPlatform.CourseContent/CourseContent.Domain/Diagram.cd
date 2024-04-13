@@ -2,9 +2,19 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="CourseContent.Domain.Entities.Assignment">
     <Position X="6.75" Y="4.75" Width="4" />
-    <AssociationLine Name="Assignmentfiles" Type="CourseContent.Domain.Entities.Assignmentfile">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-3.065" Y="0.035" />
+    <AssociationLine Name="Assignmentfiles" Type="CourseContent.Domain.Entities.Assignmentfile" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="10.75" Y="7.312" />
+        <Point X="13" Y="7.312" />
+        <Point X="13" Y="9.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-0.768" Y="2.036" Height="0.182" Width="3.003" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Assignmentlinks" Type="CourseContent.Domain.Entities.Assignmentlink">
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-3.326" Y="0.671" Height="0.182" Width="3.263" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -13,11 +23,12 @@
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Property Name="Assignmentfiles" />
+      <Property Name="Assignmentlinks" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Assignmentfile">
-    <Position X="6.75" Y="9.25" Width="4" />
+    <Position X="11.25" Y="9.25" Width="4" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAgAAAAAAAAAQAAAAAAAAAAAAAAAAAIAAA=</HashCode>
       <FileName>Entities\Assignmentfile.cs</FileName>
@@ -48,22 +59,33 @@
   </Class>
   <Class Name="CourseContent.Domain.Entities.Material">
     <Position X="19.75" Y="4.75" Width="4" />
-    <AssociationLine Name="Materialfiles" Type="CourseContent.Domain.Entities.Materialfile">
+    <AssociationLine Name="Materialfiles" Type="CourseContent.Domain.Entities.Materialfile" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="19.75" Y="7.325" />
+        <Point X="17.75" Y="7.325" />
+        <Point X="17.75" Y="9.25" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
+        <Position X="-2.078" Y="2.018" Height="0.182" Width="2.558" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="Materiallinks" Type="CourseContent.Domain.Entities.Materiallink">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.093" Y="0.552" />
+        <Position X="0.033" Y="1.349" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAGAEAAAAAAAAAAAMAAAAACAACAAAAAABAAACEAABA=</HashCode>
+      <HashCode>AAAGAEAAAAAAAAAAAMAAAAACAACAAAAAQBAAACEAABA=</HashCode>
       <FileName>Entities\Material.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Property Name="Materialfiles" />
+      <Property Name="Materiallinks" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Materialfile">
-    <Position X="19.75" Y="8.25" Width="4" />
+    <Position X="16" Y="9.25" Width="4" />
     <TypeIdentifier>
       <HashCode>AEACAAAAAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Entities\Materialfile.cs</FileName>
@@ -90,6 +112,22 @@
       <Property Name="Materials" />
       <Property Name="Assignments" />
     </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Domain.Entities.Assignmentlink">
+    <Position X="6.75" Y="9.25" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAgAAAAAAAAAQAAAAIAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Assignmentlink.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CourseContent.Domain.Entities.Materiallink">
+    <Position X="20.5" Y="9.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AEACAAAAAAAAAAAAAAQAAAAAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Materiallink.cs</FileName>
+    </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="CourseContent.Domain.Interfaces.IAggregateRoot">

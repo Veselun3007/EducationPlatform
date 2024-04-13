@@ -12,7 +12,6 @@
 
             public static Error ExpiredCode() =>
                 new("identity.code.expired", "Code is expired");
-
         }
 
         public static class General

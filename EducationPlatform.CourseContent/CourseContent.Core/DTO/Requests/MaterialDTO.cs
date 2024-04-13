@@ -29,6 +29,8 @@ namespace CourseContent.Core.DTO.Requests
             ErrorMessage = "Файл має непідтримуване розширення")]
         public List<IFormFile>? MaterialFiles { get; set; }
 
+        public List<string>? MaterialLinks { get; set; }
+
         public static Material FromMaterialDto(MaterialDTO materialDto)
         {
             return new Material

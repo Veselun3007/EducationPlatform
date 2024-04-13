@@ -39,9 +39,14 @@ namespace CourseContent.Infrastructure.Repositories
             await _contentRepository.RemoveRange(entities);
         }
 
-        public void AddFiles(Material entity, string file)
+        public void AddFile(Material entity, string file)
         {
-            _contentRepository.AddFiles(entity, file);
+            _contentRepository.AddFile(entity, file);
+        }
+
+        public void AddLink(Material entity, string link)
+        {
+            _contentRepository.AddLink(entity, link);
         }
     }
 }

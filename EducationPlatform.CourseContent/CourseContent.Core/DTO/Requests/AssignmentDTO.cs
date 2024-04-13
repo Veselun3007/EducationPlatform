@@ -37,6 +37,8 @@ namespace CourseContent.Core.DTO.Requests.AssignmentDTO
             ErrorMessage = "Файл має непідтримуване розширення")]
         public List<IFormFile>? AssignmentFiles { get; set; }
 
+        public List<string>? AssignmentLinks { get; set; }
+
         public static Assignment FromAssignmentDto(AssignmentDTO assignmentDto)
         {
             return new Assignment

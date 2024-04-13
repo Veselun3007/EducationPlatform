@@ -62,26 +62,42 @@ namespace CourseContent.Web.Controllers
         }
 
         [Authorize]
-        [HttpGet("getFileById/{id}")]
-        public async Task<IActionResult> GetAssignmentFileById(int id)
+        [HttpGet("getFileById/{fileId}")]
+        public async Task<IActionResult> GetAssignmentFileById(int fileId)
         {
-            var result = await _operation.GetFileByIdAsync(id);
+            var result = await _operation.GetFileByIdAsync(fileId);
             return FromResult(result);
         }
 
         [Authorize]
-        [HttpDelete("deleteFileById/{id}")]
-        public async Task<IActionResult> DeleteAssignmentFileById(int id)
+        [HttpDelete("deleteFileById/{fileId}")]
+        public async Task<IActionResult> DeleteAssignmentFileById(int fileId)
         {
-            var result = await _operation.DeleteFileAsync(id);
+            var result = await _operation.DeleteFileAsync(fileId);
             return FromResult(result);
         }
 
         [Authorize]
-        [HttpPost("addFileById/{id}")]
-        public async Task<IActionResult> AddAssignmentFileById([FromForm] IFormFile file, int id)
+        [HttpPost("addFileById/{fileId}")]
+        public async Task<IActionResult> AddAssignmentFileById([FromForm] IFormFile file, int fileId)
         {
-            var result = await _operation.AddFileAsync(file, id);
+            var result = await _operation.AddFileAsync(file, fileId);
+            return FromResult(result);
+        }
+
+        [Authorize]
+        [HttpGet("getLinkById/{linkId}")]
+        public async Task<IActionResult> GetAssignmentLinkById(int linkId)
+        {
+            var result = await _operation.GetLinkByIdAsync(linkId);
+            return FromResult(result);
+        }
+
+        [Authorize]
+        [HttpDelete("deleteLinkById/{linkId}")]
+        public async Task<IActionResult> DeleteAssignmentLinkById(int linkId)
+        {
+            var result = await _operation.DeleteLinkAsync(linkId);
             return FromResult(result);
         }
     }

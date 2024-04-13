@@ -2,43 +2,61 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="CourseContent.Web.Controllers.AssignmentController">
     <Position X="12.5" Y="5" Width="4.25" />
-    <AssociationLine Name="_crudContext" Type="CourseContent.Core.Services.OperationsContext&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12.75" Y="5.25" />
-        <Point X="12.125" Y="5.25" />
-        <Point X="12.125" Y="9.188" />
-        <Point X="15.25" Y="9.188" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAABAAAABAAAAACACAAgAAAAFAAAAAAA=</HashCode>
+      <HashCode>AAAAAAQAAAAAAAACAAABBAAAACACAAgAAAAFAAAIAAA=</HashCode>
       <FileName>Controllers\AssignmentController.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="_crudContext" />
+      <Field Name="_operation" />
     </ShowAsAssociation>
   </Class>
   <Class Name="EducationPlatform.CourseContent.Controllers.MaterialController">
     <Position X="17.75" Y="5" Width="4.25" />
-    <AssociationLine Name="_crudContext" Type="CourseContent.Core.Services.OperationsContext&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
+    <InheritanceLine Type="CourseContent.Web.Controllers.Base.BaseController" FixedToPoint="true">
       <Path>
-        <Point X="22" Y="5.25" />
-        <Point X="22.375" Y="5.25" />
-        <Point X="22.375" Y="9.188" />
-        <Point X="19" Y="9.188" />
+        <Point X="19.75" Y="9.75" />
+        <Point X="19.75" Y="8.156" />
       </Path>
-    </AssociationLine>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAgBAAAAAAAAAgAAQAEAAAAAEBAAAAAA=</HashCode>
+      <HashCode>AAAAAAAQAAAAAgBAAAAABAAAgAAQAEABAAAEBAAAAAI=</HashCode>
       <FileName>Controllers\MaterialController.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="_crudContext" />
+      <Field Name="_operation" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="CourseContent.Core.Services.OperationsContext&lt;T&gt;">
-    <Position X="15.25" Y="8.5" Width="3.75" />
-    <TypeIdentifier />
+  <Class Name="CourseContent.Web.Controllers.Base.BaseController">
+    <Position X="17.75" Y="9.75" Width="4" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
+      <FileName>Controllers\Base\BaseController.cs</FileName>
+    </TypeIdentifier>
   </Class>
+  <Class Name="CourseContent.Web.Controllers.TopicController">
+    <Position X="23" Y="5" Width="4" />
+    <AssociationLine Name="_operation" Type="CourseContent.Core.Interfaces.IBaseOperation&lt;T, Error, E&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="25.5" Y="5" />
+        <Point X="25.5" Y="2.25" />
+        <Point X="24" Y="2.25" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAgAAAAAAAABAAAAAAAAAAAAAEAAACgAAA=</HashCode>
+      <FileName>Controllers\TopicController.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="_operation" />
+    </ShowAsAssociation>
+  </Class>
+  <Interface Name="CourseContent.Core.Interfaces.IOperation&lt;T, Error, E, F&gt;">
+    <Position X="15" Y="1.25" Width="4.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="CourseContent.Core.Interfaces.IBaseOperation&lt;T, Error, E&gt;">
+    <Position X="20.75" Y="1.25" Width="3.25" />
+    <TypeIdentifier />
+  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

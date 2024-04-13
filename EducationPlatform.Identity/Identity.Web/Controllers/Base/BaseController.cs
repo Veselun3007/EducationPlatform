@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using Identity.Core.Models;
+using Identity.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Web.Controllers.Base

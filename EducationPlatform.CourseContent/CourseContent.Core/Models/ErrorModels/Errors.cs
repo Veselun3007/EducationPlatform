@@ -9,6 +9,9 @@
 
             public static Error NotRecords() =>
                 new("record.not.exist", "No entities provided for removal.");
+
+            public static Error NotAdded() =>
+                new("record.not.added", "Entities not added.");
         }
     }
 }

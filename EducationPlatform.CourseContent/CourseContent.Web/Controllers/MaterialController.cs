@@ -62,27 +62,44 @@ namespace EducationPlatform.CourseContent.Controllers
         }
 
         [Authorize]
-        [HttpGet("getFileById/{id}")]
-        public async Task<IActionResult> GetMaterialFileById(int id)
+        [HttpGet("getFileById/{fileId}")]
+        public async Task<IActionResult> GetMaterialFileById(int fileId)
         {
-            var result = await _operation.GetFileByIdAsync(id);
+            var result = await _operation.GetFileByIdAsync(fileId);
             return FromResult(result);
         }
 
         [Authorize]
-        [HttpDelete("deleteFileById/{id}")]
-        public async Task<IActionResult> DeleteMaterialFileById(int id)
+        [HttpDelete("deleteFileById/{fileId}")]
+        public async Task<IActionResult> DeleteMaterialFileById(int fileId)
         {
-            var result = await _operation.DeleteFileAsync(id);
+            var result = await _operation.DeleteFileAsync(fileId);
             return FromResult(result);
         }
 
         [Authorize]
-        [HttpPost("addFileById/{id}")]
-        public async Task<IActionResult> AddMaterialFileById([FromForm] IFormFile file, int id)
+        [HttpPost("addFileById/{fileId}")]
+        public async Task<IActionResult> AddMaterialFileById([FromForm] IFormFile file, int fileId)
         {
-            var result = await _operation.AddFileAsync(file, id);
+            var result = await _operation.AddFileAsync(file, fileId);
             return FromResult(result);
         }
+
+        [Authorize]
+        [HttpGet("getLinkById/{fileId}")]
+        public async Task<IActionResult> GetMaterialLinkById(int fileId)
+        {
+            var result = await _operation.GetLinkByIdAsync(fileId);
+            return FromResult(result);
+        }
+
+        [Authorize]
+        [HttpDelete("deleteLinkById/{fileId}")]
+        public async Task<IActionResult> DeleteMaterialLinkById(int fileId)
+        {
+            var result = await _operation.DeleteLinkAsync(fileId);
+            return FromResult(result);
+        }
+
     }
 }

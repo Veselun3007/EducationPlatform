@@ -26,6 +26,10 @@ namespace CourseContent.Core.Services
             {
                 await AddFilesAsync(Material, entity.MaterialFiles);
             }
+            if (entity.MaterialLinks is not null)
+            {
+                await AddLinksAsync(Material, entity.MaterialLinks);
+            }
             return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(Material));
         }
 
@@ -34,10 +38,21 @@ namespace CourseContent.Core.Services
             foreach (var file in files)
             {
                 var fileLink = await _fileHelper.AddFileAsync(file);
-                _unitOfWork.MaterialRepository.AddFiles(entity, fileLink);
+                _unitOfWork.MaterialRepository.AddFile(entity, fileLink);
             }
             await _unitOfWork.CompleteAsync();
         }
+
+
+        private async Task AddLinksAsync(Material entity, List<string> links)
+        {
+            foreach (var link in links)
+            {
+                _unitOfWork.MaterialRepository.AddLink(entity, link);
+            }
+            await _unitOfWork.CompleteAsync();
+        }
+
 
         public async Task<Result<MaterialOutDTO, Error>> UpdateAsync(MaterialDTO entity, int id)
         {
@@ -71,6 +86,20 @@ namespace CourseContent.Core.Services
             }
         }
 
+        public async Task<Result<string, Error>> DeleteLinkAsync(int linkId)
+        {
+            try
+            {
+                await _unitOfWork.AssignmentfileRepository.DeleteAsync(linkId);
+                await _unitOfWork.CompleteAsync();
+                return Result.Success<string, Error>("Deleted was successful");
+            }
+            catch (KeyNotFoundException)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+        }
+
         public async Task<Result<string, Error>> RemoveRangeAsync(List<int> entities)
         {
             if (entities.Count == 0)
@@ -82,18 +111,17 @@ namespace CourseContent.Core.Services
             return Result.Success<string, Error>("Deleted was successful");
         }
 
-
-        public async Task<Result<string, Error>> DeleteFileAsync(int id)
+        public async Task<Result<string, Error>> DeleteFileAsync(int fileId)
         {
             try
             {
-                var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(id);
+                var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(fileId);
                 if (materialFile is not null && materialFile.MaterialFile is not null)
                 {
                     await _fileHelper.DeleteFileAsync(materialFile.MaterialFile);
                 }
 
-                await _unitOfWork.MaterialfileRepository.DeleteAsync(id);
+                await _unitOfWork.MaterialfileRepository.DeleteAsync(fileId);
                 await _unitOfWork.CompleteAsync();
 
                 return Result.Success<string, Error>("Deleted was successful");
@@ -103,8 +131,6 @@ namespace CourseContent.Core.Services
                 return Result.Failure<string, Error>(Errors.General.NotFound());
             }
         }
-
-
         public async Task<Result<MaterialfileOutDTO, Error>> AddFileAsync(IFormFile file, int id)
         {
             var fileLink = await _fileHelper.AddFileAsync(file);
@@ -117,6 +143,26 @@ namespace CourseContent.Core.Services
             await _unitOfWork.CompleteAsync();
 
             return Result.Success<MaterialfileOutDTO, Error>(MaterialfileOutDTO.FromMaterialFile(addedFile));
+        }
+
+        public async Task<Result<string, Error>> AddLinkAsync(string link, int id)
+        {
+            Materiallink materialLink = new()
+            {
+                MaterialId = id,
+                MaterialLink = link
+            };
+            var addedLink = await _unitOfWork.MateriallinkRepository.AddAsync(materialLink);
+            await _unitOfWork.CompleteAsync();
+
+            if (addedLink.MaterialLink is not null)
+            {
+                return Result.Success<string, Error>(addedLink.MaterialLink);
+            }
+            else
+            {
+                return Result.Failure<string, Error>(Errors.General.NotAdded());
+            }
         }
 
         public async Task<Result<MaterialOutDTO, Error>> GetByIdAsync(int id)
@@ -139,6 +185,17 @@ namespace CourseContent.Core.Services
             }
             return Result.Success<string, Error>(await _fileHelper
                 .GetFileLink(MaterialFile.MaterialFile));
+        }
+
+        public async Task<Result<string, Error>> GetLinkByIdAsync(int linkId)
+        {
+            var materialLink = await _unitOfWork.MateriallinkRepository.GetByIdAsync(linkId);
+
+            if (materialLink is null || materialLink.MaterialLink is null)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+            return Result.Success<string, Error>(materialLink.MaterialLink);
         }
 
         public async Task<IEnumerable<MaterialOutDTO>> GetAllByCourseAsync(int id)

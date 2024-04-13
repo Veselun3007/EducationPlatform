@@ -7,6 +7,8 @@ namespace CourseContent.Infrastructure.Interfaces
     {
         Task RemoveRange(List<int> entities);
 
-        void AddFiles(T entity, string file);
+        void AddFile(T entity, string file);
+
+        void AddLink(T entity, string link);
     }
 }

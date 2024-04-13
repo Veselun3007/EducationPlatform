@@ -25,4 +25,6 @@ public class Material : IAggregateRoot
     public virtual Topic? Topic { get; set; }
 
     public virtual ICollection<Materialfile> Materialfiles { get; set; } = new List<Materialfile>();
+
+    public virtual ICollection<Materiallink> Materiallinks { get; set; } = new List<Materiallink>();
 }
