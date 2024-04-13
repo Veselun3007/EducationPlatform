@@ -18,11 +18,16 @@ public partial class EducationPlatformContext : DbContext
 
     public virtual DbSet<Assignmentfile> Assignmentfiles { get; set; }
 
+    public virtual DbSet<Assignmentlink> Assignmentlinks { get; set; }
+
     public virtual DbSet<Course> Courses { get; set; }
 
     public virtual DbSet<Material> Materials { get; set; }
 
     public virtual DbSet<Materialfile> Materialfiles { get; set; }
+
+    public virtual DbSet<Materiallink> Materiallinks { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,17 +84,15 @@ public partial class EducationPlatformContext : DbContext
             entity.HasOne(d => d.Topic).WithMany(t => t.Assignments)
                 .HasForeignKey(d => d.TopicId)
                 .HasConstraintName("fk_assignments_topics");
-
-
         });
 
         modelBuilder.Entity<Assignmentfile>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("assignmentfiles_pkey");
 
-            entity.ToTable("assignmentfiles");
+            entity.ToTable("assignment_files");
 
-            entity.Property(e => e.Id).HasColumnName("assignment_attachedfile_id");
+            entity.Property(e => e.Id).HasColumnName("assignment_file_id");
             entity.Property(e => e.AssignmentId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("assignment_id");
@@ -101,6 +104,26 @@ public partial class EducationPlatformContext : DbContext
                 .HasForeignKey(d => d.AssignmentId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_assignmentfiles_assignments");
+        });
+
+        modelBuilder.Entity<Assignmentlink>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("assignmentlinks_pkey");
+
+            entity.ToTable("assignment_links");
+
+            entity.Property(e => e.Id).HasColumnName("assignmentlink_id");
+            entity.Property(e => e.AssignmentId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("assignment_id");
+            entity.Property(e => e.AssignmentLink)
+                .HasColumnType("character varying")
+                .HasColumnName("assignment_link");
+
+            entity.HasOne(d => d.Assignment).WithMany(p => p.Assignmentlinks)
+                .HasForeignKey(d => d.AssignmentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_assignmentlinks_assignments");
         });
 
         modelBuilder.Entity<Course>(entity =>
@@ -164,9 +187,9 @@ public partial class EducationPlatformContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("materialfiles_pkey");
 
-            entity.ToTable("materialfiles");
+            entity.ToTable("material_files");
 
-            entity.Property(e => e.Id).HasColumnName("material_attachedfile_id");
+            entity.Property(e => e.Id).HasColumnName("material_file_id");
             entity.Property(e => e.MaterialFile)
                 .HasColumnType("character varying")
                 .HasColumnName("material_file");
@@ -175,6 +198,26 @@ public partial class EducationPlatformContext : DbContext
                 .HasColumnName("material_id");
 
             entity.HasOne(d => d.Material).WithMany(p => p.Materialfiles)
+                .HasForeignKey(d => d.MaterialId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_materialfiles_materials");
+        });
+
+        modelBuilder.Entity<Materiallink>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("materialfiles_pkey");
+
+            entity.ToTable("material_files");
+
+            entity.Property(e => e.Id).HasColumnName("material_link_id");
+            entity.Property(e => e.MaterialLink)
+                .HasColumnType("character varying")
+                .HasColumnName("material_link");
+            entity.Property(e => e.MaterialId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("material_id");
+
+            entity.HasOne(d => d.Material).WithMany(p => p.Materiallinks)
                 .HasForeignKey(d => d.MaterialId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_materialfiles_materials");

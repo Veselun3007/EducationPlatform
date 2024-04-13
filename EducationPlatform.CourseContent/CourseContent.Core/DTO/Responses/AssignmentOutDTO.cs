@@ -24,6 +24,7 @@ namespace CourseContent.Core.DTO.Responses
 
         public ICollection<AssignmentfileOutDTO>? Assignmentfiles { get; set; }
 
+        public List<string?>? Assignmentlink { get; set; }
         public static AssignmentOutDTO FromAssignment(Assignment assignment)
         {
             return new AssignmentOutDTO
@@ -38,7 +39,8 @@ namespace CourseContent.Core.DTO.Responses
                 EditedTime = assignment.EditedTime,
                 Assignmentfiles = assignment
                     .Assignmentfiles.Select(af => AssignmentfileOutDTO
-                    .FromAssignmentFile(af)).ToList()
+                    .FromAssignmentFile(af)).ToList(),
+                Assignmentlink = assignment.Assignmentlinks.Select(al => al.AssignmentLink).ToList()
             };
         }
 

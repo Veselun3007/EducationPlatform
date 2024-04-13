@@ -16,6 +16,8 @@ namespace CourseContent.Core.DTO.Responses
 
         public ICollection<MaterialfileOutDTO>? Materialfiles { get; set; }
 
+        public List<string?>? Materiallink { get; set; }
+
         public static MaterialOutDTO FromMaterial(Material material)
         {
             return new MaterialOutDTO
@@ -26,7 +28,8 @@ namespace CourseContent.Core.DTO.Responses
                 IsEdited = material.IsEdited,
                 EditedTime = material.EditedTime,
                 Materialfiles = material.Materialfiles.Select(mf => MaterialfileOutDTO
-                    .FromMaterialFile(mf)).ToList()
+                    .FromMaterialFile(mf)).ToList(),
+                Materiallink = material.Materiallinks.Select(ml => ml.MaterialLink).ToList()
             };
         }
     }
