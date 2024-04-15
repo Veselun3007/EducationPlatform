@@ -16,7 +16,7 @@ namespace CourseContent.Core.DTO.Responses
 
         public ICollection<MaterialfileOutDTO>? Materialfiles { get; set; }
 
-        publicICollection<AssignmentlinkOutDTO?>? Materiallinks { get; set; }
+        public ICollection<MateriallinkOutDTO>? Materiallinks { get; set; }
 
         public static MaterialOutDTO FromMaterial(Material material)
         {
@@ -27,9 +27,12 @@ namespace CourseContent.Core.DTO.Responses
                 MaterialDatePublication = material.MaterialDatePublication,
                 IsEdited = material.IsEdited,
                 EditedTime = material.EditedTime,
-                Materialfiles = material.Materialfiles.Select(mf => MaterialfileOutDTO
+                Materialfiles = material.Materialfiles
+                    .Select(mf => MaterialfileOutDTO
                     .FromMaterialFile(mf)).ToList(),
-                Materiallinks = material.Materiallinks.Select(ml => ml.MaterialLink).ToList()
+                Materiallinks = material.Materiallinks
+                    .Select(ml => MateriallinkOutDTO
+                    .FromMaterialLink(ml)).ToList()
             };
         }
     }

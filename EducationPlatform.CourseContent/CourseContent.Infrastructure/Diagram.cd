@@ -36,6 +36,11 @@
         <Position X="-0.024" Y="0.687" />
       </MemberNameLabel>
     </AssociationLine>
+    <AssociationLine Name="_dbSet" Type="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.089" Y="0.129" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAhAAAAAAIAAAIAAAAAIAEAAAAAAAgAAAAAAIAAIIA=</HashCode>
       <FileName>Repositories\GenericRepositories\ContentRepository.cs</FileName>
@@ -65,6 +70,9 @@
         <Point X="17.5" Y="2.25" />
         <Point X="17.5" Y="1.812" />
       </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.76" Y="0.123" />
+      </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAABAAAAAAAAAAAAAAAAIAEAAAAAAAAAAAAAAAAAIIA=</HashCode>

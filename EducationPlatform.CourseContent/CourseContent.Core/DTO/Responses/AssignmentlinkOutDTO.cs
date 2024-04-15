@@ -2,18 +2,18 @@
 
 namespace CourseContent.Core.DTO.Responses
 {
-    public class AssignmentfileOutDTO
+    public class AssignmentlinkOutDTO
     {
         public int Id { get; set; }
 
-        public string? AssignmentFile { get; set; }
+        public string? AssignmentLink { get; set; }
 
-        public static AssignmentfileOutDTO FromAssignmentFile(Assignmentfile assignment)
+        public static AssignmentlinkOutDTO FromAssignmentLink(Assignmentlink assignmentLink)
         {
-            return new AssignmentfileOutDTO
+            return new AssignmentlinkOutDTO
             {
-                Id = assignment.Id,
-                AssignmentFile = assignment.AssignmentFile
+                Id = assignmentLink.Id,
+                AssignmentLink = assignmentLink.AssignmentLink
             };
         }
     }

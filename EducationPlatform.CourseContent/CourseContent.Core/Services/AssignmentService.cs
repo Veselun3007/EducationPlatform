@@ -194,16 +194,5 @@ namespace CourseContent.Core.Services
                 .GetAllByCourseAsync(m => m.CourseId == id);
             return assignments.Select(AssignmentOutDTO.FromAssignment).ToList();
         }
-
-        public async Task<Result<string, Error>> GetLinkByIdAsync(int linkId)
-        {
-            var assignmentLink = await _unitOfWork.AssignmentlinkRepository.GetByIdAsync(linkId);
-
-            if (assignmentLink is null || assignmentLink.AssignmentLink is null)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
-            return Result.Success<string, Error>(assignmentLink.AssignmentLink);
-        }
     }
 }

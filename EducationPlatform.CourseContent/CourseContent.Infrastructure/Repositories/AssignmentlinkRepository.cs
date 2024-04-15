@@ -3,10 +3,10 @@ using CourseContent.Infrastructure.Interfaces.Base;
 
 namespace CourseContent.Infrastructure.Repositories
 {
-    public class AssignmentlinkRepository(IEntityRepository<Assignmentlink> repository) :
-        IEntityRepository<Assignmentlink>
+    public class AssignmentlinkRepository(IMinRepository<Assignmentlink> repository) :
+        IMinRepository<Assignmentlink>
     {
-        private readonly IEntityRepository<Assignmentlink> _repository = repository;
+        private readonly IMinRepository<Assignmentlink> _repository = repository;
 
 
         public async Task<Assignmentlink> AddAsync(Assignmentlink entity)
@@ -17,11 +17,6 @@ namespace CourseContent.Infrastructure.Repositories
         public async Task DeleteAsync(int id)
         {
             await _repository.DeleteAsync(id);
-        }
-
-        public async Task<Assignmentlink?> GetByIdAsync(int id)
-        {
-            return await _repository.GetByIdAsync(id);
         }
     }
 }

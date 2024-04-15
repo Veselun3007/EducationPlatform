@@ -86,14 +86,6 @@ namespace CourseContent.Web.Controllers
         }
 
         [Authorize]
-        [HttpGet("getLinkById/{linkId}")]
-        public async Task<IActionResult> GetAssignmentLinkById(int linkId)
-        {
-            var result = await _operation.GetLinkByIdAsync(linkId);
-            return FromResult(result);
-        }
-
-        [Authorize]
         [HttpDelete("deleteLinkById/{linkId}")]
         public async Task<IActionResult> DeleteAssignmentLinkById(int linkId)
         {
