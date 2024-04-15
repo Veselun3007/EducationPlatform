@@ -24,21 +24,28 @@
     </TypeIdentifier>
   </Class>
   <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.ContentRepository&lt;T&gt;">
-    <Position X="7.5" Y="1.5" Width="4" />
+    <Position X="8" Y="1.5" Width="4" />
     <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="7.562" Y="4.142" />
-        <Point X="7.562" Y="15.54" />
-        <Point X="14.125" Y="15.54" />
-        <Point X="14.125" Y="14.915" />
+        <Point X="8" Y="2.875" />
+        <Point X="7.507" Y="2.875" />
+        <Point X="7.507" Y="15.54" />
+        <Point X="14.312" Y="15.54" />
+        <Point X="14.312" Y="14.915" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.024" Y="0.687" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="_dbSet" Type="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;">
+    <AssociationLine Name="_dbSet" Type="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="12" Y="2.188" />
+        <Point X="12.375" Y="2.188" />
+        <Point X="12.375" Y="1.531" />
+        <Point X="14.25" Y="1.531" />
+      </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.089" Y="0.129" />
+        <Position X="0.129" Y="0.089" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -52,13 +59,14 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.EntityRepository&lt;T&gt;">
-    <Position X="20.25" Y="1.5" Width="4" />
+    <Position X="19.5" Y="1.5" Width="4.25" />
     <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="24.125" Y="3.18" />
-        <Point X="24.125" Y="15.575" />
-        <Point X="18.188" Y="15.575" />
-        <Point X="18.188" Y="14.915" />
+        <Point X="23.75" Y="2.938" />
+        <Point X="24.286" Y="2.938" />
+        <Point X="24.286" Y="15.575" />
+        <Point X="17.938" Y="15.575" />
+        <Point X="17.938" Y="14.915" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.918" Y="0.715" />
@@ -66,12 +74,13 @@
     </AssociationLine>
     <AssociationLine Name="_dbSet" Type="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="20.25" Y="2.25" />
-        <Point X="17.5" Y="2.25" />
-        <Point X="17.5" Y="1.812" />
+        <Point X="19.5" Y="2.25" />
+        <Point X="19.125" Y="2.25" />
+        <Point X="19.125" Y="1.562" />
+        <Point X="18" Y="1.562" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.76" Y="0.123" />
+        <Position X="0.165" Y="0.107" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
@@ -171,7 +180,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="Microsoft.EntityFrameworkCore.DbSet&lt;TEntity&gt;" Collapsed="true">
-    <Position X="14" Y="1.25" Width="3.75" />
+    <Position X="14.25" Y="1.25" Width="3.75" />
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
