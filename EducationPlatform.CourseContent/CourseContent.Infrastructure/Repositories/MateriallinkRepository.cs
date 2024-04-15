@@ -3,10 +3,10 @@ using CourseContent.Infrastructure.Interfaces.Base;
 
 namespace CourseContent.Infrastructure.Repositories
 {
-    public class MateriallinkRepository(IEntityRepository<Materiallink> repository) :
-        IEntityRepository<Materiallink>
+    public class MateriallinkRepository(IMinRepository<Materiallink> repository) :
+        IMinRepository<Materiallink>
     {
-        private readonly IEntityRepository<Materiallink> _repository = repository;
+        private readonly IMinRepository<Materiallink> _repository = repository;
 
         public async Task<Materiallink> AddAsync(Materiallink entity)
         {
@@ -16,11 +16,6 @@ namespace CourseContent.Infrastructure.Repositories
         public async Task DeleteAsync(int id)
         {
             await _repository.DeleteAsync(id);
-        }
-
-        public async Task<Materiallink?> GetByIdAsync(int id)
-        {
-            return await _repository.GetByIdAsync(id);
         }
     }
 }

@@ -187,17 +187,6 @@ namespace CourseContent.Core.Services
                 .GetFileLink(MaterialFile.MaterialFile));
         }
 
-        public async Task<Result<string, Error>> GetLinkByIdAsync(int linkId)
-        {
-            var materialLink = await _unitOfWork.MateriallinkRepository.GetByIdAsync(linkId);
-
-            if (materialLink is null || materialLink.MaterialLink is null)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
-            return Result.Success<string, Error>(materialLink.MaterialLink);
-        }
-
         public async Task<IEnumerable<MaterialOutDTO>> GetAllByCourseAsync(int id)
         {
             var materials = await _unitOfWork.MaterialRepository

@@ -24,7 +24,8 @@ namespace CourseContent.Core.DTO.Responses
 
         public ICollection<AssignmentfileOutDTO>? Assignmentfiles { get; set; }
 
-        public List<string?>? Assignmentlink { get; set; }
+        public ICollection<AssignmentlinkOutDTO>? Assignmentlinks { get; set; }
+
         public static AssignmentOutDTO FromAssignment(Assignment assignment)
         {
             return new AssignmentOutDTO
@@ -40,7 +41,9 @@ namespace CourseContent.Core.DTO.Responses
                 Assignmentfiles = assignment
                     .Assignmentfiles.Select(af => AssignmentfileOutDTO
                     .FromAssignmentFile(af)).ToList(),
-                Assignmentlink = assignment.Assignmentlinks.Select(al => al.AssignmentLink).ToList()
+                Assignmentlinks = assignment
+                    .Assignmentlinks.Select(al => AssignmentlinkOutDTO
+                    .FromAssignmentLink(al)).ToList()
             };
         }
 

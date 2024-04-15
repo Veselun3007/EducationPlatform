@@ -15,8 +15,6 @@ namespace CourseContent.Core.Interfaces
         
         Task<Result<string, Error>> DeleteFileAsync(int fileId);
 
-        Task<Result<string, Error>> GetLinkByIdAsync(int linkId);
-
         Task<Result<string, Error>> DeleteLinkAsync(int linkId);
     }
 }

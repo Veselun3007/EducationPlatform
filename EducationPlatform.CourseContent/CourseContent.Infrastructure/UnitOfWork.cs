@@ -16,11 +16,11 @@ namespace CourseContent.Infrastructure
 
             AssignmentRepository = new ContentRepository<Assignment>(_dbContext);
             AssignmentfileRepository = new EntityRepository<Assignmentfile>(_dbContext);
-            AssignmentlinkRepository = new EntityRepository<Assignmentlink>(_dbContext);
+            AssignmentlinkRepository = new MinRepository<Assignmentlink>(_dbContext);
 
             MaterialRepository = new ContentRepository<Material>(_dbContext);
             MaterialfileRepository = new EntityRepository<Materialfile>(_dbContext);
-            MateriallinkRepository = new EntityRepository<Materiallink>(_dbContext);
+            MateriallinkRepository = new MinRepository<Materiallink>(_dbContext);
 
             TopicRepository = new Repository<Topic>(_dbContext);
         }
@@ -29,8 +29,8 @@ namespace CourseContent.Infrastructure
         public IContentRepository<Material> MaterialRepository { get; private set; }
         public IEntityRepository<Assignmentfile> AssignmentfileRepository { get; private set; }
         public IEntityRepository<Materialfile> MaterialfileRepository { get; private set; }
-        public IEntityRepository<Assignmentlink> AssignmentlinkRepository { get; private set; }
-        public IEntityRepository<Materiallink> MateriallinkRepository { get; private set; }
+        public IMinRepository<Assignmentlink> AssignmentlinkRepository { get; private set; }
+        public IMinRepository<Materiallink> MateriallinkRepository { get; private set; }
         public IRepository<Topic> TopicRepository { get; private set; }
 
         public async Task<int> CompleteAsync()

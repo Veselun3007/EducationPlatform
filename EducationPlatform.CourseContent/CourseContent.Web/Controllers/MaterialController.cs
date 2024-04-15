@@ -86,20 +86,11 @@ namespace EducationPlatform.CourseContent.Controllers
         }
 
         [Authorize]
-        [HttpGet("getLinkById/{fileId}")]
-        public async Task<IActionResult> GetMaterialLinkById(int fileId)
-        {
-            var result = await _operation.GetLinkByIdAsync(fileId);
-            return FromResult(result);
-        }
-
-        [Authorize]
         [HttpDelete("deleteLinkById/{fileId}")]
         public async Task<IActionResult> DeleteMaterialLinkById(int fileId)
         {
             var result = await _operation.DeleteLinkAsync(fileId);
             return FromResult(result);
         }
-
     }
 }
