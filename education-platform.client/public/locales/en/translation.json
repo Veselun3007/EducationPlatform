@@ -12,8 +12,11 @@
         "settings": "Settings",
         "logout": "Log out",
         "commonSettings": "Common",
-        "userSettings":"User"
-
+        "userSettings":"User",
+        "name": "Name",
+        "description": "Description",
+        "close": "Close",
+        "create":"Create"
     },
     "validation":{
         "isRequired": "Field is required",
@@ -22,7 +25,11 @@
         "weakPassword":"The password must be 8 characters long, contain upper and lower case letters, numbers, and special characters",
         "invalidImage": "Image is not supported, use .jpg .jpeg .png instead",
         "bigFile": "File should be less than {{size}} MB",
-        "notSize": "Value length should be {{length}} characters"
+        "notSize": "Value length should be {{length}} characters",
+        "lessThan": "Value must be less than {{value}}",
+        "greaterThan": "Value must be greater than {{value}}",
+        "unsupportedFileExtension":"Only files with {{extensions}} types allowed",
+        "invalidLink": "Invalid link"
     },
     "glossary":{
         "introductionTitle": "A new word in education platforms",
@@ -62,6 +69,12 @@
         "editUser":"Edit user",
         "deleteUser": "Delete user",
         "editSuccess":"Changes were applied",
-        "deleteUserSuccess":"User was deleted successfully"  
+        "deleteUserSuccess":"User was deleted successfully",
+        "createCourseHeader": "Create course",
+        "assignmentNotFound": "Assignment was not found",
+        "assignmentFileNotFound": "File not found",
+        "materialNotFound":"Material was not found",
+        "materialFileNotFound":"File not found",
+        "topicNotFound":"Topic was not found"
     }
 }

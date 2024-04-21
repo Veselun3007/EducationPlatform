@@ -12,7 +12,11 @@
         "settings": "Налаштування",
         "logout": "Вийти з акаунту",
         "commonSettings": "Загальні",
-        "userSettings":"Користувач"
+        "userSettings":"Користувач",
+        "name": "Назва",
+        "description": "Опис",
+        "close": "Закрити",
+        "create":"Створити"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -21,7 +25,11 @@
         "weakPassword":"Пароль має бути довжиною 8 символів, містити літери верхнього та нижнього регістрів, цифри, спеціальні символи",
         "invalidImage": "Непідтримуваний тип зображення, використовуйте .png, .jpg, .jpeg зображення",
         "bigFile": "Файл повинен бути меншим {{size}} МБ",
-        "notSize": "Значення повинно бути довжиною {{length}} символів"
+        "notSize": "Значення повинно бути довжиною {{length}} символів",
+        "lessThan": "Значення повинно бути меншим за {{value}}",
+        "greaterThan": "Значення повинно бути більшим за {{value}}",
+        "unsupportedFileExtension":"Підтримуються файли лише типу {{extensions}}",
+        "invalidLink": "Невірне посилання"
     },
     "glossary":{
         "introductionTitle": "Нове слово у навчальних платформах",
@@ -61,6 +69,12 @@
         "editUser":"Редагування користувача",
         "deleteUser": "Видалення користувача",
         "editSuccess":"Зміни застосовано",
-        "deleteUserSuccess":"Користувача видалено"
+        "deleteUserSuccess":"Користувача видалено",
+        "createCourseHeader": "Створити курс",
+        "assignmentNotFound": "Завдання не знайдено",
+        "assignmentFileNotFound": "Файл не знайдено",
+        "materialNotFound":"Матеріал не знайдено",
+        "materialFileNotFound":"Файл не знайдено",
+        "topicNotFound":"Тему не знайдено"
     }
 }

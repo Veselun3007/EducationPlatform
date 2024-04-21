@@ -1,19 +1,18 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { action, computed, flow, makeObservable, observable, runInAction } from "mobx";
-import AuthService from "../services/AuthService";
-import IStore from "./common/IStore";
-import RootStore from "./RootStore";
-import UserModel from "../models/user/UserModel";
-import { enqueueAlert } from "../components/Notification/NotificationProvider";
-import ServiceError from "../errors/ServiceError";
-import { NavigateFunction } from "react-router-dom";
-import FormStore from "./common/FormStore";
-import UserUpdateModel from "../models/user/UserUpdateModel";
-import ValidationError from "../helpers/validation/ValidationError";
-import debounce from "../helpers/debounce";
-import UserService from "../services/UserService";
-import LoginRequiredError from "../errors/LoginRequiredError";
-
+import { action, computed, flow, makeObservable, observable, runInAction } from 'mobx';
+import AuthService from '../services/AuthService';
+import IStore from './common/IStore';
+import RootStore from './RootStore';
+import UserModel from '../models/user/UserModel';
+import { enqueueAlert } from '../components/Notification/NotificationProvider';
+import ServiceError from '../errors/ServiceError';
+import { NavigateFunction } from 'react-router-dom';
+import FormStore from './common/FormStore';
+import UserUpdateModel from '../models/user/UserUpdateModel';
+import ValidationError from '../helpers/validation/ValidationError';
+import debounce from '../helpers/debounce';
+import UserService from '../services/UserService';
+import LoginRequiredError from '../errors/LoginRequiredError';
 
 export default class UserStore extends FormStore {
     private readonly _rootStore: RootStore;
@@ -30,12 +29,15 @@ export default class UserStore extends FormStore {
         meta: null,
     };
 
-    constructor(rootStore: RootStore, authService: AuthService, userService: UserService) {
+    constructor(
+        rootStore: RootStore,
+        authService: AuthService,
+        userService: UserService,
+    ) {
         super();
         this._rootStore = rootStore;
         this._authService = authService;
         this._userService = userService;
-
 
         makeObservable(this, {
             user: observable,
@@ -54,7 +56,6 @@ export default class UserStore extends FormStore {
             submit: action.bound,
             deleteUser: flow.bound,
         });
-
     }
 
     get previewImage(): string {
@@ -63,7 +64,6 @@ export default class UserStore extends FormStore {
 
     async getUser(navigate: NavigateFunction) {
         try {
-
             const user = await this._userService.getUser();
             let imageFile: File | undefined = undefined;
             if (user.userImage) {
@@ -78,24 +78,23 @@ export default class UserStore extends FormStore {
                 navigate('/login');
                 enqueueAlert(error.message, 'error');
             } else {
-                navigate('/')
+                navigate('/');
                 enqueueAlert((error as ServiceError).message, 'error');
             }
         }
     }
 
-    * signOut(navigate: NavigateFunction) {
+    *signOut(navigate: NavigateFunction) {
         try {
             yield this._authService.signOut();
             navigate('/login');
             enqueueAlert('glossary.signOutSuccess', 'success');
-        }
-        catch (error) {
+        } catch (error) {
             enqueueAlert((error as ServiceError).message, 'error');
         }
     }
 
-    * deleteUser(navigate: NavigateFunction) {
+    *deleteUser(navigate: NavigateFunction) {
         try {
             yield this._userService.deleteUser();
             navigate('/');
@@ -170,10 +169,14 @@ export default class UserStore extends FormStore {
             if (updatedUser.userImage) {
                 imageFile = await this._userService.getUserImage(updatedUser.userImage);
             }
-            
+
             runInAction(() => {
                 this.user = updatedUser;
-                this.data = new UserUpdateModel(updatedUser.email, updatedUser.userName, imageFile)
+                this.data = new UserUpdateModel(
+                    updatedUser.email,
+                    updatedUser.userName,
+                    imageFile,
+                );
             });
 
             enqueueAlert('glossary.editSuccess', 'success');
@@ -181,8 +184,7 @@ export default class UserStore extends FormStore {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
                 enqueueAlert(error.message, 'error');
-            }
-            else {
+            } else {
                 this.errors.meta = new ValidationError((error as ServiceError).message);
             }
         }

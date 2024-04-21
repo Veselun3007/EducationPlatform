@@ -78,7 +78,7 @@ namespace CourseContent.Web.Controllers
         }
 
         [Authorize]
-        [HttpPost("addFileById/{id}")]
+        [HttpPost("addFile/{id}")]
         public async Task<IActionResult> AddAssignmentFileById([FromForm] IFormFile file, int id)
         {
             var result = await _operation.AddFileAsync(file, id);
@@ -86,7 +86,7 @@ namespace CourseContent.Web.Controllers
         }
 
         [Authorize]
-        [HttpPost("addLinkById/{id}")]
+        [HttpPost("addLink/{id}")]
         public async Task<IActionResult> AddAssignmentLinkById([FromForm] string link, int id)
         {
             var result = await _operation.AddLinkAsync(link, id);

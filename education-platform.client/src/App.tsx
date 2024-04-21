@@ -25,7 +25,6 @@ const darkTheme = createTheme({
         secondary: {
             main: '#312577',
         },
-
     },
 });
 
@@ -96,52 +95,50 @@ const darkTheme = createTheme({
 //   },
 // });
 
-
-
 const rootStore: RootStore = new RootStore();
 
 function App() {
-  const navigate = useNavigate();
-  console.log('rerendered');
-  return (
-    <RootStoreContext.Provider value={rootStore}>
-      <ThemeProvider theme={darkTheme}>
-        <CssBaseline />
-        <NotificationProvider autoHideDuration={3000} />
-        <Routes>
-          <Route index element={<IntroductionPage />} />
+    const navigate = useNavigate();
+    console.log('rerendered');
+    return (
+        <RootStoreContext.Provider value={rootStore}>
+            <ThemeProvider theme={darkTheme}>
+                <CssBaseline />
+                <NotificationProvider autoHideDuration={3000} />
+                <Routes>
+                    <Route index element={<IntroductionPage />} />
 
-          <Route element={<NotAuthRoutes />}>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignUpPage />} />
-            <Route
-              path="/confirmEmail/:email"
-              element={<ConfirmEmailPage />}
-            />
-          </Route>
+                    <Route element={<NotAuthRoutes />}>
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/signup" element={<SignUpPage />} />
+                        <Route
+                            path="/confirmEmail/:email"
+                            element={<ConfirmEmailPage />}
+                        />
+                    </Route>
 
-          <Route element={<AuthRoutes />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route
-              path="/course/:id"
-              element={
-                <Button onClick={() => navigate('/course/1/chat')}>
-                  Sosi
-                </Button>
-              }
-            />
+                    <Route element={<AuthRoutes />}>
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route
+                            path="/course/:id"
+                            element={
+                                <Button onClick={() => navigate('/course/1/chat')}>
+                                    Sosi
+                                </Button>
+                            }
+                        />
 
-            <Route
-              path="/course/:id/chat"
-              element={<Typography>Sosi</Typography>}
-            />
-          </Route>
+                        <Route
+                            path="/course/:id/chat"
+                            element={<Typography>Sosi</Typography>}
+                        />
+                    </Route>
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </ThemeProvider>
-    </RootStoreContext.Provider>
-  );
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+            </ThemeProvider>
+        </RootStoreContext.Provider>
+    );
 }
 
 export default App;

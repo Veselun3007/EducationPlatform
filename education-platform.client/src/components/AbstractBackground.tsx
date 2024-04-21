@@ -11,7 +11,7 @@ interface AbstractBackgroundProps {
 const AbstractBackground: React.FC<AbstractBackgroundProps> = ({
     value,
     children,
-    sx
+    sx,
 }) => {
     const hash = sha256(value);
 
@@ -52,9 +52,7 @@ const AbstractBackground: React.FC<AbstractBackgroundProps> = ({
     gradient = gradient + ')';
 
     return (
-        <Box
-            sx={{ position: 'relative', overflow: 'hidden', top: 0, left: 0, ...sx}}
-        >
+        <Box sx={{ position: 'relative', overflow: 'hidden', top: 0, left: 0, ...sx }}>
             <Box
                 width="100%"
                 height="100%"
@@ -68,7 +66,6 @@ const AbstractBackground: React.FC<AbstractBackgroundProps> = ({
                 sx={{
                     background: gradient,
                     filter: 'blur(10px) brightness(50%)',
-                   
                 }}
             />
         </Box>

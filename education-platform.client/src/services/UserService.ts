@@ -64,10 +64,12 @@ export default class UserService {
 
     async getUserImage(src: string): Promise<File | undefined> {
         try {
-            const response = await axios.get(src, { responseType: 'blob'});
+            const response = await axios.get(src, { responseType: 'blob' });
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const extension = (response.headers['content-type']! as string).split('/').pop();
-            
+            const extension = (response.headers['content-type']! as string)
+                .split('/')
+                .pop();
+
             const image = new File([response.data], `image.${extension}`);
             return image;
         } catch {
@@ -75,14 +77,12 @@ export default class UserService {
         }
     }
 
-    async getUser():Promise<UserModel>{
-        try{
-            
-            const user = (await httpClient.get(GET_USER)).data
-                .result as UserModel;
+    async getUser(): Promise<UserModel> {
+        try {
+            const user = (await httpClient.get(GET_USER)).data.result as UserModel;
 
             return user;
-        } catch(error){
+        } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
                     switch (error.response.status) {

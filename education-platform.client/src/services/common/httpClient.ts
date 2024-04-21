@@ -4,28 +4,26 @@ import TokenResponseModel from '../../models/auth/TokenResponseModel';
 
 const httpClient = axios.create();
 
-
 // httpClient.defaults.headers.common['Authorization'] =
 //     'Bearer ' + localStorage.getItem('accessToken');
 
 async function refreshToken() {
-    const tokens = (
+    const accessToken = (
         await httpClient.post(REFRESH_TOKEN, {
             refreshToken: localStorage.getItem('refreshToken'),
         })
-    ).data.result as TokenResponseModel;
+    ).data.result as string;
 
-    localStorage.setItem('accessToken', tokens.accessToken);
-    localStorage.setItem('refreshToken', tokens.refreshToken);
+    localStorage.setItem('accessToken', accessToken);
 }
 
-httpClient.interceptors.request.use((config)=>{
+httpClient.interceptors.request.use((config) => {
     const token = localStorage.getItem('accessToken');
-    if(token){
-        config.headers.Authorization = `Bearer ${token}`
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
     }
-    return config
-})
+    return config;
+});
 
 httpClient.interceptors.response.use(
     (response) => response,

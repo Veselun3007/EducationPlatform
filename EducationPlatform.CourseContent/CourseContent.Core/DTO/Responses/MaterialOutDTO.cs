@@ -4,6 +4,8 @@ namespace CourseContent.Core.DTO.Responses
 {
     public class MaterialOutDTO
     {
+        public int Id { get; set; }
+        public int? TopicId { get; set; }
         public required string MaterialName { get; set; }
 
         public string? MaterialDescription { get; set; }
@@ -22,6 +24,8 @@ namespace CourseContent.Core.DTO.Responses
         {
             return new MaterialOutDTO
             {
+                Id = material.Id,
+                TopicId = material.TopicId,
                 MaterialName = material.MaterialName,
                 MaterialDescription = material.MaterialDescription,
                 MaterialDatePublication = material.MaterialDatePublication,
