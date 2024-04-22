@@ -1,3 +1,4 @@
+import { makeObservable, observable } from 'mobx';
 import FileValidator from '../../helpers/validation/FileValidator';
 import StringValidator from '../../helpers/validation/StringValidator';
 import ValidationError from '../../helpers/validation/ValidationError';
@@ -7,18 +8,19 @@ export default class CreateUpdateModelModel {
     topicId?: number;
     materialName: string;
     materialDescription?: string;
-    materialDatePublication: Date;
-    materialFiles?: File[];
-    materialLinks?: string[];
+    materialDatePublication?: Date;
+    materialFiles: File[];
+    materialLinks: string[];
 
     constructor(
         courseId: number,
         materialName: string,
-        materialDatePublication: Date,
+        materialFiles: File[],
+        materialLinks: string[],
+        materialDatePublication?: Date,
         topicId?: number,
         materialDescription?: string,
-        materialFiles?: File[],
-        materialLinks?: string[],
+        
     ) {
         this.courseId = courseId;
         this.topicId = topicId;
@@ -27,6 +29,16 @@ export default class CreateUpdateModelModel {
         this.materialDatePublication = materialDatePublication;
         this.materialFiles = materialFiles;
         this.materialLinks = materialLinks;
+
+        makeObservable(this, {
+            courseId:observable,
+            topicId: observable,
+            materialName:observable,
+            materialDescription: observable,
+            materialDatePublication: observable,
+            materialFiles:observable,
+            materialLinks: observable
+        })
     }
 
     validateMaterialName(): ValidationError[] {
@@ -38,7 +50,8 @@ export default class CreateUpdateModelModel {
     }
 
     validateMaterialFiles(): ValidationError[] {
-        if (this.materialFiles) {
+        const errors:ValidationError[] = []
+        if (this.materialFiles.length !== 0) {
             this.materialFiles.forEach((file) => {
                 const validator = new FileValidator(file);
 
@@ -55,26 +68,23 @@ export default class CreateUpdateModelModel {
                     'xlsx',
                 ]);
 
-                if (validator.errors.length > 0) {
-                    return validator.errors;
-                }
+                errors.push(...validator.errors)
             });
         }
-        return [];
+        return errors;
     }
 
     validateMaterialLinks(): ValidationError[] {
-        if (this.materialLinks) {
+        const errors:ValidationError[] = []
+        if (this.materialLinks?.length !== 0) {
             this.materialLinks.forEach((link) => {
                 const validator = new StringValidator(link);
 
                 validator.isLink();
 
-                if (validator.errors.length > 0) {
-                    return validator.errors;
-                }
+                errors.push(...validator.errors)
             });
         }
-        return [];
+        return errors;
     }
 }

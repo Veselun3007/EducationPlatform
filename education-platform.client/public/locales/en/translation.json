@@ -16,7 +16,14 @@
         "name": "Name",
         "description": "Description",
         "close": "Close",
-        "create":"Create"
+        "create":"Create",
+        "title":"Title",
+        "edit": "Edit",
+        "topic": "Topic",
+        "addFile": "Add file",
+        "addLink": "AddLink",
+        "add": "Add",
+        "link": "Link"
     },
     "validation":{
         "isRequired": "Field is required",
@@ -75,6 +82,18 @@
         "assignmentFileNotFound": "File not found",
         "materialNotFound":"Material was not found",
         "materialFileNotFound":"File not found",
-        "topicNotFound":"Topic was not found"
+        "topicNotFound":"Topic was not found",
+        "joinLink": "Join link:",
+        "copiedToClipboard":"Copied to clipboard",
+        "editCourse":"Edit course",
+        "deleteCourse":"Delete course",
+        "deleteCourseSuccess": "Course have been deleted",
+        "topic":"Topic",
+        "material":"Material",
+        "assignment":"Assignment",
+        "createTopic":"Create topic",
+        "createMaterial":"Create material",
+        "createAssignment":"Create assignment",
+        "noTopic": "No topic"
     }
 }

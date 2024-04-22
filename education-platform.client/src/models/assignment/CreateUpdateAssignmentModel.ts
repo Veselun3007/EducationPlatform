@@ -1,3 +1,4 @@
+import { makeObservable, observable } from 'mobx';
 import BaseValidator from '../../helpers/validation/BaseValidator';
 import DateValidator from '../../helpers/validation/DateValidator';
 import FileValidator from '../../helpers/validation/FileValidator';
@@ -13,10 +14,10 @@ export default class CreateUpdateAssignmentModel {
     public maxMark: number;
     public minMark: number;
     public isRequired: boolean;
-    public assignmentDatePublication: Date;
+    public assignmentDatePublication?: Date;
     public assignmentDeadline: Date;
-    public assignmentFiles?: File[];
-    public assignmentLinks?: string[];
+    public assignmentFiles: File[];
+    public assignmentLinks: string[];
 
     constructor(
         courseId: number,
@@ -24,12 +25,13 @@ export default class CreateUpdateAssignmentModel {
         maxMark: number,
         minMark: number,
         isRequired: boolean,
-        assignmentDatePublication: Date,
         assignmentDeadline: Date,
+        assignmentFiles: File[],
+        assignmentLinks: string[],
+        assignmentDatePublication?: Date,
         topicId?: number,
         assignmentDescription?: string,
-        assignmentFiles?: File[],
-        assignmentLinks?: string[],
+        
     ) {
         this.courseId = courseId;
         this.topicId = topicId;
@@ -42,6 +44,20 @@ export default class CreateUpdateAssignmentModel {
         this.assignmentDeadline = assignmentDeadline;
         this.assignmentFiles = assignmentFiles;
         this.assignmentLinks = assignmentLinks;
+
+        makeObservable(this, {
+            courseId: observable,
+            topicId: observable,
+            assignmentName:observable,
+            assignmentDescription: observable,
+            minMark: observable,
+            maxMark: observable,
+            isRequired: observable,
+            assignmentDatePublication: observable,
+            assignmentDeadline: observable,
+            assignmentFiles: observable,
+            assignmentLinks: observable
+        });
     }
 
     validateAssignmentName(): ValidationError[] {
@@ -85,7 +101,8 @@ export default class CreateUpdateAssignmentModel {
     }
 
     validateAssignmentFiles(): ValidationError[] {
-        if (this.assignmentFiles) {
+        const errors:ValidationError[] = []
+        if (this.assignmentFiles.length !== 0) {
             this.assignmentFiles.forEach((file) => {
                 const validator = new FileValidator(file);
 
@@ -102,26 +119,23 @@ export default class CreateUpdateAssignmentModel {
                     'xlsx',
                 ]);
 
-                if (validator.errors.length > 0) {
-                    return validator.errors;
-                }
+                errors.push(...validator.errors)
             });
         }
-        return [];
+        return errors;
     }
 
     validateAssignmentLinks(): ValidationError[] {
-        if (this.assignmentLinks) {
+        const errors:ValidationError[] = []
+        if (this.assignmentLinks.length !== 0) {
             this.assignmentLinks.forEach((link) => {
                 const validator = new StringValidator(link);
 
                 validator.isLink();
 
-                if (validator.errors.length > 0) {
-                    return validator.errors;
-                }
+                errors.push(...validator.errors)
             });
         }
-        return [];
+        return errors;
     }
 }

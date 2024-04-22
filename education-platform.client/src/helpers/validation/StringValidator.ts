@@ -46,7 +46,7 @@ export default class StringValidator extends BaseValidator<string | undefined> {
     }
 
     smallerThan(length: number): void {
-        if (this._value && this._value.length < length) {
+        if (this._value && this._value.length > length) {
             this.errors.push(
                 new ValidationError('validation.lessThan', { value: length }),
             );
@@ -57,7 +57,7 @@ export default class StringValidator extends BaseValidator<string | undefined> {
         if (
             this._value &&
             // eslint-disable-next-line no-useless-escape
-            !/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi.test(
+            !/^(https?:\/\/)?([\w\-]+(\.[\w\-]+)+\/?|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?(\/\S*)?$/i.test(
                 this._value as string,
             )
         ) {

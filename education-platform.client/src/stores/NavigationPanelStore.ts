@@ -1,6 +1,6 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import ValidationError from '../helpers/validation/ValidationError';
-import CreateCourseModel from '../models/course/CreateCourseModel';
+import CreateUpdateCourseModel from '../models/course/CreateUpdateCourseModel';
 import CourseService from '../services/CourseService';
 import FormStore from './common/FormStore';
 import RootStore from './RootStore';
@@ -10,7 +10,7 @@ export default class NavigationPanelStore extends FormStore {
     private readonly _courseService: CourseService;
     private readonly _rootStore: RootStore;
 
-    data: CreateCourseModel = new CreateCourseModel('');
+    data: CreateUpdateCourseModel = new CreateUpdateCourseModel('');
     errors: Record<string, ValidationError | null> = {
         name: null,
         meta: null,
@@ -108,6 +108,8 @@ export default class NavigationPanelStore extends FormStore {
 
     handleCreateCourseClose(): void {
         this.createCourseOpen = false;
+        this.reset()
+        
     }
 
     onNameChange(e: React.ChangeEvent<HTMLInputElement>): void {

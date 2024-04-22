@@ -16,7 +16,14 @@
         "name": "Назва",
         "description": "Опис",
         "close": "Закрити",
-        "create":"Створити"
+        "create":"Створити",
+        "title":"Заголовок",
+        "edit": "Змінити",
+        "topic": "Тема",
+        "addFile": "Додати файл",
+        "addLink": "Додати посилання",
+        "add": "Додати",
+        "link": "Посилання"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -75,6 +82,18 @@
         "assignmentFileNotFound": "Файл не знайдено",
         "materialNotFound":"Матеріал не знайдено",
         "materialFileNotFound":"Файл не знайдено",
-        "topicNotFound":"Тему не знайдено"
+        "topicNotFound":"Тему не знайдено",
+        "joinLink": "Посилання для приєднання:",
+        "copiedToClipboard":"Скопійовано в буфер обміну",
+        "editCourse":"Редагування курсу",
+        "deleteCourse":"Видалити курс",
+        "deleteCourseSuccess": "Курс видалено",
+        "topic":"Тему",
+        "material":"Матеріал",
+        "assignment":"Завдання",
+        "createTopic":"Створити тему",
+        "createMaterial":"Створити матеріал",
+        "createAssignment":"Створитити завдання",
+        "noTopic": "Без теми"
     }
 }

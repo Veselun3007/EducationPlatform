@@ -141,7 +141,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                 <ListItemButton
                     selected={pathname === '/dashboard'}
                     sx={{
-                        minHeight: 48,
+                        minHeight: 48, 
                         justifyContent:
                             navigationPanelStore.drawerOpen ||
                             navigationPanelStore.toggled
@@ -696,7 +696,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
             >
                 <Stack
                     bgcolor={theme.palette.background.paper}
-                    width={350}
+                    width={{ xs: '90%', md: '50%' }}
                     height="fit-content"
                     sx={{
                         position: 'absolute',

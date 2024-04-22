@@ -2,7 +2,7 @@ import { makeObservable, observable } from 'mobx';
 import StringValidator from '../../helpers/validation/StringValidator';
 import ValidationError from '../../helpers/validation/ValidationError';
 
-export default class CreateCourseModel {
+export default class CreateUpdateCourseModel {
     public name: string;
     public description?: string;
 

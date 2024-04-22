@@ -14,6 +14,7 @@ import DashboardPage from './pages/DashboardPage/DashboardPage';
 import AuthRoutes from './HOC/AuthRoutes';
 import NotAuthRoutes from './HOC/NotAuthRoutes';
 import { Button, Typography } from '@mui/material';
+import CoursePage from './pages/CoursePage/CoursePage';
 
 const darkTheme = createTheme({
     palette: {
@@ -122,9 +123,7 @@ function App() {
                         <Route
                             path="/course/:id"
                             element={
-                                <Button onClick={() => navigate('/course/1/chat')}>
-                                    Sosi
-                                </Button>
+                                <CoursePage/>
                             }
                         />
 
