@@ -23,7 +23,11 @@
         "addFile": "Add file",
         "addLink": "AddLink",
         "add": "Add",
-        "link": "Link"
+        "link": "Link",
+        "isRequired": "Requirency",
+        "deadline": "Deadline",
+        "minMark":"Min mark",
+        "maxMark":"Max mark"
     },
     "validation":{
         "isRequired": "Field is required",
@@ -94,6 +98,8 @@
         "createTopic":"Create topic",
         "createMaterial":"Create material",
         "createAssignment":"Create assignment",
-        "noTopic": "No topic"
+        "noTopic": "No topic",
+        "required":"Required",
+        "notRequired":"Not required"
     }
 }

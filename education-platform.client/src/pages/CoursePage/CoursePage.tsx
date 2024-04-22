@@ -4,6 +4,7 @@ import {
     Button,
     CircularProgress,
     FormControl,
+    FormHelperText,
     IconButton,
     InputLabel,
     Menu,
@@ -26,6 +27,8 @@ import { enqueueAlert } from '../../components/Notification/NotificationProvider
 import FilesPicker from '../../components/FilesPicker';
 
 import LinksPicker from '../../components/LinksPicker';
+import { DateTimePicker } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
 
 const CoursePage = observer(() => {
     const { coursePageStore } = useStore();
@@ -55,6 +58,7 @@ const CoursePage = observer(() => {
             </Box>
         )
     }
+
     return (
         <Grid container>
             <Grid xs />
@@ -180,7 +184,7 @@ const CoursePage = observer(() => {
                 >
                     <Stack
                         bgcolor={theme.palette.background.paper}
-                        width={{ xs: '90%', md: '50%' }}
+                        width={{ xs: '90%', md: '40%' }}
                         height="fit-content"
                         sx={{
                             position: 'absolute',
@@ -339,7 +343,7 @@ const CoursePage = observer(() => {
                     <Stack
                         bgcolor={theme.palette.background.paper}
                         width={{ xs: '90%', md: '40%' }}
-                        maxHeight={{ xs: '90%', md: '70%' }}
+                        maxHeight={{ xs: '90%'}}
                         sx={{
                             position: 'absolute',
                             top: '50%',
@@ -347,10 +351,8 @@ const CoursePage = observer(() => {
                             transform: 'translate(-50%, -50%)',
                         }}
                         overflow="auto"
-                        justifyContent="center"
                         spacing={{ xs: 1, md: 2 }}
                         p={3}
-                        alignItems="center"
                     >
                         <Typography textAlign="start" width="100%" variant="h6">
                             {t('glossary.createMaterial')}
@@ -386,7 +388,7 @@ const CoursePage = observer(() => {
                             <Select
                                 labelId="materialTopicSelect"
 
-                                value={coursePageStore.materialData?.topicId ? coursePageStore.materialData?.topicId.toString():"0"}
+                                value={coursePageStore.materialData?.topicId ? coursePageStore.materialData?.topicId.toString() : "0"}
                                 label={t('common.topic')}
                                 onChange={coursePageStore.onMaterialTopicChange}
                                 fullWidth
@@ -449,11 +451,11 @@ const CoursePage = observer(() => {
                 <Modal
                     open={coursePageStore.createAssignmentOpen}
                     onClose={coursePageStore.handleCreateAssignmentClose}
-                >
+                >   
                     <Stack
                         bgcolor={theme.palette.background.paper}
                         width={{ xs: '90%', md: '40%' }}
-                        maxHeight={{ xs: '90%', md: '70%' }}
+                        maxHeight={{ xs: '90%'}}
                         sx={{
                             position: 'absolute',
                             top: '50%',
@@ -461,10 +463,8 @@ const CoursePage = observer(() => {
                             transform: 'translate(-50%, -50%)',
                         }}
                         overflow="auto"
-                        justifyContent="center"
                         spacing={{ xs: 1, md: 2 }}
                         p={3}
-                        alignItems="center"
                     >
                         <Typography textAlign="start" width="100%" variant="h6">
                             {t('glossary.createAssignment')}
@@ -474,14 +474,14 @@ const CoursePage = observer(() => {
                             required
                             type="text"
                             label={t('common.name')}
-                            value={coursePageStore.materialData?.materialName}
-                            onChange={coursePageStore.onMaterialNameChange}
-                            error={coursePageStore.materialErrors.materialName !== null}
+                            value={coursePageStore.assignmentData?.assignmentName}
+                            onChange={coursePageStore.onAssignmentNameChange}
+                            error={coursePageStore.assignmentErrors.assignmentName !== null}
                             helperText={
-                                coursePageStore.materialErrors.materialName !== null
+                                coursePageStore.assignmentErrors.assignmentName !== null
                                     ? t(
-                                        coursePageStore.materialErrors.materialName.errorKey,
-                                        coursePageStore.materialErrors.materialName.options,
+                                        coursePageStore.assignmentErrors.assignmentName.errorKey,
+                                        coursePageStore.assignmentErrors.assignmentName.options,
                                     )
                                     : null
                             }
@@ -492,17 +492,17 @@ const CoursePage = observer(() => {
                             multiline
                             rows={4}
                             label={t('common.description')}
-                            value={coursePageStore.materialData?.materialDescription}
-                            onChange={coursePageStore.onMaterialDescriptionChange}
+                            value={coursePageStore.assignmentData?.assignmentDescription}
+                            onChange={coursePageStore.onAssignmentDescriptionChange}
                         />
                         <FormControl fullWidth>
-                            <InputLabel id="materialTopicSelect">{t('common.topic')}</InputLabel>
+                            <InputLabel id="assignmentTopicSelect">{t('common.topic')}</InputLabel>
                             <Select
-                                labelId="materialTopicSelect"
+                                labelId="assignmentTopicSelect"
 
-                                value={coursePageStore.materialData?.topicId ? coursePageStore.materialData?.topicId.toString():"0"}
+                                value={coursePageStore.assignmentData?.topicId ? coursePageStore.assignmentData?.topicId.toString() : "0"}
                                 label={t('common.topic')}
-                                onChange={coursePageStore.onMaterialTopicChange}
+                                onChange={coursePageStore.onAssignmentTopicChange}
                                 fullWidth
                             >
                                 <MenuItem value={0}>{t('glossary.noTopic')}</MenuItem>
@@ -511,48 +511,117 @@ const CoursePage = observer(() => {
                                 ))}
                             </Select>
                         </FormControl>
+                        <FormControl fullWidth>
+                            <InputLabel id="assignmentIsRequiredSelect">{t('common.isRequired')}</InputLabel>
+                            <Select
+                                labelId="assignmentIsRequiredSelect"
+
+                                value={coursePageStore.assignmentData?.isRequired ? "1":"0"}
+                                label={t('common.isRequired')}
+                                onChange={coursePageStore.onAssignmentIsRequiredChange}
+                                fullWidth
+                            >
+                                <MenuItem value={0}>{t('glossary.notRequired')}</MenuItem>
+                                <MenuItem value={1}>{t('glossary.required')}</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl fullWidth>
+                            <DateTimePicker
+                                sx={{ width: '100%' }}
+                                label={t('common.deadline')}
+                                value={dayjs(coursePageStore.assignmentData?.assignmentDeadline)}
+                                onChange={(newValue) => coursePageStore.onAssignmentDeadlineChange(newValue)}
+                                minDateTime={dayjs()}
+                                ampm={false}
+                                disablePast
+                            />
+                            <FormHelperText error>
+                                {coursePageStore.assignmentErrors.assignmentDeadline !== null
+                                    ? t(
+                                        coursePageStore.assignmentErrors.assignmentDeadline.errorKey,
+                                        coursePageStore.assignmentErrors.assignmentDeadline.options,
+                                    )
+                                    : null
+                                }
+                            </FormHelperText>
+                        </FormControl>
+                        <TextField
+                            fullWidth
+                            required
+                            type="number"
+                            label={t('common.minMark')}
+                            value={coursePageStore.assignmentData?.minMark}
+                            onChange={coursePageStore.onAssignmentMinMarkChange}
+                            error={coursePageStore.assignmentErrors.minMark !== null}
+                            helperText={
+                                coursePageStore.assignmentErrors.minMark !== null
+                                    ? t(
+                                        coursePageStore.assignmentErrors.minMark.errorKey,
+                                        coursePageStore.assignmentErrors.minMark.options,
+                                    )
+                                    : null
+                            }
+                        />
+
+                        <TextField
+                            fullWidth
+                            required
+                            type="number"
+                            label={t('common.maxMark')}
+                            value={coursePageStore.assignmentData?.maxMark}
+                            onChange={coursePageStore.onAssignmentMaxMarkChange}
+                            error={coursePageStore.assignmentErrors.maxMark !== null}
+                            helperText={
+                                coursePageStore.assignmentErrors.maxMark !== null
+                                    ? t(
+                                        coursePageStore.assignmentErrors.maxMark.errorKey,
+                                        coursePageStore.assignmentErrors.maxMark.options,
+                                    )
+                                    : null
+                            }
+                        />
                         <FilesPicker
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            files={coursePageStore.materialData!.materialFiles}
-                            error={coursePageStore.materialErrors.materialFiles}
-                            onFileAdd={coursePageStore.onMaterialFileAdd}
-                            onFileDelete={coursePageStore.onMaterialFileDelete}
+                            files={coursePageStore.assignmentData!.assignmentFiles}
+                            error={coursePageStore.assignmentErrors.assignmentFiles}
+                            onFileAdd={coursePageStore.onAssignmentFileAdd}
+                            onFileDelete={coursePageStore.onAssignmentFileDelete}
                         />
 
                         <LinksPicker
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            links={coursePageStore.materialData!.materialLinks}
-                            error={coursePageStore.materialErrors.materialLinks}
-                            onLinkAdd={coursePageStore.onMaterialLinkAdd}
-                            onLinkDelete={coursePageStore.onMaterialLinkDelete} />
+                            links={coursePageStore.assignmentData!.assignmentLinks}
+                            error={coursePageStore.assignmentErrors.assignmentLinks}
+                            onLinkAdd={coursePageStore.onAssignmentLinkAdd}
+                            onLinkDelete={coursePageStore.onAssignmentLinkDelete} />
                         <Typography
                             color="error"
                             variant="caption"
                             align="center"
                             visibility={
-                                coursePageStore.materialErrors.meta !== null
+                                coursePageStore.assignmentErrors.meta !== null
                                     ? 'visible'
                                     : 'collapse'
                             }
                         >
-                            {coursePageStore.materialErrors.meta !== null
+                            {coursePageStore.assignmentErrors.meta !== null
                                 ? t(
-                                    coursePageStore.materialErrors.meta.errorKey,
-                                    coursePageStore.materialErrors.meta.options,
+                                    coursePageStore.assignmentErrors.meta.errorKey,
+                                    coursePageStore.assignmentErrors.meta.options,
                                 )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">
                             <Button
                                 color="inherit"
-                                onClick={coursePageStore.handleCreateMaterialClose}
+                                onClick={coursePageStore.handleCreateAssignmentClose}
                             >
                                 {t('common.close')}
                             </Button>
                             <Button
                                 color="primary"
-                                onClick={coursePageStore.submitMaterial}
-                                disabled={!coursePageStore.isMaterialValid}
+                                onClick={coursePageStore.submitAssignment}
+                                disabled={!coursePageStore.isAssignmentValid}
                             >
                                 {t('common.create')}
                             </Button>

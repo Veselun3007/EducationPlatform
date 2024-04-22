@@ -14,7 +14,8 @@ import CreateUpdateTopicModel from '../models/topic/CreateUpdateTopicModel';
 import CreateUpdateMaterialModel from '../models/material/CreateUpdateMaterialModel';
 import CreateUpdateAssignmentModel from '../models/assignment/CreateUpdateAssignmentModel';
 import TopicModel from '../models/topic/TopicModel';
-import { SelectChangeEvent } from '@mui/material';
+import { avatarClasses, SelectChangeEvent } from '@mui/material';
+import { Dayjs } from 'dayjs';
 
 export default class CoursePageStore {
 
@@ -122,7 +123,18 @@ export default class CoursePageStore {
             onMaterialFileAdd: action.bound,
             onMaterialFileDelete: action.bound,
             onMaterialLinkAdd: action.bound,
-            onMaterialLinkDelete: action.bound
+            onMaterialLinkDelete: action.bound,
+            onAssignmentDeadlineChange: action.bound,
+            onAssignmentDescriptionChange: action.bound,
+            onAssignmentFileAdd: action.bound,
+            onAssignmentFileDelete: action.bound,
+            onAssignmentIsRequiredChange: action.bound,
+            onAssignmentLinkAdd: action.bound,
+            onAssignmentLinkDelete: action.bound,
+            onAssignmentMaxMarkChange: action.bound,
+            onAssignmentMinMarkChange: action.bound,
+            onAssignmentNameChange: action.bound,
+            onAssignmentTopicChange: action.bound
         });
     }
 
@@ -163,7 +175,7 @@ export default class CoursePageStore {
 
         this.topicData = new CreateUpdateTopicModel(this.course.courseId, '');
         this.materialData = new CreateUpdateMaterialModel(this.course.courseId, '', [], [], new Date(Date.now()));
-        this.assignmentData = new CreateUpdateAssignmentModel(this.course.courseId, '', 100, 0, false, new Date(Date.now()), [], [], new Date(Date.now()));
+        this.assignmentData = new CreateUpdateAssignmentModel(this.course.courseId, '', 100, 0, false, new Date(Date.now() + 86400000), [], [], new Date(Date.now()));
         this.topics = [
             {
                 courseId: 1,
@@ -271,6 +283,117 @@ export default class CoursePageStore {
         this.materialData!.materialDescription = e.target.value;
     }
 
+    onAssignmentNameChange(e: React.ChangeEvent<HTMLInputElement>) {
+        this.assignmentData!.assignmentName = e.target.value;
+        debounce(
+            action(() => {
+                const errors = this.assignmentData!.validateAssignmentName();
+                this.assignmentErrors.assignmentName = errors.length !== 0 ? errors[0] : null;
+            }),
+        )();
+    }
+
+    onAssignmentDescriptionChange(e: React.ChangeEvent<HTMLInputElement>) {
+        this.assignmentData!.assignmentDescription = e.target.value;
+    }
+
+    onAssignmentMaxMarkChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (e.target.value) {
+            this.assignmentData!.maxMark = Number.parseInt(e.target.value);
+            debounce(
+                action(() => {
+                    const errors = this.assignmentData!.validateMaxMark();
+                    this.assignmentErrors.maxMark = errors.length !== 0 ? errors[0] : null;
+                }),
+            )();
+        }
+    }
+
+    onAssignmentMinMarkChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (e.target.value) {
+            this.assignmentData!.minMark = Number.parseInt(e.target.value);
+            debounce(
+                action(() => {
+                    const errors = this.assignmentData!.validateMinMark();
+                    this.assignmentErrors.minMark = errors.length !== 0 ? errors[0] : null;
+                }),
+            )();
+        }
+    }
+
+    onAssignmentTopicChange(event: SelectChangeEvent) {
+        const value = Number.parseInt(event.target.value)
+        if (value !== 0) {
+            this.assignmentData!.topicId = value;
+        } else {
+            this.assignmentData!.topicId = undefined;
+        }
+    }
+
+    onAssignmentIsRequiredChange(event: SelectChangeEvent) {
+        const value = Number.parseInt(event.target.value)
+        if (value === 0) {
+            this.assignmentData!.isRequired = false;
+        } else {
+            this.assignmentData!.isRequired = true;
+        }
+
+    }
+
+    onAssignmentDeadlineChange(date: Dayjs | null) {
+        if (date) {
+            const value = date.toDate();
+            this.assignmentData!.assignmentDeadline = value;
+            debounce(
+                action(() => {
+                    const errors = this.assignmentData!.validateAssignmentDeadline();
+                    this.assignmentErrors.assignmentDeadline = errors.length !== 0 ? errors[0] : null;
+                }),
+            )();
+        }
+    }
+
+    onAssignmentFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
+        if (e.target.files) {
+            this.assignmentData!.assignmentFiles.push(...Array.from(e.target.files))
+        }
+        debounce(
+            action(() => {
+                const errors = this.assignmentData!.validateAssignmentFiles();
+                this.assignmentErrors.assignmentFiles = errors.length !== 0 ? errors[0] : null;
+            }),
+        )();
+    }
+    onAssignmentFileDelete(id: number) {
+        this.assignmentData?.assignmentFiles.splice(id, 1);
+        debounce(
+            action(() => {
+                const errors = this.assignmentData!.validateAssignmentFiles();
+                this.assignmentErrors.assignmentFiles = errors.length !== 0 ? errors[0] : null;
+            }),
+        )();
+    }
+
+    onAssignmentLinkAdd(link: string) {
+        this.assignmentData?.assignmentLinks.push(link)
+        debounce(
+            action(() => {
+                const errors = this.assignmentData!.validateAssignmentLinks();
+                this.assignmentErrors.assignmentLinks = errors.length !== 0 ? errors[0] : null;
+            }),
+        )();
+    }
+
+    onAssignmentLinkDelete(id: number) {
+        this.assignmentData?.assignmentLinks.splice(id, 1)
+        debounce(
+            action(() => {
+                const errors = this.assignmentData!.validateAssignmentLinks();
+                this.assignmentErrors.assignmentLinks = errors.length !== 0 ? errors[0] : null;
+            }),
+        )();
+    }
+
     submitCourse() {
 
         this.handleEditCourseClose();
@@ -368,7 +491,7 @@ export default class CoursePageStore {
 
     resetAssignment() {
         this.assignmentData!.assignmentName = '';
-        this.assignmentData!.assignmentDeadline = new Date(Date.now());
+        this.assignmentData!.assignmentDeadline = new Date(Date.now() + 86400000);
         this.assignmentData!.assignmentDescription = '';
         this.assignmentData!.assignmentDatePublication = new Date(Date.now());
         this.assignmentData!.assignmentFiles = [];

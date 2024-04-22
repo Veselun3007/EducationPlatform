@@ -73,12 +73,14 @@ export default class CreateUpdateAssignmentModel {
         validator.required();
         validator.greaterThan(0);
         validator.lessThan(this.maxMark);
+        validator.lessThan(99);
         return validator.errors;
     }
 
     validateMaxMark(): ValidationError[] {
         const validator = new NumberValidator(this.maxMark);
         validator.required();
+        validator.greaterThan(1);
         validator.greaterThan(this.minMark);
         validator.lessThan(100);
 

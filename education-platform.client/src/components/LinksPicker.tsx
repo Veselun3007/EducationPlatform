@@ -45,7 +45,7 @@ const LinksPicker: React.FC<LinksPickerProps> = observer(({ onLinkAdd, error, on
     })
     return (
         <>
-            <Stack direction="column" spacing={2} width="100%">
+            <Stack direction="column" width="100%">
                 <Grid container spacing={1}>
                     {links.map(((link, index) => (
                         <Grid key={index} xs={12} >

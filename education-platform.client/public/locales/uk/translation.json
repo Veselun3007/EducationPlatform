@@ -23,7 +23,11 @@
         "addFile": "Додати файл",
         "addLink": "Додати посилання",
         "add": "Додати",
-        "link": "Посилання"
+        "link": "Посилання",
+        "isRequired": "Обов'язковість",
+        "deadline": "Дедлайн",
+        "minMark":"Мінімальний бал",
+        "maxMark":"Максимальний бал"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -93,7 +97,9 @@
         "assignment":"Завдання",
         "createTopic":"Створити тему",
         "createMaterial":"Створити матеріал",
-        "createAssignment":"Створитити завдання",
-        "noTopic": "Без теми"
+        "createAssignment":"Створити завдання",
+        "noTopic": "Без теми",
+        "required":"Обов'язково",
+        "notRequired":"Необов'язково"
     }
 }

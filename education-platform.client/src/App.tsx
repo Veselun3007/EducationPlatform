@@ -15,6 +15,8 @@ import AuthRoutes from './HOC/AuthRoutes';
 import NotAuthRoutes from './HOC/NotAuthRoutes';
 import { Button, Typography } from '@mui/material';
 import CoursePage from './pages/CoursePage/CoursePage';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 const darkTheme = createTheme({
     palette: {
@@ -104,37 +106,39 @@ function App() {
     return (
         <RootStoreContext.Provider value={rootStore}>
             <ThemeProvider theme={darkTheme}>
-                <CssBaseline />
-                <NotificationProvider autoHideDuration={3000} />
-                <Routes>
-                    <Route index element={<IntroductionPage />} />
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <CssBaseline />
+                    <NotificationProvider autoHideDuration={3000} />
+                    <Routes>
+                        <Route index element={<IntroductionPage />} />
 
-                    <Route element={<NotAuthRoutes />}>
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/signup" element={<SignUpPage />} />
-                        <Route
-                            path="/confirmEmail/:email"
-                            element={<ConfirmEmailPage />}
-                        />
-                    </Route>
+                        <Route element={<NotAuthRoutes />}>
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/signup" element={<SignUpPage />} />
+                            <Route
+                                path="/confirmEmail/:email"
+                                element={<ConfirmEmailPage />}
+                            />
+                        </Route>
 
-                    <Route element={<AuthRoutes />}>
-                        <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route
-                            path="/course/:id"
-                            element={
-                                <CoursePage/>
-                            }
-                        />
+                        <Route element={<AuthRoutes />}>
+                            <Route path="/dashboard" element={<DashboardPage />} />
+                            <Route
+                                path="/course/:id"
+                                element={
+                                    <CoursePage />
+                                }
+                            />
 
-                        <Route
-                            path="/course/:id/chat"
-                            element={<Typography>Sosi</Typography>}
-                        />
-                    </Route>
+                            <Route
+                                path="/course/:id/chat"
+                                element={<Typography>Sosi</Typography>}
+                            />
+                        </Route>
 
-                    <Route path="*" element={<NotFoundPage />} />
-                </Routes>
+                        <Route path="*" element={<NotFoundPage />} />
+                    </Routes>
+                </LocalizationProvider>
             </ThemeProvider>
         </RootStoreContext.Provider>
     );

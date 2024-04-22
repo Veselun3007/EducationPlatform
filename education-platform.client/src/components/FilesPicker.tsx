@@ -19,7 +19,7 @@ const FilesPicker: React.FC<FilesPickerProps> = observer(({ onFileAdd, error, on
 }) => {
     const { t } = useTranslation();
     return (
-        <Stack direction="column" spacing={2} width="100%">
+        <Stack direction="column" width="100%">
             <Grid container spacing={1}>
                 {files.map(((file, index) => (
                     <Grid key={index} xs={12}>
