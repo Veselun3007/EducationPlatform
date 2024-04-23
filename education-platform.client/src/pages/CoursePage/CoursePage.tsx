@@ -1,7 +1,10 @@
 import React, { useEffect } from 'react';
 import {
+    Avatar,
     Box,
     Button,
+    Card,
+    CardActionArea,
     CircularProgress,
     FormControl,
     FormHelperText,
@@ -21,8 +24,8 @@ import AbstractBackground from '../../components/AbstractBackground';
 import { useStore } from '../../context/RootStoreContext';
 import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Unstable_Grid2';
-import { useNavigate } from 'react-router-dom';
-import { Add, ContentCopy, MoreVert } from '@mui/icons-material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Add, Assignment, Book, ContentCopy, Delete, Edit, MoreVert } from '@mui/icons-material';
 import { enqueueAlert } from '../../components/Notification/NotificationProvider';
 import FilesPicker from '../../components/FilesPicker';
 
@@ -33,17 +36,18 @@ import dayjs from 'dayjs';
 const CoursePage = observer(() => {
     const { coursePageStore } = useStore();
     const theme = useTheme();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
+    const { id } = useParams();
 
     useEffect(() => {
-        coursePageStore.getCourse();
+        coursePageStore.init();
         return () => coursePageStore.reset();
     }, []);
 
     if (coursePageStore.course === null ||
         coursePageStore.courseData === null ||
-        coursePageStore.topicData === null
+        coursePageStore.createTopicData === null
 
     ) {
         return (
@@ -59,8 +63,15 @@ const CoursePage = observer(() => {
         )
     }
 
+
+
+    const emptyTopic: React.ReactNode = (
+        <Typography color='InactiveCaptionText' textAlign="center">{t('glossary.topicEmpty')}</Typography>
+    );
+
+
     return (
-        <Grid container>
+        <Grid container mt={2}>
             <Grid xs />
             <Grid xs={12} md={10} xl={8}>
                 <Stack spacing={2}>
@@ -101,6 +112,11 @@ const CoursePage = observer(() => {
                                 >
                                     <MenuItem onClick={coursePageStore.handleEditCourseOpen}>{t('glossary.editCourse')}</MenuItem>
                                     <MenuItem onClick={() => coursePageStore.deleteCourse(navigate)}>{t('glossary.deleteCourse')}</MenuItem>
+                                    <MenuItem onClick={() => {
+                                        coursePageStore.closeCourseMenu();
+                                        navigate(`/course/${id}/users`);
+                                    }
+                                    }>{t('glossary.courseUsers')}</MenuItem>
                                 </Menu>
                             </Grid>
                             <Grid xs={12} flexGrow={0}>
@@ -152,6 +168,7 @@ const CoursePage = observer(() => {
                         sx={{ width: 'fit-content' }}
                         startIcon={<Add />}
                         variant="contained"
+                        color="secondary"
                     >
                         {t('common.create')}
                     </Button>
@@ -177,7 +194,221 @@ const CoursePage = observer(() => {
                         <MenuItem onClick={coursePageStore.handleCreateMaterialOpen}>{t('glossary.material')}</MenuItem>
                         <MenuItem onClick={coursePageStore.handleCreateAssignmentOpen}>{t('glossary.assignment')}</MenuItem>
                     </Menu>
+
+                    <Stack spacing={2}>
+
+
+                        <Box borderBottom={2} borderColor={theme.palette.primary.light} p={1} >
+                            <Typography variant='h5' color={theme.palette.primary.light}>
+                                {t('glossary.noTopic')}
+                            </Typography>
+
+                        </Box>
+                        {
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            coursePageStore.materials!.filter((m => m.topicId === undefined)).map(material => {
+                                const editString = material.isEdited ? ` (${t('glossary.changed')}: ${material.editedTime?.toLocaleDateString(i18n.language)})` : '';
+                                return (
+                                    <Card key={material.id} >
+                                        <CardActionArea sx={{ p: 2 }}>
+                                            <Stack direction="row" spacing={2}>
+                                                <Avatar sx={{ bgcolor: theme.palette.primary.light }}>
+                                                    <Book />
+                                                </Avatar>
+                                                <Stack>
+                                                    <Typography>{material.materialName}</Typography>
+                                                    <Typography>{material.materialDatePublication.toLocaleDateString(i18n.language) + editString}</Typography>
+                                                </Stack>
+                                            </Stack>
+                                        </CardActionArea>
+                                    </Card>
+                                )
+                            })
+                        }
+
+                        {
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            coursePageStore.assignments!.filter((m => m.topicId === undefined)).map(assignment => {
+                                const editString = assignment.isEdited ? ` (${t('glossary.changed')}: ${assignment.editedTime?.toLocaleDateString(i18n.language)})` : '';
+                                return (
+                                    <Card key={assignment.id} >
+                                        <CardActionArea sx={{ p: 2 }}>
+                                            <Stack direction="row" spacing={2}>
+                                                <Avatar sx={{ bgcolor: theme.palette.primary.light }}>
+                                                    <Assignment />
+                                                </Avatar>
+                                                <Stack>
+                                                    <Typography>{assignment.assignmentName}</Typography>
+                                                    <Typography>{assignment.assignmentDatePublication.toLocaleDateString(i18n.language) + editString}</Typography>
+                                                </Stack>
+                                            </Stack>
+                                        </CardActionArea>
+                                    </Card>
+                                )
+                            })
+                        }
+
+                        {
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            (!coursePageStore.assignments!.some((m => m.topicId === undefined)) ||
+                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                !coursePageStore.materials!.some((m => m.topicId === undefined))) && emptyTopic
+                        }
+                    </Stack>
+                    {
+
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        coursePageStore.topics!.map((topic) => (
+                            <Stack key={topic.id} spacing={2}>
+                                <Stack direction="row" borderBottom={2} borderColor={theme.palette.primary.light} p={1} alignItems="center">
+                                    <Typography variant='h5'
+                                        flexGrow={1}
+                                        color={theme.palette.primary.light}
+                                        textAlign="left"
+                                        sx={{
+                                            display: '-webkit-box',
+                                            overflow: 'hidden',
+                                            WebkitBoxOrient: 'vertical',
+                                            WebkitLineClamp: 1,
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'normal',
+                                        }}
+                                    >{topic.title}</Typography>
+                                    <Stack direction="row">
+                                        <IconButton onClick={() => coursePageStore.handleEditTopicOpen(topic.id)}><Edit /></IconButton>
+                                        <IconButton onClick={() => coursePageStore.deleteTopic(topic.id)}><Delete /></IconButton>
+                                    </Stack>
+                                </Stack>
+                                {
+                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                    coursePageStore.materials!.filter((m => m.topicId === topic.id)).map(material => {
+                                        const editString = material.isEdited ? ` (${t('glossary.changed')}: ${material.editedTime?.toLocaleDateString(i18n.language)})` : '';
+                                        return (
+                                            <Card key={material.id} >
+                                                <CardActionArea sx={{ p: 2 }}>
+                                                    <Stack direction="row" spacing={2}>
+                                                        <Avatar sx={{ bgcolor: theme.palette.primary.light }}>
+                                                            <Book />
+                                                        </Avatar>
+                                                        <Stack>
+                                                            <Typography>{material.materialName}</Typography>
+                                                            <Typography>{material.materialDatePublication.toLocaleDateString(i18n.language) + editString}</Typography>
+                                                        </Stack>
+                                                    </Stack>
+                                                </CardActionArea>
+                                            </Card>
+                                        )
+                                    })
+                                }
+
+                                {
+                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                    coursePageStore.assignments!.filter((m => m.topicId === topic.id)).map(assignment => {
+                                        const editString = assignment.isEdited ? ` (${t('glossary.changed')}: ${assignment.editedTime?.toLocaleDateString(i18n.language)})` : '';
+                                        return (
+                                            <Card key={assignment.id} >
+                                                <CardActionArea sx={{ p: 2 }}>
+                                                    <Stack direction="row" spacing={2}>
+                                                        <Avatar sx={{ bgcolor: theme.palette.primary.light }}>
+                                                            <Assignment />
+                                                        </Avatar>
+                                                        <Stack>
+                                                            <Typography>{assignment.assignmentName}</Typography>
+                                                            <Typography>{assignment.assignmentDatePublication.toLocaleDateString(i18n.language) + editString}</Typography>
+                                                        </Stack>
+                                                    </Stack>
+                                                </CardActionArea>
+                                            </Card>
+                                        )
+                                    })
+                                }
+
+                                {
+                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                    (!coursePageStore.assignments!.some((m => m.topicId === topic.id)) ||
+                                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                        !coursePageStore.materials!.some((m => m.topicId === topic.id))) && emptyTopic
+                                }
+                            </Stack>
+                        )
+                        )}
                 </Stack>
+                <Modal
+                    open={coursePageStore.editTopicOpen}
+                    onClose={coursePageStore.handleEditTopicClose}
+                >
+                    <Stack
+                        bgcolor={theme.palette.background.paper}
+                        width={{ xs: '90%', md: '40%' }}
+                        height="fit-content"
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                        }}
+                        overflow="auto"
+                        justifyContent="center"
+                        spacing={{ xs: 1, md: 2 }}
+                        p={3}
+                        alignItems="center"
+                    >
+                        <Typography textAlign="start" width="100%" variant="h6">
+                            {t('glossary.editTopic')}
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            required
+                            type="text"
+                            label={t('common.title')}
+                            value={coursePageStore.editTopicData?.title}
+                            onChange={coursePageStore.onEditTopicTitleChange}
+                            error={coursePageStore.editTopicErrors.title !== null}
+                            helperText={
+                                coursePageStore.editTopicErrors.title !== null
+                                    ? t(
+                                        coursePageStore.editTopicErrors.title.errorKey,
+                                        coursePageStore.editTopicErrors.title.options,
+                                    )
+                                    : null
+                            }
+                        />
+
+                        <Typography
+                            color="error"
+                            variant="caption"
+                            align="center"
+                            visibility={
+                                coursePageStore.editTopicErrors.meta !== null
+                                    ? 'visible'
+                                    : 'collapse'
+                            }
+                        >
+                            {coursePageStore.editTopicErrors.meta !== null
+                                ? t(
+                                    coursePageStore.editTopicErrors.meta.errorKey,
+                                    coursePageStore.editTopicErrors.meta.options,
+                                )
+                                : null}
+                        </Typography>
+                        <Stack direction="row" width="100%" justifyContent="end">
+                            <Button
+                                color="inherit"
+                                onClick={coursePageStore.handleEditTopicClose}
+                            >
+                                {t('common.close')}
+                            </Button>
+                            <Button
+                                color="primary"
+                                onClick={coursePageStore.submitEditTopic}
+                                disabled={!coursePageStore.isEditTopicValid}
+                            >
+                                {t('common.edit')}
+                            </Button>
+                        </Stack>
+                    </Stack>
+                </Modal>
+
                 <Modal
                     open={coursePageStore.editCourseOpen}
                     onClose={coursePageStore.handleEditCourseClose}
@@ -288,14 +519,14 @@ const CoursePage = observer(() => {
                             required
                             type="text"
                             label={t('common.title')}
-                            value={coursePageStore.topicData?.title}
-                            onChange={coursePageStore.onTitleChange}
-                            error={coursePageStore.topicErrors.title !== null}
+                            value={coursePageStore.createTopicData?.title}
+                            onChange={coursePageStore.onCreateTopicTitleChange}
+                            error={coursePageStore.createTopicErrors.title !== null}
                             helperText={
-                                coursePageStore.topicErrors.title !== null
+                                coursePageStore.createTopicErrors.title !== null
                                     ? t(
-                                        coursePageStore.topicErrors.title.errorKey,
-                                        coursePageStore.topicErrors.title.options,
+                                        coursePageStore.createTopicErrors.title.errorKey,
+                                        coursePageStore.createTopicErrors.title.options,
                                     )
                                     : null
                             }
@@ -306,15 +537,15 @@ const CoursePage = observer(() => {
                             variant="caption"
                             align="center"
                             visibility={
-                                coursePageStore.topicErrors.meta !== null
+                                coursePageStore.createTopicErrors.meta !== null
                                     ? 'visible'
                                     : 'collapse'
                             }
                         >
-                            {coursePageStore.topicErrors.meta !== null
+                            {coursePageStore.createTopicErrors.meta !== null
                                 ? t(
-                                    coursePageStore.topicErrors.meta.errorKey,
-                                    coursePageStore.topicErrors.meta.options,
+                                    coursePageStore.createTopicErrors.meta.errorKey,
+                                    coursePageStore.createTopicErrors.meta.options,
                                 )
                                 : null}
                         </Typography>
@@ -327,8 +558,8 @@ const CoursePage = observer(() => {
                             </Button>
                             <Button
                                 color="primary"
-                                onClick={coursePageStore.submitTopic}
-                                disabled={!coursePageStore.isTopicValid}
+                                onClick={coursePageStore.submitCreateTopic}
+                                disabled={!coursePageStore.isCreateTopicValid}
                             >
                                 {t('common.create')}
                             </Button>
@@ -343,7 +574,7 @@ const CoursePage = observer(() => {
                     <Stack
                         bgcolor={theme.palette.background.paper}
                         width={{ xs: '90%', md: '40%' }}
-                        maxHeight={{ xs: '90%'}}
+                        maxHeight={{ xs: '90%' }}
                         sx={{
                             position: 'absolute',
                             top: '50%',
@@ -451,11 +682,11 @@ const CoursePage = observer(() => {
                 <Modal
                     open={coursePageStore.createAssignmentOpen}
                     onClose={coursePageStore.handleCreateAssignmentClose}
-                >   
+                >
                     <Stack
                         bgcolor={theme.palette.background.paper}
                         width={{ xs: '90%', md: '40%' }}
-                        maxHeight={{ xs: '90%'}}
+                        maxHeight={{ xs: '90%' }}
                         sx={{
                             position: 'absolute',
                             top: '50%',
@@ -516,7 +747,7 @@ const CoursePage = observer(() => {
                             <Select
                                 labelId="assignmentIsRequiredSelect"
 
-                                value={coursePageStore.assignmentData?.isRequired ? "1":"0"}
+                                value={coursePageStore.assignmentData?.isRequired ? "1" : "0"}
                                 label={t('common.isRequired')}
                                 onChange={coursePageStore.onAssignmentIsRequiredChange}
                                 fullWidth
@@ -631,8 +862,6 @@ const CoursePage = observer(() => {
             </Grid>
             <Grid xs />
         </Grid>
-
-
     );
 });
 

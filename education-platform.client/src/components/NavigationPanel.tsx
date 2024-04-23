@@ -272,7 +272,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
             >
                 {content}
             </PermanentDrawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1 }}>
                 <DrawerHeader />
                 {children}
             </Box>

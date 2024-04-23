@@ -11,4 +11,24 @@ export default interface MaterialModel {
     editedTime?: Date;
     materialfiles?: MaterialFileModel[];
     materiallinks?: MaterialLinkModel[];
+
+    // constructor(id: number, materialName: string, 
+    //     materialDatePublication: Date, isEdited: boolean,
+    //     topicId?: number, materialDescription?: string,
+    //     editedTime?: Date, materialfiles?: MaterialFileModel[],
+    //     materiallinks?: MaterialLinkModel[]
+    // ) {
+    //     this.id = id;
+    //     this.editedTime = editedTime;
+    //     this.materialName = materialName;
+    //     this.materialDescription = materialDescription;
+    //     this.materialDatePublication = materialDatePublication;
+    //     this.isEdited = isEdited;
+    //     this.topicId = topicId;
+    //     this.materialfiles = materialfiles;
+    //     this.materiallinks = materiallinks
+        
+        
+    // }
+
 }

@@ -16,13 +16,17 @@ import CreateUpdateAssignmentModel from '../models/assignment/CreateUpdateAssign
 import TopicModel from '../models/topic/TopicModel';
 import { avatarClasses, SelectChangeEvent } from '@mui/material';
 import { Dayjs } from 'dayjs';
+import AssignmentModel from '../models/assignment/AssignmentModel';
+import MaterialModel from '../models/material/MaterialModel';
 
 export default class CoursePageStore {
 
     private readonly _rootStore: RootStore;
 
     course: CourseModel | null = null;
-    topics: TopicModel[] | null = null;
+    topics: TopicModel[] | null = [];
+    assignments: AssignmentModel[] | null = null;
+    materials: MaterialModel[] | null = null;
 
     courseMenuAnchor: null | HTMLElement = null;
     contentMenuAnchor: null | HTMLElement = null;
@@ -31,6 +35,7 @@ export default class CoursePageStore {
     createTopicOpen = false;
     createMaterialOpen = false;
     createAssignmentOpen = false;
+    editTopicOpen = false;
 
 
     courseData: CreateUpdateCourseModel | null = null;
@@ -39,11 +44,18 @@ export default class CoursePageStore {
         meta: null,
     };
 
-    topicData: CreateUpdateTopicModel | null = null;
-    topicErrors: Record<string, ValidationError | null> = {
+    createTopicData: CreateUpdateTopicModel | null = null;
+    createTopicErrors: Record<string, ValidationError | null> = {
         title: null,
         meta: null
     }
+
+    editTopicData: CreateUpdateTopicModel | null = null;
+    editTopicErrors: Record<string, ValidationError | null> = {
+        title: null,
+        meta: null
+    }
+    editTopicId: number | null = null;
 
     materialData: CreateUpdateMaterialModel | null = null;
     materialErrors: Record<string, ValidationError | null> = {
@@ -69,6 +81,10 @@ export default class CoursePageStore {
         this._rootStore = rootStore;
 
         makeObservable(this, {
+            editTopicId: observable,
+            editTopicData: observable,
+            editTopicErrors: observable,
+            editTopicOpen: observable,
             createMaterialOpen: observable,
             topics: observable,
             createAssignmentOpen: observable,
@@ -78,20 +94,23 @@ export default class CoursePageStore {
             courseMenuAnchor: observable,
             contentMenuAnchor: observable,
             editCourseOpen: observable,
-            topicData: observable,
-            topicErrors: observable,
+            createTopicData: observable,
+            createTopicErrors: observable,
             createTopicOpen: observable,
             materialData: observable,
             materialErrors: observable,
             assignmentData: observable,
             assignmentErrors: observable,
+            assignments: observable,
+            materials: observable,
 
             isCourseValid: computed,
-            isTopicValid: computed,
+            isCreateTopicValid: computed,
             isMaterialValid: computed,
             isAssignmentValid: computed,
+            isEditTopicValid: computed,
 
-            getCourse: action.bound,
+            init: action.bound,
             onNameChange: action.bound,
             onDescriptionChange: action.bound,
             openCourseMenu: action.bound,
@@ -101,8 +120,8 @@ export default class CoursePageStore {
             reset: action.bound,
             submitCourse: action.bound,
             deleteCourse: action.bound,
-            onTitleChange: action.bound,
-            submitTopic: action.bound,
+            onCreateTopicTitleChange: action.bound,
+            submitCreateTopic: action.bound,
             openContentMenu: action.bound,
             closeContentMenu: action.bound,
             handleCreateTopicOpen: action.bound,
@@ -110,7 +129,7 @@ export default class CoursePageStore {
             resetAssignment: action.bound,
             resetCourse: action.bound,
             resetMaterial: action.bound,
-            resetTopic: action.bound,
+            resetCreateTopic: action.bound,
             handleCreateMaterialOpen: action.bound,
             handleCreateMaterialClose: action.bound,
             handleCreateAssignmentClose: action.bound,
@@ -134,7 +153,13 @@ export default class CoursePageStore {
             onAssignmentMaxMarkChange: action.bound,
             onAssignmentMinMarkChange: action.bound,
             onAssignmentNameChange: action.bound,
-            onAssignmentTopicChange: action.bound
+            onAssignmentTopicChange: action.bound,
+            handleEditTopicOpen: action.bound,
+            handleEditTopicClose: action.bound,
+            resetEditTopic: action.bound,
+            onEditTopicTitleChange: action.bound,
+            submitEditTopic: action.bound,
+            deleteTopic: action.bound,
         });
     }
 
@@ -142,8 +167,12 @@ export default class CoursePageStore {
         return this.courseData!.validateName().length === 0;
     }
 
-    get isTopicValid(): boolean {
-        return this.topicData!.validateTitle().length === 0;
+    get isCreateTopicValid(): boolean {
+        return this.createTopicData!.validateTitle().length === 0;
+    }
+
+    get isEditTopicValid(): boolean {
+        return this.editTopicData!.validateTitle().length === 0;
     }
 
     get isMaterialValid(): boolean {
@@ -162,7 +191,7 @@ export default class CoursePageStore {
             this.assignmentData!.validateMinMark().length === 0;
     }
 
-    getCourse() {
+    init() {
         this.course = {
             courseId: 1,
             courseName: 'Course name 1 ВАП ВФ ІАР ПВІАПВАП ВАПВА ВІПІПІВП',
@@ -173,9 +202,10 @@ export default class CoursePageStore {
 
         this.courseData = new CreateUpdateCourseModel(this.course.courseName, this.course.courseDescription);
 
-        this.topicData = new CreateUpdateTopicModel(this.course.courseId, '');
+        this.createTopicData = new CreateUpdateTopicModel(this.course.courseId, '');
         this.materialData = new CreateUpdateMaterialModel(this.course.courseId, '', [], [], new Date(Date.now()));
         this.assignmentData = new CreateUpdateAssignmentModel(this.course.courseId, '', 100, 0, false, new Date(Date.now() + 86400000), [], [], new Date(Date.now()));
+        this.editTopicData = new CreateUpdateTopicModel(this.course.courseId, '');
         this.topics = [
             {
                 courseId: 1,
@@ -194,6 +224,108 @@ export default class CoursePageStore {
             },
         ]
 
+        this.assignments = [{
+            id: 1,
+            topicId: 1,
+            assignmentName: "Introduction to JavaScript",
+            assignmentDescription: "Write a simple JavaScript program to calculate the factorial of a number.",
+            maxMark: 10,
+            minMark: 0,
+            isRequired: true,
+            assignmentDatePublication: new Date(Date.now()),
+            assignmentDeadline: new Date("2024-05-05"),
+            isEdited: false,
+            editedTime: undefined,
+            assignmentfiles: [
+                { id: 1, assignmentFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+            ],
+            assignmentlinks: [
+                { id: 1, assignmentLink: "https://developer.mozilla.org/en-US/docs/Web/JavaScript" }
+            ]
+        },
+        {
+            id: 2,
+            topicId: 2,
+            assignmentName: "Introduction to HTML",
+            maxMark: 5,
+            minMark: 0,
+            isRequired: false,
+            assignmentDatePublication: new Date(Date.now()),
+            assignmentDeadline: new Date("2024-05-10"),
+            isEdited: false,
+            editedTime: undefined,
+            assignmentfiles: [
+                { id: 1, assignmentFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+            ],
+            assignmentlinks: [
+                { id: 1, assignmentLink: "https://www.w3schools.com/html/" }
+            ]
+        },
+        {
+            id: 3,
+            assignmentName: "Research Paper on Artificial Intelligence",
+            maxMark: 20,
+            minMark: 0,
+            isRequired: true,
+            assignmentDatePublication: new Date(Date.now()),
+            assignmentDeadline: new Date("2024-05-15"),
+            isEdited: true,
+            editedTime: new Date("2024-04-23"),
+            assignmentfiles: [
+                { id: 1, assignmentFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+            ],
+            assignmentlinks: [
+                { id: 1, assignmentLink: "https://ai.stanford.edu/" }
+            ]
+        }
+        ];
+
+        this.materials = [
+            {
+                id: 1,
+                topicId: 1,
+                materialName: "Introduction to Algorithms",
+                materialDescription: "Overview of basic algorithms and their analysis.",
+                materialDatePublication: new Date("2024-04-20"),
+                isEdited: false,
+                editedTime: undefined,
+                materialfiles: [
+                    { id: 1, materialFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+                ],
+                materiallinks: [
+                    { id: 1, materialLink: "https://mitpress.mit.edu/books/introduction-algorithms" }
+                ]
+            },
+            {
+                id: 2,
+                topicId: 2,
+                materialName: "Database Design Basics",
+                materialDatePublication: new Date("2024-04-22"),
+                isEdited: false,
+                editedTime: undefined,
+                materialfiles: [
+                    { id: 1, materialFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+                ],
+                materiallinks: [
+                    { id: 1, materialLink: "https://www.tutorialspoint.com/dbms/database_design.htm" }
+                ]
+            },
+            {
+                id: 3,
+                materialName: "Introduction to Machine Learning",
+                materialDescription: "An overview of machine learning concepts and algorithms.",
+                materialDatePublication: new Date("2024-04-18"),
+                isEdited: true,
+                editedTime: new Date("2024-04-23"),
+                materialfiles: [
+                    { id: 1, materialFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+                ],
+                materiallinks: [
+                    { id: 1, materialLink: "https://www.coursera.org/learn/machine-learning" }
+                ]
+            }
+        ];
+
     }
 
     onNameChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -210,12 +342,12 @@ export default class CoursePageStore {
         this.courseData!.description = e.target.value;
     }
 
-    onTitleChange(e: React.ChangeEvent<HTMLInputElement>): void {
-        this.topicData!.title = e.target.value;
+    onCreateTopicTitleChange(e: React.ChangeEvent<HTMLInputElement>): void {
+        this.createTopicData!.title = e.target.value;
         debounce(
             action(() => {
-                const titleErrors = this.topicData!.validateTitle();
-                this.topicErrors.title = titleErrors.length !== 0 ? titleErrors[0] : null;
+                const titleErrors = this.createTopicData!.validateTitle();
+                this.createTopicErrors.title = titleErrors.length !== 0 ? titleErrors[0] : null;
             }),
         )();
     }
@@ -394,13 +526,23 @@ export default class CoursePageStore {
         )();
     }
 
+    onEditTopicTitleChange(e: React.ChangeEvent<HTMLInputElement>) {
+        this.editTopicData!.title = e.target.value;
+        debounce(
+            action(() => {
+                const titleErrors = this.editTopicData!.validateTitle();
+                this.editTopicErrors.title = titleErrors.length !== 0 ? titleErrors[0] : null;
+            }),
+        )();
+    }
+
     submitCourse() {
 
         this.handleEditCourseClose();
 
     }
 
-    submitTopic() {
+    submitCreateTopic() {
         this.handleCreateTopicClose();
     }
 
@@ -410,6 +552,10 @@ export default class CoursePageStore {
 
     submitAssignment() {
         this.handleCreateAssignmentClose();
+    }
+
+    submitEditTopic() {
+        this.handleEditTopicClose();
     }
 
     openCourseMenu(event: React.MouseEvent<HTMLButtonElement>) {
@@ -439,15 +585,26 @@ export default class CoursePageStore {
         this.closeCourseMenu();
     }
 
+    handleEditTopicOpen(id: number) {
+        const topic = this.topics!.find((c) => c.id === id);
+        this.editTopicData!.title = topic!.title;
+        this.editTopicId = topic!.id;
+        this.editTopicOpen = true;
+    }
+
+    handleEditTopicClose() {
+        this.resetEditTopic()
+        this.editTopicOpen = false;
+    }
+
     handleCreateTopicOpen() {
         this.createTopicOpen = true;
         this.closeContentMenu();
     }
 
     handleCreateTopicClose() {
-        this.resetTopic();
+        this.resetCreateTopic();
         this.createTopicOpen = false;
-        this.closeContentMenu();
     }
 
     handleCreateMaterialOpen() {
@@ -478,9 +635,33 @@ export default class CoursePageStore {
         this.closeCourseMenu();
     }
 
-    resetTopic() {
-        this.topicData!.title = '';
-        Object.keys(this.topicErrors).forEach((key) => (this.topicErrors[key] = null));
+    deleteTopic(id: number) {
+        this.assignments!.forEach(a => {
+            if (a.topicId === id) {
+
+                a.topicId = undefined;
+            }
+        });
+
+        this.materials!.forEach(m => {
+            if (m.topicId === id) {
+                m.topicId = undefined;
+            }
+        });
+        const index = this.topics!.findIndex(t => t.id === id);
+
+        this.topics!.splice(index, 1);
+    }
+
+    resetEditTopic() {
+        this.editTopicData!.title = '';
+        this.editTopicId = null;
+        Object.keys(this.editTopicErrors).forEach((key) => (this.editTopicErrors[key] = null));
+    }
+
+    resetCreateTopic() {
+        this.createTopicData!.title = '';
+        Object.keys(this.createTopicErrors).forEach((key) => (this.createTopicErrors[key] = null));
     }
 
     resetCourse() {
@@ -518,7 +699,7 @@ export default class CoursePageStore {
         this.resetAssignment();
         this.resetCourse();
         this.resetMaterial();
-        this.resetTopic();
-        this.course = null;
+        this.resetCreateTopic();
+        //this.course = null;
     }
 }

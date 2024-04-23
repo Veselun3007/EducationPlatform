@@ -100,6 +100,11 @@
         "createAssignment":"Створити завдання",
         "noTopic": "Без теми",
         "required":"Обов'язково",
-        "notRequired":"Необов'язково"
+        "notRequired":"Необов'язково",
+        "editTopic":"Редагування теми",
+        "deleteTopic":"Видалити тему",
+        "changed": "Змінено",
+        "topicEmpty":"Ця тема пуста",
+        "courseUsers":"Користувачі курсу"
     }
 }

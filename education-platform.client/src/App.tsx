@@ -132,7 +132,12 @@ function App() {
 
                             <Route
                                 path="/course/:id/chat"
-                                element={<Typography>Sosi</Typography>}
+                                element={<Typography>Chat</Typography>}
+                            />
+
+                            <Route
+                                path="/course/:id/users"
+                                element={<Typography>Users</Typography>}
                             />
                         </Route>
 
