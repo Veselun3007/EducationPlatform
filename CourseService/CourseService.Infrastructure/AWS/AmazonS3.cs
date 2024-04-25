@@ -3,20 +3,28 @@ using Amazon.S3;
 using Amazon;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FileAWS {
     public class AmazonS3 {
         private IAmazonS3 _client;
         public static readonly RegionEndpoint USEast1 = Amazon.RegionEndpoint.USEast1;
+        private string _bucket = "educationplatform";
 
         public AmazonS3(string access_key, string secret_key, RegionEndpoint region_endpoint) {
             _client = new AmazonS3Client(access_key, secret_key,
                 new AmazonS3Config { RegionEndpoint = region_endpoint });
         }
 
-        //видалити, для тестування
-        public AmazonS3() {
+        public AmazonS3(IAmazonS3 client, string bucket) {
+            _client = client;
+            _bucket = bucket;
+        }
 
+        //видалити, для тестування
+        public AmazonS3() { 
+            _client = new AmazonS3Client("AKIA6GBMGKKRTD7XQ7W6", "rKGmDJysLQqLETz2/A0ivfL7ggK9wxefPB+JZK/A", 
+                new AmazonS3Config { RegionEndpoint = USEast1 });
         }
 
         #region *** GetObject ***
@@ -172,6 +180,13 @@ namespace FileAWS {
             if (_client == null) throw new ArgumentNullException();
             return await GetObjectTemporaryUrlAsync(_client, bucket_name, object_name);
         }
+
+
+        public async Task<string> GetObjectTemporaryUrlAsync(string object_name) {
+            //using var client = new AmazonS3Client();
+            return await GetObjectTemporaryUrlAsync(_client, _bucket, object_name);
+        }
+
         #endregion
 
     }

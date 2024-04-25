@@ -2,6 +2,10 @@
 
 namespace CourseService.Application.DTOs {
     public class CourseInfo {
+        public CourseInfo() {
+            UserInfo = new UserInfo();
+            AdminInfo = new AdminInfo();
+        }
         public Course Course { get; set; }
         public UserInfo UserInfo { get; set; }
         public AdminInfo AdminInfo { get; set; }

@@ -2,18 +2,20 @@
 using CourseService.Domain.Entities;
 using MediatR;
 
-namespace CourseService.Application.Courseusers.Commands.CreateCourseuser {
-    public class CreateCourseuserCommand : IRequest<Result<Courseuser>> {
-        public CreateCourseuserCommand(string courseLink, string userId) {
+namespace CourseService.Application.Courseusers.Commands.CreateCourseuser.CreateStudent {
+    public class CreateStudentCommand : IRequest<Result<Courseuser>> {
+        public CreateStudentCommand(string courseLink, string userId) {
             CourseLink = courseLink;
             UserId = userId;
         }
-        public CreateCourseuserCommand(string courseLink, string userId, int role, bool isAdmin) {
+        public CreateStudentCommand(string courseLink, string userId, int role, bool isAdmin) {
             CourseLink = courseLink;
             UserId = userId;
             Role = role;
             IsAdmin = isAdmin;
         }
+
+        public CreateStudentCommand() { }
 
         public string CourseLink { get; set; }
         public string UserId { get; set; }

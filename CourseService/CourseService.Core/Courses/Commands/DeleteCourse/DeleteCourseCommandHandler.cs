@@ -13,7 +13,6 @@ namespace CourseService.Application.Courses.Commands.DeleteCourse {
             Course course = await _unitOfWork.GetRepository<Course>().GetByIdAsync(request.CourseId);
             if (course == null) return Errors.CourseError.TestError();
             _unitOfWork.GetRepository<Course>().Delete(course);
-            _unitOfWork.SaveChanges();
             return Result.Ok();
         }
     }

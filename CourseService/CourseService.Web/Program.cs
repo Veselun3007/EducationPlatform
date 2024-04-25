@@ -1,4 +1,5 @@
 using Amazon.Runtime;
+using CourseService.Application;
 using CourseService.Application.Behaviors;
 using CourseService.Infrastructure.Context;
 using CourseService.Infrastructure.Repositories;
@@ -8,7 +9,10 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
+
+using CourseService.Infrastructure.AWS;
 
 //using Amazon.Extensions.NETCore.Setup;
 //using Amazon.S3;
@@ -29,18 +33,22 @@ namespace CourseService.Web {
             //    .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
             //var (awsOptions, dbOptions) = builder.Services.AddVariables();
 
-            builder.Services.AddMediatR(cfg => {
-                cfg.RegisterServicesFromAssembly(CourseService.Application.AssemblyReference.Assembly);
-                cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-            });
-            builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-            builder.Services.AddValidatorsFromAssembly(CourseService.Application.AssemblyReference.Assembly);
+            //builder.Services.AddMediatR(cfg => {
+            //    cfg.RegisterServicesFromAssembly(CourseService.Application.AssemblyReference.Assembly);
+            //    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            //    cfg.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
+            //});
+            //builder.Services.AddValidatorsFromAssembly(CourseService.Application.AssemblyReference.Assembly);
+
+            builder.Services.AddApplication();
+
+            builder.Services.AddS3();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddTransient<ExceptionHandlingMiddleware>();
+            builder.Services.AddScoped<ExceptionHandlingMiddleware>();
 
             string ep_connection = _configuration.GetConnectionString("EducationPlatformConnection") ?? "defaultConnectionString";
             builder.Services

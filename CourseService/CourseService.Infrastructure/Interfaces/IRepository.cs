@@ -5,6 +5,8 @@ namespace CourseService.Infrastructure.Interfaces {
     public interface IRepository<TEntity> where TEntity : class  {
         Task<TEntity> GetByIdAsync(object id);
 
+        TEntity GetById(object id);
+
         Task<TEntity> AddAsync(TEntity entity);
 
         TEntity Update(TEntity entity);

@@ -1,21 +1,20 @@
 ﻿using CourseService.Application.Abstractions;
 using CourseService.Domain.Entities;
-using CourseService.Infrastructure.Context;
 using CourseService.Infrastructure.Interfaces;
-using CourseService.Infrastructure.Repositories;
 using MediatR;
 
-namespace CourseService.Application.Courseusers.Commands.CreateCourseuser {
-    public class CreateCourseuserCommandHandler : IRequestHandler<CreateCourseuserCommand, Result<Courseuser>> {
+namespace CourseService.Application.Courseusers.Commands.CreateCourseuser.CreateStudent {
+    public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand, Result<Courseuser>> {
         private readonly IUnitOfWork _unitOfWork;
-        public CreateCourseuserCommandHandler(IUnitOfWork unitOfWork) {
+        public CreateStudentCommandHandler(IUnitOfWork unitOfWork) {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result<Courseuser>> Handle(CreateCourseuserCommand request, CancellationToken cancellationToken) {
+        public async Task<Result<Courseuser>> Handle(CreateStudentCommand request, CancellationToken cancellationToken) {
             Course? course = await _unitOfWork.GetRepository<Course>().FirstOrDefaultAsync(c => c.CourseLink == request.CourseLink);
             User? user = await _unitOfWork.GetRepository<User>().GetByIdAsync(request.UserId);
             if (course == null || user == null) return Errors.CourseuserError.TestError();
+            if (_unitOfWork.GetRepository<Courseuser>().Any(cu => cu.UserId == user.UserId && cu.CourseId == course.CourseId)) return Errors.CourseuserError.TestError();
             Courseuser courseuser = new Courseuser() {
                 IsAdmin = request.IsAdmin,
                 Role = request.Role,

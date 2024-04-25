@@ -27,20 +27,10 @@ namespace CourseService.Infrastructure.Repositories {
         }
 
         public int SaveChanges() {
-            try {
-                return DbContext.SaveChanges();
-            }
-            catch (Exception) {
-                return 0;
-            }
+            return DbContext.SaveChanges();
         }
         public async Task<int> SaveChangesAsync() {
-            try {
-                return await DbContext.SaveChangesAsync();
-            }
-            catch (Exception) {
-                return 0;
-            }
+            return await DbContext.SaveChangesAsync();
         }
 
         public void Dispose() {

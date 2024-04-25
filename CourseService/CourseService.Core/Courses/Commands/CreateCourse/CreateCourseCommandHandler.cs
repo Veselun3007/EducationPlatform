@@ -15,9 +15,8 @@ namespace CourseService.Application.Courses.Commands.CreateCourse {
                 courseLink = Guid.NewGuid().ToString().Substring(0, 20);
             } while (await _unitOfWork.GetRepository<Course>().FirstOrDefaultAsync(c => c.CourseLink == courseLink) != null);
             Course course = new Course(request.CourseName, request.CourseDescription, courseLink);
-            Course res = await _unitOfWork.GetRepository<Course>().AddAsync(course);
-            //_unitOfWork.SaveChanges();
-            return res;
+            course = await _unitOfWork.GetRepository<Course>().AddAsync(course);
+            return course;
         }
     }
 }

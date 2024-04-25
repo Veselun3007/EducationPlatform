@@ -14,15 +14,8 @@ namespace CourseService.Application.Courseusers.Commands.UpdateCourseuser {
             Courseuser courseuser = await _unitOfWork.GetRepository<Courseuser>().GetByIdAsync(request.CourseuserId);
             courseuser.IsAdmin = request.IsAdmin;
             courseuser.Role = request.Role;
-            Courseuser res;
-            try {
-                res = _unitOfWork.GetRepository<Courseuser>().Update(courseuser);
-                _unitOfWork.SaveChanges();
-            }
-            catch (Exception e) {
-                return Errors.CourseuserError.TestError();
-            }
-            return res;
+            courseuser = _unitOfWork.GetRepository<Courseuser>().Update(courseuser);
+            return courseuser;
         }
     }
 }

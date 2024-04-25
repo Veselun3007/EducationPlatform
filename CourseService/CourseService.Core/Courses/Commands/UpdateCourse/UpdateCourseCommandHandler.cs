@@ -14,9 +14,8 @@ namespace CourseService.Application.Courses.Commands.UpdateCourse {
             if(course == null) return Errors.CourseError.TestError();
             course.CourseName = request.CourseName;
             course.CourseDescription = request.CourseDescription;
-            Course res = _unitOfWork.GetRepository<Course>().Update(course);
-            _unitOfWork.SaveChanges();
-            return res;
+            course = _unitOfWork.GetRepository<Course>().Update(course);
+            return course;
         }
     }
 }

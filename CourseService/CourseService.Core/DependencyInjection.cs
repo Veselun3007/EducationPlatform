@@ -1,5 +1,6 @@
 ﻿using CourseService.Application.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
+using FluentValidation;
 
 namespace CourseService.Application {
     public static class DependencyInjection {
@@ -9,6 +10,7 @@ namespace CourseService.Application {
                 cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
                 cfg.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
             });
+            services.AddValidatorsFromAssembly(AssemblyReference.Assembly);
             return services;
         }
     }

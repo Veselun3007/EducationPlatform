@@ -14,6 +14,8 @@ namespace CourseService.Infrastructure.Repositories {
 
         public virtual async Task<TEntity> GetByIdAsync(object id) => await DbSet.FindAsync(id);
 
+        public virtual TEntity GetById(object id) => DbSet.Find(id);
+
         public virtual async Task<TEntity> AddAsync(TEntity entity) => (await DbSet.AddAsync(entity)).Entity;
 
         public virtual void Delete(TEntity entity) => DbSet.Remove(entity);

@@ -17,7 +17,7 @@ namespace CourseService.Web.Middlewares {
             }
             catch (Exception e) {
                 _logger.LogError(e, e.Message);
-                context.Response.StatusCode = 400;
+                context.Response.StatusCode = 500;
                 ProblemDetails details = new() {
                     Status = (int)HttpStatusCode.InternalServerError,
                     Detail = e.Message,
