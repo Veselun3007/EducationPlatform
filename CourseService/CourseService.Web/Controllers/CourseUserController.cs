@@ -18,7 +18,7 @@ namespace CourseService.Web.Controllers {
         }
 
         // вертає List CourseUserInfo
-        //[Authorize]
+        [Authorize]
         [HttpGet("get_courseusers_course")]
         public async Task<IActionResult> GetByIdCourse(int courseId) {
             GetCourseusersByCourseQuery request = new GetCourseusersByCourseQuery(courseId);
@@ -26,25 +26,25 @@ namespace CourseService.Web.Controllers {
             return ReturnResult(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("create_courseuser")]
         public async Task<IActionResult> PostCourseuser(CreateStudentCommand request) {
             request.IsAdmin = false;
             request.Role = 2;
-            //request.UserId = HttpContext.User.FindFirst("username")?.Value;
-            request.UserId = "945864e8-30e1-7010-6377-79d39e0c3261";
+            request.UserId = HttpContext.User.FindFirst("username")?.Value;
+            //request.UserId = "945864e8-30e1-7010-6377-79d39e0c3261";
             var result = await _mediator.Send(request, new CancellationToken());
             return ReturnResult(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPut("update_courseuser")]
         public async Task<IActionResult> Put(UpdateCourseuserCommand request) {
             var result = await _mediator.Send(request, new CancellationToken());
             return ReturnResult(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpDelete("delete_courseuser")]
         public async Task<IActionResult> Delete(DeleteCourseuserCommand request) {
             var result = await _mediator.Send(request, new CancellationToken());
