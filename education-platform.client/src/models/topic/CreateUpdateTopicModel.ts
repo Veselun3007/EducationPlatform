@@ -11,9 +11,9 @@ export default class CreateUpdateTopicModel {
         this.title = title;
 
         makeObservable(this, {
-            courseId:observable,
-            title: observable
-        })
+            courseId: observable,
+            title: observable,
+        });
     }
 
     validateTitle(): ValidationError[] {

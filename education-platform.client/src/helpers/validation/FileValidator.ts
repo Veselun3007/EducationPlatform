@@ -33,9 +33,15 @@ export default class FileValidator extends BaseValidator<File | undefined> {
         if (
             this._value &&
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            !extensions.includes((this._value as File).name.split('.').pop()!.toLowerCase())
+            !extensions.includes(
+                (this._value as File).name.split('.').pop()!.toLowerCase(),
+            )
         ) {
-            this.errors.push(new ValidationError('validation.unsupportedFileExtension', {extensions: extensions.join(' ')}));
+            this.errors.push(
+                new ValidationError('validation.unsupportedFileExtension', {
+                    extensions: extensions.join(' '),
+                }),
+            );
         }
     }
 }

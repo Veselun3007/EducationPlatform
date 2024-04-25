@@ -108,8 +108,7 @@ export default class NavigationPanelStore extends FormStore {
 
     handleCreateCourseClose(): void {
         this.createCourseOpen = false;
-        this.reset()
-        
+        this.reset();
     }
 
     onNameChange(e: React.ChangeEvent<HTMLInputElement>): void {

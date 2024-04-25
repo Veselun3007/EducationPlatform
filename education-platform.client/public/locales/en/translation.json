@@ -27,7 +27,8 @@
         "isRequired": "Requirency",
         "deadline": "Deadline",
         "minMark":"Min mark",
-        "maxMark":"Max mark"
+        "maxMark":"Max mark",
+        "send":"Надіслати"
     },
     "validation":{
         "isRequired": "Field is required",
@@ -105,6 +106,15 @@
         "deleteTopic":"Delete topic",
         "changed": "Changed",
         "topicEmpty":"This topic is empty",
-        "courseUsers":"Course users"
+        "courseUsers":"Course users",
+        "myWork":"My work",
+        "editAssignment": "Edit assignment",
+        "editMaterial": "Edit material",
+        "deleteAssignment": "Delete assignment",
+        "deleteMaterial": "Edit material",
+        "markWorks": "Mark works",
+        "deleteAssignmentSuccess": "Assignment have been deleted",
+        "deleteTopicSuccess": "Topic have been deleted",
+        "deleteMaterialSuccess": "Material have been deleted"
     }
 }

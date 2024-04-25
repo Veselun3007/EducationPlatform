@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { action, computed, makeObservable, observable } from 'mobx';
-import IStore from './common/IStore';
-import AuthService from '../services/AuthService';
 import RootStore from './RootStore';
 import CourseModel from '../models/course/CourseModel';
-import FormStore from './common/FormStore';
 import ValidationError from '../helpers/validation/ValidationError';
 import CreateUpdateCourseModel from '../models/course/CreateUpdateCourseModel';
 import debounce from '../helpers/debounce';
@@ -14,13 +11,12 @@ import CreateUpdateTopicModel from '../models/topic/CreateUpdateTopicModel';
 import CreateUpdateMaterialModel from '../models/material/CreateUpdateMaterialModel';
 import CreateUpdateAssignmentModel from '../models/assignment/CreateUpdateAssignmentModel';
 import TopicModel from '../models/topic/TopicModel';
-import { avatarClasses, SelectChangeEvent } from '@mui/material';
+import { SelectChangeEvent } from '@mui/material';
 import { Dayjs } from 'dayjs';
 import AssignmentModel from '../models/assignment/AssignmentModel';
 import MaterialModel from '../models/material/MaterialModel';
 
 export default class CoursePageStore {
-
     private readonly _rootStore: RootStore;
 
     course: CourseModel | null = null;
@@ -37,7 +33,6 @@ export default class CoursePageStore {
     createAssignmentOpen = false;
     editTopicOpen = false;
 
-
     courseData: CreateUpdateCourseModel | null = null;
     courseErrors: Record<string, ValidationError | null> = {
         name: null,
@@ -47,14 +42,14 @@ export default class CoursePageStore {
     createTopicData: CreateUpdateTopicModel | null = null;
     createTopicErrors: Record<string, ValidationError | null> = {
         title: null,
-        meta: null
-    }
+        meta: null,
+    };
 
     editTopicData: CreateUpdateTopicModel | null = null;
     editTopicErrors: Record<string, ValidationError | null> = {
         title: null,
-        meta: null
-    }
+        meta: null,
+    };
     editTopicId: number | null = null;
 
     materialData: CreateUpdateMaterialModel | null = null;
@@ -62,8 +57,8 @@ export default class CoursePageStore {
         materialName: null,
         materialFiles: null,
         materialLinks: null,
-        meta: null
-    }
+        meta: null,
+    };
 
     assignmentData: CreateUpdateAssignmentModel | null = null;
     assignmentErrors: Record<string, ValidationError | null> = {
@@ -74,13 +69,16 @@ export default class CoursePageStore {
         assignmentDeadline: null,
         assignmentFiles: null,
         assignmentLinks: null,
-        meta: null
-    }
+        meta: null,
+    };
+
+    isLoading = true;
 
     constructor(rootStore: RootStore) {
         this._rootStore = rootStore;
 
         makeObservable(this, {
+            isLoading: observable,
             editTopicId: observable,
             editTopicData: observable,
             editTopicErrors: observable,
@@ -176,19 +174,23 @@ export default class CoursePageStore {
     }
 
     get isMaterialValid(): boolean {
-        return this.materialData!.validateMaterialName().length === 0 &&
+        return (
+            this.materialData!.validateMaterialName().length === 0 &&
             this.materialData!.validateMaterialFiles().length === 0 &&
-            this.materialData!.validateMaterialLinks().length === 0;
+            this.materialData!.validateMaterialLinks().length === 0
+        );
     }
 
     get isAssignmentValid(): boolean {
-        return this.assignmentData!.validateAssignmentDeadline().length === 0 &&
+        return (
+            this.assignmentData!.validateAssignmentDeadline().length === 0 &&
             this.assignmentData!.validateAssignmentFiles().length === 0 &&
             this.assignmentData!.validateAssignmentLinks().length === 0 &&
             this.assignmentData!.validateAssignmentName().length === 0 &&
             this.assignmentData!.validateIsRequired().length === 0 &&
             this.assignmentData!.validateMaxMark().length === 0 &&
-            this.assignmentData!.validateMinMark().length === 0;
+            this.assignmentData!.validateMinMark().length === 0
+        );
     }
 
     init() {
@@ -197,135 +199,194 @@ export default class CoursePageStore {
             courseName: 'Course name 1 ВАП ВФ ІАР ПВІАПВАП ВАПВА ВІПІПІВП',
             courseDescription:
                 'ThiThis is description for cource 1s is description for cource 1 This is description for cource 1, This is description for cource 1 This is description for cource 1This is description for cource 1',
-            courseLink: 'link 1'
+            courseLink: 'link 1',
         };
 
-        this.courseData = new CreateUpdateCourseModel(this.course.courseName, this.course.courseDescription);
+        this.courseData = new CreateUpdateCourseModel(
+            this.course.courseName,
+            this.course.courseDescription,
+        );
 
         this.createTopicData = new CreateUpdateTopicModel(this.course.courseId, '');
-        this.materialData = new CreateUpdateMaterialModel(this.course.courseId, '', [], [], new Date(Date.now()));
-        this.assignmentData = new CreateUpdateAssignmentModel(this.course.courseId, '', 100, 0, false, new Date(Date.now() + 86400000), [], [], new Date(Date.now()));
+        this.materialData = new CreateUpdateMaterialModel(
+            this.course.courseId,
+            '',
+            [],
+            [],
+            new Date(Date.now()),
+        );
+        this.assignmentData = new CreateUpdateAssignmentModel(
+            this.course.courseId,
+            '',
+            100,
+            0,
+            false,
+            new Date(Date.now() + 86400000),
+            [],
+            [],
+            new Date(Date.now()),
+        );
         this.editTopicData = new CreateUpdateTopicModel(this.course.courseId, '');
         this.topics = [
             {
                 courseId: 1,
                 id: 1,
-                title: "topic1",
+                title: 'topic1',
             },
             {
                 courseId: 1,
                 id: 2,
-                title: "topic2",
+                title: 'topic2',
             },
             {
                 courseId: 1,
                 id: 3,
-                title: "topic3",
+                title: 'topic3',
             },
-        ]
+        ];
 
-        this.assignments = [{
-            id: 1,
-            topicId: 1,
-            assignmentName: "Introduction to JavaScript",
-            assignmentDescription: "Write a simple JavaScript program to calculate the factorial of a number.",
-            maxMark: 10,
-            minMark: 0,
-            isRequired: true,
-            assignmentDatePublication: new Date(Date.now()),
-            assignmentDeadline: new Date("2024-05-05"),
-            isEdited: false,
-            editedTime: undefined,
-            assignmentfiles: [
-                { id: 1, assignmentFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
-            ],
-            assignmentlinks: [
-                { id: 1, assignmentLink: "https://developer.mozilla.org/en-US/docs/Web/JavaScript" }
-            ]
-        },
-        {
-            id: 2,
-            topicId: 2,
-            assignmentName: "Introduction to HTML",
-            maxMark: 5,
-            minMark: 0,
-            isRequired: false,
-            assignmentDatePublication: new Date(Date.now()),
-            assignmentDeadline: new Date("2024-05-10"),
-            isEdited: false,
-            editedTime: undefined,
-            assignmentfiles: [
-                { id: 1, assignmentFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
-            ],
-            assignmentlinks: [
-                { id: 1, assignmentLink: "https://www.w3schools.com/html/" }
-            ]
-        },
-        {
-            id: 3,
-            assignmentName: "Research Paper on Artificial Intelligence",
-            maxMark: 20,
-            minMark: 0,
-            isRequired: true,
-            assignmentDatePublication: new Date(Date.now()),
-            assignmentDeadline: new Date("2024-05-15"),
-            isEdited: true,
-            editedTime: new Date("2024-04-23"),
-            assignmentfiles: [
-                { id: 1, assignmentFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
-            ],
-            assignmentlinks: [
-                { id: 1, assignmentLink: "https://ai.stanford.edu/" }
-            ]
-        }
+        this.assignments = [
+            {
+                id: 1,
+                topicId: 1,
+                assignmentName: 'Introduction to JavaScript',
+                assignmentDescription:
+                    'Write a simple JavaScript program to calculate the factorial of a number.',
+                maxMark: 10,
+                minMark: 0,
+                isRequired: true,
+                assignmentDatePublication: new Date(Date.now()),
+                assignmentDeadline: new Date('2024-05-05'),
+                isEdited: false,
+                editedTime: undefined,
+                assignmentfiles: [
+                    {
+                        id: 1,
+                        assignmentFile:
+                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
+                    },
+                ],
+                assignmentlinks: [
+                    {
+                        id: 1,
+                        assignmentLink:
+                            'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
+                    },
+                ],
+            },
+            {
+                id: 2,
+                topicId: 2,
+                assignmentName: 'Introduction to HTML',
+                maxMark: 5,
+                minMark: 0,
+                isRequired: false,
+                assignmentDatePublication: new Date(Date.now()),
+                assignmentDeadline: new Date('2024-05-10'),
+                isEdited: false,
+                editedTime: undefined,
+                assignmentfiles: [
+                    {
+                        id: 1,
+                        assignmentFile:
+                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
+                    },
+                ],
+                assignmentlinks: [
+                    { id: 1, assignmentLink: 'https://www.w3schools.com/html/' },
+                ],
+            },
+            {
+                id: 3,
+                assignmentName: 'Research Paper on Artificial Intelligence',
+                maxMark: 20,
+                minMark: 0,
+                isRequired: true,
+                assignmentDatePublication: new Date(Date.now()),
+                assignmentDeadline: new Date('2024-05-15'),
+                isEdited: true,
+                editedTime: new Date('2024-04-23'),
+                assignmentfiles: [
+                    {
+                        id: 1,
+                        assignmentFile:
+                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
+                    },
+                ],
+                assignmentlinks: [{ id: 1, assignmentLink: 'https://ai.stanford.edu/' }],
+            },
         ];
 
         this.materials = [
             {
                 id: 1,
                 topicId: 1,
-                materialName: "Introduction to Algorithms",
-                materialDescription: "Overview of basic algorithms and their analysis.",
-                materialDatePublication: new Date("2024-04-20"),
+                materialName: 'Introduction to Algorithms',
+                materialDescription: 'Overview of basic algorithms and their analysis.',
+                materialDatePublication: new Date('2024-04-20'),
                 isEdited: false,
                 editedTime: undefined,
                 materialfiles: [
-                    { id: 1, materialFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+                    {
+                        id: 1,
+                        materialFile:
+                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
+                    },
                 ],
                 materiallinks: [
-                    { id: 1, materialLink: "https://mitpress.mit.edu/books/introduction-algorithms" }
-                ]
+                    {
+                        id: 1,
+                        materialLink:
+                            'https://mitpress.mit.edu/books/introduction-algorithms',
+                    },
+                ],
             },
             {
                 id: 2,
                 topicId: 2,
-                materialName: "Database Design Basics",
-                materialDatePublication: new Date("2024-04-22"),
+                materialName: 'Database Design Basics',
+                materialDatePublication: new Date('2024-04-22'),
                 isEdited: false,
                 editedTime: undefined,
                 materialfiles: [
-                    { id: 1, materialFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+                    {
+                        id: 1,
+                        materialFile:
+                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
+                    },
                 ],
                 materiallinks: [
-                    { id: 1, materialLink: "https://www.tutorialspoint.com/dbms/database_design.htm" }
-                ]
+                    {
+                        id: 1,
+                        materialLink:
+                            'https://www.tutorialspoint.com/dbms/database_design.htm',
+                    },
+                ],
             },
             {
                 id: 3,
-                materialName: "Introduction to Machine Learning",
-                materialDescription: "An overview of machine learning concepts and algorithms.",
-                materialDatePublication: new Date("2024-04-18"),
+                materialName: 'Introduction to Machine Learning',
+                materialDescription:
+                    'An overview of machine learning concepts and algorithms.',
+                materialDatePublication: new Date('2024-04-18'),
                 isEdited: true,
-                editedTime: new Date("2024-04-23"),
+                editedTime: new Date('2024-04-23'),
                 materialfiles: [
-                    { id: 1, materialFile: "https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing" }
+                    {
+                        id: 1,
+                        materialFile:
+                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
+                    },
                 ],
                 materiallinks: [
-                    { id: 1, materialLink: "https://www.coursera.org/learn/machine-learning" }
-                ]
-            }
+                    {
+                        id: 1,
+                        materialLink: 'https://www.coursera.org/learn/machine-learning',
+                    },
+                ],
+            },
         ];
-
+        this.isLoading = false;
     }
 
     onNameChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -347,7 +408,8 @@ export default class CoursePageStore {
         debounce(
             action(() => {
                 const titleErrors = this.createTopicData!.validateTitle();
-                this.createTopicErrors.title = titleErrors.length !== 0 ? titleErrors[0] : null;
+                this.createTopicErrors.title =
+                    titleErrors.length !== 0 ? titleErrors[0] : null;
             }),
         )();
     }
@@ -363,7 +425,7 @@ export default class CoursePageStore {
     }
 
     onMaterialTopicChange(event: SelectChangeEvent) {
-        const value = Number.parseInt(event.target.value)
+        const value = Number.parseInt(event.target.value);
         if (value !== 0) {
             this.materialData!.topicId = value;
         } else {
@@ -372,12 +434,13 @@ export default class CoursePageStore {
     }
     onMaterialFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files) {
-            this.materialData!.materialFiles.push(...Array.from(e.target.files))
+            this.materialData!.materialFiles.push(...Array.from(e.target.files));
         }
         debounce(
             action(() => {
                 const errors = this.materialData!.validateMaterialFiles();
-                this.materialErrors.materialFiles = errors.length !== 0 ? errors[0] : null;
+                this.materialErrors.materialFiles =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
@@ -386,27 +449,30 @@ export default class CoursePageStore {
         debounce(
             action(() => {
                 const errors = this.materialData!.validateMaterialFiles();
-                this.materialErrors.materialFiles = errors.length !== 0 ? errors[0] : null;
+                this.materialErrors.materialFiles =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
 
     onMaterialLinkAdd(link: string) {
-        this.materialData?.materialLinks.push(link)
+        this.materialData?.materialLinks.push(link);
         debounce(
             action(() => {
                 const errors = this.materialData!.validateMaterialLinks();
-                this.materialErrors.materialLinks = errors.length !== 0 ? errors[0] : null;
+                this.materialErrors.materialLinks =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
 
     onMaterialLinkDelete(id: number) {
-        this.materialData?.materialLinks.splice(id, 1)
+        this.materialData?.materialLinks.splice(id, 1);
         debounce(
             action(() => {
                 const errors = this.materialData!.validateMaterialLinks();
-                this.materialErrors.materialLinks = errors.length !== 0 ? errors[0] : null;
+                this.materialErrors.materialLinks =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
@@ -420,7 +486,8 @@ export default class CoursePageStore {
         debounce(
             action(() => {
                 const errors = this.assignmentData!.validateAssignmentName();
-                this.assignmentErrors.assignmentName = errors.length !== 0 ? errors[0] : null;
+                this.assignmentErrors.assignmentName =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
@@ -435,7 +502,8 @@ export default class CoursePageStore {
             debounce(
                 action(() => {
                     const errors = this.assignmentData!.validateMaxMark();
-                    this.assignmentErrors.maxMark = errors.length !== 0 ? errors[0] : null;
+                    this.assignmentErrors.maxMark =
+                        errors.length !== 0 ? errors[0] : null;
                 }),
             )();
         }
@@ -447,14 +515,15 @@ export default class CoursePageStore {
             debounce(
                 action(() => {
                     const errors = this.assignmentData!.validateMinMark();
-                    this.assignmentErrors.minMark = errors.length !== 0 ? errors[0] : null;
+                    this.assignmentErrors.minMark =
+                        errors.length !== 0 ? errors[0] : null;
                 }),
             )();
         }
     }
 
     onAssignmentTopicChange(event: SelectChangeEvent) {
-        const value = Number.parseInt(event.target.value)
+        const value = Number.parseInt(event.target.value);
         if (value !== 0) {
             this.assignmentData!.topicId = value;
         } else {
@@ -463,13 +532,12 @@ export default class CoursePageStore {
     }
 
     onAssignmentIsRequiredChange(event: SelectChangeEvent) {
-        const value = Number.parseInt(event.target.value)
+        const value = Number.parseInt(event.target.value);
         if (value === 0) {
             this.assignmentData!.isRequired = false;
         } else {
             this.assignmentData!.isRequired = true;
         }
-
     }
 
     onAssignmentDeadlineChange(date: Dayjs | null) {
@@ -479,7 +547,8 @@ export default class CoursePageStore {
             debounce(
                 action(() => {
                     const errors = this.assignmentData!.validateAssignmentDeadline();
-                    this.assignmentErrors.assignmentDeadline = errors.length !== 0 ? errors[0] : null;
+                    this.assignmentErrors.assignmentDeadline =
+                        errors.length !== 0 ? errors[0] : null;
                 }),
             )();
         }
@@ -487,12 +556,13 @@ export default class CoursePageStore {
 
     onAssignmentFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files) {
-            this.assignmentData!.assignmentFiles.push(...Array.from(e.target.files))
+            this.assignmentData!.assignmentFiles.push(...Array.from(e.target.files));
         }
         debounce(
             action(() => {
                 const errors = this.assignmentData!.validateAssignmentFiles();
-                this.assignmentErrors.assignmentFiles = errors.length !== 0 ? errors[0] : null;
+                this.assignmentErrors.assignmentFiles =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
@@ -501,27 +571,30 @@ export default class CoursePageStore {
         debounce(
             action(() => {
                 const errors = this.assignmentData!.validateAssignmentFiles();
-                this.assignmentErrors.assignmentFiles = errors.length !== 0 ? errors[0] : null;
+                this.assignmentErrors.assignmentFiles =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
 
     onAssignmentLinkAdd(link: string) {
-        this.assignmentData?.assignmentLinks.push(link)
+        this.assignmentData?.assignmentLinks.push(link);
         debounce(
             action(() => {
                 const errors = this.assignmentData!.validateAssignmentLinks();
-                this.assignmentErrors.assignmentLinks = errors.length !== 0 ? errors[0] : null;
+                this.assignmentErrors.assignmentLinks =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
 
     onAssignmentLinkDelete(id: number) {
-        this.assignmentData?.assignmentLinks.splice(id, 1)
+        this.assignmentData?.assignmentLinks.splice(id, 1);
         debounce(
             action(() => {
                 const errors = this.assignmentData!.validateAssignmentLinks();
-                this.assignmentErrors.assignmentLinks = errors.length !== 0 ? errors[0] : null;
+                this.assignmentErrors.assignmentLinks =
+                    errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
@@ -531,15 +604,14 @@ export default class CoursePageStore {
         debounce(
             action(() => {
                 const titleErrors = this.editTopicData!.validateTitle();
-                this.editTopicErrors.title = titleErrors.length !== 0 ? titleErrors[0] : null;
+                this.editTopicErrors.title =
+                    titleErrors.length !== 0 ? titleErrors[0] : null;
             }),
         )();
     }
 
     submitCourse() {
-
         this.handleEditCourseClose();
-
     }
 
     submitCreateTopic() {
@@ -580,7 +652,7 @@ export default class CoursePageStore {
     }
 
     handleEditCourseClose() {
-        this.resetCourse()
+        this.resetCourse();
         this.editCourseOpen = false;
         this.closeCourseMenu();
     }
@@ -593,7 +665,7 @@ export default class CoursePageStore {
     }
 
     handleEditTopicClose() {
-        this.resetEditTopic()
+        this.resetEditTopic();
         this.editTopicOpen = false;
     }
 
@@ -636,32 +708,36 @@ export default class CoursePageStore {
     }
 
     deleteTopic(id: number) {
-        this.assignments!.forEach(a => {
+        this.assignments!.forEach((a) => {
             if (a.topicId === id) {
-
                 a.topicId = undefined;
             }
         });
 
-        this.materials!.forEach(m => {
+        this.materials!.forEach((m) => {
             if (m.topicId === id) {
                 m.topicId = undefined;
             }
         });
-        const index = this.topics!.findIndex(t => t.id === id);
+        const index = this.topics!.findIndex((t) => t.id === id);
 
         this.topics!.splice(index, 1);
+        enqueueAlert('glossary.deleteTopicSuccess', 'success');
     }
 
     resetEditTopic() {
         this.editTopicData!.title = '';
         this.editTopicId = null;
-        Object.keys(this.editTopicErrors).forEach((key) => (this.editTopicErrors[key] = null));
+        Object.keys(this.editTopicErrors).forEach(
+            (key) => (this.editTopicErrors[key] = null),
+        );
     }
 
     resetCreateTopic() {
         this.createTopicData!.title = '';
-        Object.keys(this.createTopicErrors).forEach((key) => (this.createTopicErrors[key] = null));
+        Object.keys(this.createTopicErrors).forEach(
+            (key) => (this.createTopicErrors[key] = null),
+        );
     }
 
     resetCourse() {
@@ -682,7 +758,9 @@ export default class CoursePageStore {
         this.assignmentData!.minMark = 0;
         this.assignmentData!.topicId = undefined;
 
-        Object.keys(this.assignmentErrors).forEach((key) => (this.assignmentErrors[key] = null));
+        Object.keys(this.assignmentErrors).forEach(
+            (key) => (this.assignmentErrors[key] = null),
+        );
     }
 
     resetMaterial() {
@@ -692,14 +770,27 @@ export default class CoursePageStore {
         this.materialData!.materialLinks = [];
         this.materialData!.materialName = '';
         this.materialData!.topicId = undefined;
-        Object.keys(this.materialErrors).forEach((key) => (this.materialErrors[key] = null));
+        Object.keys(this.materialErrors).forEach(
+            (key) => (this.materialErrors[key] = null),
+        );
     }
 
     reset(): void {
+        this.isLoading = true;
         this.resetAssignment();
         this.resetCourse();
         this.resetMaterial();
         this.resetCreateTopic();
+        this.resetEditTopic();
         //this.course = null;
+
+        this.courseMenuAnchor = null;
+        this.contentMenuAnchor = null;
+
+        this.editCourseOpen = false;
+        this.createTopicOpen = false;
+        this.createMaterialOpen = false;
+        this.createAssignmentOpen = false;
+        this.editTopicOpen = false;
     }
 }

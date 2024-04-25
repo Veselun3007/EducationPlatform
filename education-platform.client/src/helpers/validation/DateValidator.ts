@@ -16,13 +16,11 @@ export default class DateValidator extends BaseValidator<Date | undefined> {
 
     greaterThan(value: number): void {
         if (this._value && this._value.getTime() < value) {
-
             this.errors.push(
                 new ValidationError('validation.greaterThan', {
                     value: new Date(value).toDateString(),
                 }),
             );
-
         }
     }
 }

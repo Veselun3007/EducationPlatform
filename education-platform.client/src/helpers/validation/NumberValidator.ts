@@ -17,7 +17,9 @@ export default class NumberValidator extends BaseValidator<number | undefined> {
     greaterThan(value: number): void {
         if (this._value && this._value < value) {
             this.errors.push(
-                new ValidationError('validation.greaterThan', { value: value.toString() }),
+                new ValidationError('validation.greaterThan', {
+                    value: value.toString(),
+                }),
             );
         }
     }

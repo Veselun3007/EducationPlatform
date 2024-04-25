@@ -31,7 +31,6 @@ export default class CreateUpdateAssignmentModel {
         assignmentDatePublication?: Date,
         topicId?: number,
         assignmentDescription?: string,
-        
     ) {
         this.courseId = courseId;
         this.topicId = topicId;
@@ -48,7 +47,7 @@ export default class CreateUpdateAssignmentModel {
         makeObservable(this, {
             courseId: observable,
             topicId: observable,
-            assignmentName:observable,
+            assignmentName: observable,
             assignmentDescription: observable,
             minMark: observable,
             maxMark: observable,
@@ -56,7 +55,7 @@ export default class CreateUpdateAssignmentModel {
             assignmentDatePublication: observable,
             assignmentDeadline: observable,
             assignmentFiles: observable,
-            assignmentLinks: observable
+            assignmentLinks: observable,
         });
     }
 
@@ -103,7 +102,7 @@ export default class CreateUpdateAssignmentModel {
     }
 
     validateAssignmentFiles(): ValidationError[] {
-        const errors:ValidationError[] = []
+        const errors: ValidationError[] = [];
         if (this.assignmentFiles.length !== 0) {
             this.assignmentFiles.forEach((file) => {
                 const validator = new FileValidator(file);
@@ -121,21 +120,21 @@ export default class CreateUpdateAssignmentModel {
                     'xlsx',
                 ]);
 
-                errors.push(...validator.errors)
+                errors.push(...validator.errors);
             });
         }
         return errors;
     }
 
     validateAssignmentLinks(): ValidationError[] {
-        const errors:ValidationError[] = []
+        const errors: ValidationError[] = [];
         if (this.assignmentLinks.length !== 0) {
             this.assignmentLinks.forEach((link) => {
                 const validator = new StringValidator(link);
 
                 validator.isLink();
 
-                errors.push(...validator.errors)
+                errors.push(...validator.errors);
             });
         }
         return errors;

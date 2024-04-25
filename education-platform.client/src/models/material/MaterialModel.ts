@@ -12,7 +12,7 @@ export default interface MaterialModel {
     materialfiles?: MaterialFileModel[];
     materiallinks?: MaterialLinkModel[];
 
-    // constructor(id: number, materialName: string, 
+    // constructor(id: number, materialName: string,
     //     materialDatePublication: Date, isEdited: boolean,
     //     topicId?: number, materialDescription?: string,
     //     editedTime?: Date, materialfiles?: MaterialFileModel[],
@@ -27,8 +27,6 @@ export default interface MaterialModel {
     //     this.topicId = topicId;
     //     this.materialfiles = materialfiles;
     //     this.materiallinks = materiallinks
-        
-        
-    // }
 
+    // }
 }

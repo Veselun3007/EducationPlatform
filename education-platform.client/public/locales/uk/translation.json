@@ -27,7 +27,8 @@
         "isRequired": "Обов'язковість",
         "deadline": "Дедлайн",
         "minMark":"Мінімальний бал",
-        "maxMark":"Максимальний бал"
+        "maxMark":"Максимальний бал",
+        "send":"Надіслати"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -105,6 +106,15 @@
         "deleteTopic":"Видалити тему",
         "changed": "Змінено",
         "topicEmpty":"Ця тема пуста",
-        "courseUsers":"Користувачі курсу"
+        "courseUsers":"Користувачі курсу",
+        "myWork":"Моя робота",
+        "editAssignment": "Редагування завдання",
+        "editMaterial": "Редагування матеріалу",
+        "deleteAssignment": "Видалення завдання",
+        "deleteMaterial": "Видалення матерілу",
+        "markWorks": "Оцінити роботи",
+        "deleteAssignmentSuccess": "Завдання видалено",
+        "deleteTopicSuccess": "Тему видалено",
+        "deleteMaterialSuccess": "Матеріал видалено"
     }
 }

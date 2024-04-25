@@ -20,7 +20,6 @@ export default class CreateUpdateModelModel {
         materialDatePublication?: Date,
         topicId?: number,
         materialDescription?: string,
-        
     ) {
         this.courseId = courseId;
         this.topicId = topicId;
@@ -31,14 +30,14 @@ export default class CreateUpdateModelModel {
         this.materialLinks = materialLinks;
 
         makeObservable(this, {
-            courseId:observable,
+            courseId: observable,
             topicId: observable,
-            materialName:observable,
+            materialName: observable,
             materialDescription: observable,
             materialDatePublication: observable,
-            materialFiles:observable,
-            materialLinks: observable
-        })
+            materialFiles: observable,
+            materialLinks: observable,
+        });
     }
 
     validateMaterialName(): ValidationError[] {
@@ -50,7 +49,7 @@ export default class CreateUpdateModelModel {
     }
 
     validateMaterialFiles(): ValidationError[] {
-        const errors:ValidationError[] = []
+        const errors: ValidationError[] = [];
         if (this.materialFiles.length !== 0) {
             this.materialFiles.forEach((file) => {
                 const validator = new FileValidator(file);
@@ -68,21 +67,21 @@ export default class CreateUpdateModelModel {
                     'xlsx',
                 ]);
 
-                errors.push(...validator.errors)
+                errors.push(...validator.errors);
             });
         }
         return errors;
     }
 
     validateMaterialLinks(): ValidationError[] {
-        const errors:ValidationError[] = []
+        const errors: ValidationError[] = [];
         if (this.materialLinks?.length !== 0) {
             this.materialLinks.forEach((link) => {
                 const validator = new StringValidator(link);
 
                 validator.isLink();
 
-                errors.push(...validator.errors)
+                errors.push(...validator.errors);
             });
         }
         return errors;
