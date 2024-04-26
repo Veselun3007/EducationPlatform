@@ -117,7 +117,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Infrastructure.Repositories.AssignmentRepository">
-    <Position X="19.5" Y="8.5" Width="4.25" />
+    <Position X="19.5" Y="8.75" Width="4.25" />
     <AssociationLine Name="_contentRepository" Type="CourseContent.Infrastructure.Interfaces.IContentRepository&lt;T&gt;" FixedFromPoint="true">
       <Path>
         <Point X="19.5" Y="10.188" />
@@ -167,7 +167,7 @@
         <Point X="14.25" Y="10.188" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="0.079" Y="0.017" Height="0.182" Width="1.446" />
+        <Position X="0.079" Y="0.017" Height="0.182" Width="1.331" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>

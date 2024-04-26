@@ -9,7 +9,7 @@
         <Point X="13" Y="9.25" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
-        <Position X="-0.768" Y="2.036" Height="0.182" Width="3.003" />
+        <Position X="-0.835" Y="2.026" Height="0.182" Width="3.003" />
       </MemberNameLabel>
     </AssociationLine>
     <AssociationLine Name="Assignmentlinks" Type="CourseContent.Domain.Entities.Assignmentlink">
@@ -36,7 +36,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Course">
-    <Position X="13.5" Y="2.75" Width="3.25" />
+    <Position X="13.5" Y="2.75" Width="3.5" />
     <AssociationLine Name="Assignments" Type="CourseContent.Domain.Entities.Assignment">
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-2.518" Y="1.208" />
@@ -47,13 +47,19 @@
         <Position X="-0.012" Y="1.238" />
       </MemberNameLabel>
     </AssociationLine>
+    <AssociationLine Name="Topics" Type="CourseContent.Domain.Entities.Topic">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.995" Y="0.545" />
+      </MemberNameLabel>
+    </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AEKCAAgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AEKCAAgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAA=</HashCode>
       <FileName>Entities\Course.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Property Name="Assignments" />
       <Property Name="Materials" />
+      <Property Name="Topics" />
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" />
   </Class>
@@ -93,7 +99,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="CourseContent.Domain.Entities.Topic">
-    <Position X="13.5" Y="5.25" Width="3.25" />
+    <Position X="13.5" Y="5.25" Width="3.5" />
     <AssociationLine Name="Materials" Type="CourseContent.Domain.Entities.Material">
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
         <Position X="0.11" Y="0.06" Height="0.182" Width="2.632" />
@@ -131,7 +137,7 @@
     <Lollipop Position="0.2" />
   </Class>
   <Interface Name="CourseContent.Domain.Interfaces.IAggregateRoot">
-    <Position X="13.5" Y="0.5" Width="3.25" />
+    <Position X="13.5" Y="0.5" Width="3.5" />
     <TypeIdentifier>
       <HashCode>AAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Interfaces\IAggregateRoot.cs</FileName>

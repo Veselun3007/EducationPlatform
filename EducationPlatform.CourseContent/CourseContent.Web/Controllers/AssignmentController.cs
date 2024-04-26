@@ -14,7 +14,7 @@ namespace CourseContent.Web.Controllers
     {
         private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO> _operation = operation;
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
@@ -38,7 +38,7 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdAssignment(int id)
         {
@@ -78,16 +78,16 @@ namespace CourseContent.Web.Controllers
         }
 
         [Authorize]
-        [HttpPost("addFileById/{id}")]
-        public async Task<IActionResult> AddAssignmentFileById([FromForm] IFormFile file, int id)
+        [HttpPost("addFile/{id}")]
+        public async Task<IActionResult> AddAssignmentFile([FromForm] IFormFile file, int id)
         {
             var result = await _operation.AddFileAsync(file, id);
             return FromResult(result);
         }
 
         [Authorize]
-        [HttpPost("addLinkById/{id}")]
-        public async Task<IActionResult> AddAssignmentLinkById([FromForm] string link, int id)
+        [HttpPost("addLink/{id}")]
+        public async Task<IActionResult> AddAssignmentLink([FromForm] string link, int id)
         {
             var result = await _operation.AddLinkAsync(link, id);
             return FromResult(result);

@@ -9,11 +9,11 @@ namespace Identity.Web.Controllers
 {
     [ApiController]
     [Route("api/account")]
-    public class AuthController(UserOperation userOperation,
-        IdentityOperation identityOperation) : BaseController
+    public class AuthController(UserService userOperation,
+        IdentityService identityOperation) : BaseController
     {
-        private readonly UserOperation _userOperation = userOperation;
-        private readonly IdentityOperation _identityOperation = identityOperation;
+        private readonly UserService _userOperation = userOperation;
+        private readonly IdentityService _identityOperation = identityOperation;
 
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUpAsync([FromForm] UserDTO model)

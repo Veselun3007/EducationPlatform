@@ -40,8 +40,8 @@ namespace EducationPlatform.Identity
 
             builder.Services.AddScoped<IBaseDbOperation<User>, DbOperation>();
             builder.Services.AddScoped<FileHelper>();
-            builder.Services.AddScoped<UserOperation>();
-            builder.Services.AddScoped<IdentityOperation>();
+            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IdentityService>();
 
             builder.Services.AddControllers();
             builder.Services.AddProblemDetails();

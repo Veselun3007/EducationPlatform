@@ -22,9 +22,7 @@ namespace EPChat.Domain.Entities
 
         public bool IsDeleted { get; set; } = false;
 
-        public virtual ICollection<MessageMedia> AttachedMedias { get; set; } = new List<MessageMedia>();
-
-        public virtual ICollection<MessageReader> Readers { get; set; } = new List<MessageReader>();
+        public virtual ICollection<MessageMedia> AttachedMedias { get; set; } = [];
 
         public virtual Message? ReplyToMessage { get; set; }
     }

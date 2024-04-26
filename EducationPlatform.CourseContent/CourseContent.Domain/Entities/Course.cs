@@ -15,4 +15,6 @@ public class Course : IAggregateRoot
     public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 
     public virtual ICollection<Material> Materials { get; set; } = new List<Material>();
+
+    public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
 }

@@ -13,6 +13,7 @@ namespace EducationPlatform.Identity
     {
         public static IServiceCollection AddAWS(this IServiceCollection services)
         {
+
             var awsOptions = new AWSOptions()
             {
                 Credentials = new EnvironmentVariablesAWSCredentials(),

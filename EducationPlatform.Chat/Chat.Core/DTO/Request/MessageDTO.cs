@@ -13,7 +13,7 @@ namespace EPChat.Core.DTO.Request
 
         public int CreatorId { get; set; }
 
-        public DateTime CreatedIn { get; set; } = DateTime.Now;
+        public DateTime CreatedIn { get; set; } = DateTime.UtcNow;
 
         public bool? HasAttachment { get; set; } 
 

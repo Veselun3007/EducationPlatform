@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Identity.Core.Services
 {
-    public class IdentityOperation(IAmazonCognitoIdentityProvider cognitoService, IOptions<AwsOptions> option)
+    public class IdentityService(IAmazonCognitoIdentityProvider cognitoService, IOptions<AwsOptions> option)
     {
         private readonly IAmazonCognitoIdentityProvider _cognitoService = cognitoService;
         private readonly AwsOptions _options = option.Value;
@@ -21,7 +21,6 @@ namespace Identity.Core.Services
                 Username = email,
                 Password = password
             };
-
             try
             {
                 var signUpResponse = await _cognitoService.SignUpAsync(signUpRequest);
@@ -32,7 +31,6 @@ namespace Identity.Core.Services
                 return Result.Failure<string, Error>(Errors.Identity.UsernameExist(email));
             }
         }
-
 
         public async Task<Result<TokenResponseModel, Error>> SignInAsync(string email, string password)
         {

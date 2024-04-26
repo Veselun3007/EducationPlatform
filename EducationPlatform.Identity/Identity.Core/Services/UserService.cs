@@ -8,11 +8,11 @@ using Identity.Infrastructure.Interfaces;
 
 namespace Identity.Core.Services
 {
-    public class UserOperation(IBaseDbOperation<User> dbOperation,
-        IdentityOperation identityOperation, FileHelper filesHelper)
+    public class UserService(IBaseDbOperation<User> dbOperation,
+        IdentityService identityOperation, FileHelper filesHelper)
     {
         private readonly IBaseDbOperation<User> _dbOperation = dbOperation;
-        private readonly IdentityOperation _identityOperation = identityOperation;
+        private readonly IdentityService _identityOperation = identityOperation;
         private readonly FileHelper _filesHelper = filesHelper;
 
         public async Task<Result<UserOutDTO, Error>> AddAsync(UserDTO entity, string id)
@@ -60,7 +60,6 @@ namespace Identity.Core.Services
                 return Result.Failure<UserOutDTO, Error>(Errors.General.NotFound());
             }
         }
-
 
         public async Task<Result<UserOutDTO, Error>> GetByIdAsync(string id)
         {

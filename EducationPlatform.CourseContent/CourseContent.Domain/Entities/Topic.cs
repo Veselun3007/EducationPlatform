@@ -10,8 +10,10 @@ namespace CourseContent.Domain.Entities
 
         public required string Title { get; set; }
 
-        public virtual ICollection<Material>? Materials { get; set; } = new List<Material>();
+        public virtual Course Course { get; set; } = null!;
 
-        public virtual ICollection<Assignment>? Assignments { get; set; } = new List<Assignment>();
+        public virtual ICollection<Material>? Materials { get; set; } = [];
+
+        public virtual ICollection<Assignment>? Assignments { get; set; } = [];
     }
 }

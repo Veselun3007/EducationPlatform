@@ -78,16 +78,16 @@ namespace EducationPlatform.CourseContent.Controllers
         }
 
         [Authorize]
-        [HttpPost("addFileById/{id}")]
-        public async Task<IActionResult> AddMaterialFileById([FromForm] IFormFile file, int id)
+        [HttpPost("addFile/{id}")]
+        public async Task<IActionResult> AddMaterialFile([FromForm] IFormFile file, int id)
         {
             var result = await _operation.AddFileAsync(file, id);
             return FromResult(result);
         }
 
         [Authorize]
-        [HttpPost("addLinkById/{id}")]
-        public async Task<IActionResult> AddMaterialLinkById([FromForm] string link, int id)
+        [HttpPost("addLink/{id}")]
+        public async Task<IActionResult> AddMaterialLink([FromForm] string link, int id)
         {
             var result = await _operation.AddLinkAsync(link, id);
             return FromResult(result);

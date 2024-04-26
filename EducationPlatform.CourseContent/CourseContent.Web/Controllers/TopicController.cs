@@ -14,7 +14,7 @@ namespace CourseContent.Web.Controllers
     {
         private readonly IBaseOperation<TopicOutDTO, Error, TopicDTO> _operation = operation;
 
-        [Authorize]
+        //[Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateTopic([FromForm] TopicDTO topic)
         {
@@ -46,7 +46,7 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<TopicOutDTO>> GetAllTopic(int id)
         {

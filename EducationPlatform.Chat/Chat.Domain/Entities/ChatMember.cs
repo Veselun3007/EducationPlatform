@@ -14,8 +14,7 @@ namespace EPChat.Domain.Entities
 
         public virtual ChatsUser? ChatsUser { get; set; }
 
-        public virtual ICollection<Message> Messages { get; set; } = new List<Message>();
+        public virtual ICollection<Message> Messages { get; set; } = [];
 
-        public virtual ICollection<MessageReader> Read { get; set; } = new List<MessageReader>();
     }
 }

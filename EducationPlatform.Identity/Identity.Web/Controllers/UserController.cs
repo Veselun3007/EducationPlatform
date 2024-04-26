@@ -9,9 +9,9 @@ namespace Identity.Web.Controllers
 {
     [ApiController]
     [Route("api/userManagement")]
-    public class UserController(UserOperation operation) : BaseController
+    public class UserController(UserService operation) : BaseController
     {
-        private readonly UserOperation _operation = operation;
+        private readonly UserService _operation = operation;
 
         [Authorize]
         [HttpPut("update")]
