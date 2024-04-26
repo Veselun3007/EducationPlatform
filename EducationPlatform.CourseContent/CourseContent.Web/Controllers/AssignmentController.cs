@@ -14,7 +14,7 @@ namespace CourseContent.Web.Controllers
     {
         private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO> _operation = operation;
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
@@ -38,7 +38,7 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdAssignment(int id)
         {

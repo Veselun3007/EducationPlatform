@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -17,7 +16,21 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import { useStore } from '../context/RootStoreContext';
 import HomeIcon from '@mui/icons-material/Home';
-import { Button, CircularProgress, Drawer, Menu, MenuItem, Modal, Paper, Stack, Tab, TextField, ToggleButton, ToggleButtonGroup, useMediaQuery } from '@mui/material';
+import {
+    Button,
+    CircularProgress,
+    Drawer,
+    Menu,
+    MenuItem,
+    Modal,
+    Paper,
+    Stack,
+    Tab,
+    TextField,
+    ToggleButton,
+    ToggleButtonGroup,
+    useMediaQuery,
+} from '@mui/material';
 import { action, observable } from 'mobx';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -27,9 +40,8 @@ import { useTranslation } from 'react-i18next';
 import ColoredAvatar from './ColoredAvatar';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { locales } from '../i18n';
-import { Close, Edit } from '@mui/icons-material';
+import { Add, Close, Edit } from '@mui/icons-material';
 import { useEffect } from 'react';
-
 
 const drawerWidth = 240;
 
@@ -111,71 +123,14 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
     const { pathname } = useLocation();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
     const { t, i18n } = useTranslation();
-    const { dashboardPageStore, userStore } = useStore();
+    const { dashboardPageStore, userStore, navigationPanelStore } = useStore();
 
     useEffect(() => {
         userStore.getUser(navigate);
-        return () => userStore.reset()
-    }, [])
+        return () => userStore.reset();
+    }, []);
 
     const courseTopLevelPath = pathname.replace(/(\/course\/\d+).*/, '$1');
-
-    const localStore = useLocalObservable(
-        () => ({
-            drawerOpen: false,
-            toggled: false,
-            anchorEl: null as null | HTMLElement,
-            settingsOpen: false,
-            settingsTab: "1",
-
-            handleDrawerOpen() {
-                this.drawerOpen = true;
-            },
-
-            handleDrawerClose() {
-                this.drawerOpen = false;
-            },
-
-            toggleDrawer() {
-                this.toggled = !this.toggled;
-            },
-
-            handleMenuOpen(event: React.MouseEvent<HTMLElement>) {
-                this.anchorEl = event.currentTarget;
-            },
-            handleMenuClose() {
-                this.anchorEl = null;
-            },
-
-            handleSettingsClose() {
-                this.settingsOpen = false;
-
-            },
-
-            handleSettingsOpen() {
-                this.settingsOpen = true;
-            },
-
-            handleSettingsTabChange(event: React.SyntheticEvent, newValue: string) {
-                this.settingsTab = newValue;
-            },
-        }),
-        {
-            drawerOpen: observable,
-            toggled: observable,
-            anchorEl: observable,
-            settingsOpen: observable,
-            settingsTab: observable,
-            handleDrawerOpen: action.bound,
-            handleDrawerClose: action.bound,
-            toggleDrawer: action.bound,
-            handleMenuOpen: action.bound,
-            handleMenuClose: action.bound,
-            handleSettingsClose: action.bound,
-            handleSettingsOpen: action.bound,
-            handleSettingsTabChange: action.bound,
-        },
-    );
 
     const content = (
         <>
@@ -188,7 +143,10 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                     sx={{
                         minHeight: 48,
                         justifyContent:
-                            localStore.drawerOpen || localStore.toggled ? 'initial' : 'center',
+                            navigationPanelStore.drawerOpen ||
+                            navigationPanelStore.toggled
+                                ? 'initial'
+                                : 'center',
                         px: 2.5,
                         borderBottomRightRadius: 24,
                         borderTopRightRadius: 24,
@@ -200,7 +158,11 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                     <ListItemIcon
                         sx={{
                             minWidth: 0,
-                            mr: localStore.drawerOpen || localStore.toggled ? 3 : 'auto',
+                            mr:
+                                navigationPanelStore.drawerOpen ||
+                                navigationPanelStore.toggled
+                                    ? 3
+                                    : 'auto',
                             justifyContent: 'center',
                         }}
                     >
@@ -208,7 +170,13 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                     </ListItemIcon>
                     <ListItemText
                         primary={'Dashboard'}
-                        sx={{ opacity: localStore.drawerOpen || localStore.toggled ? 1 : 0 }}
+                        sx={{
+                            opacity:
+                                navigationPanelStore.drawerOpen ||
+                                navigationPanelStore.toggled
+                                    ? 1
+                                    : 0,
+                        }}
                     />
                 </ListItemButton>
             </ListItem>
@@ -225,7 +193,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                             sx={{
                                 minHeight: 48,
                                 justifyContent:
-                                    localStore.drawerOpen || localStore.toggled
+                                    navigationPanelStore.drawerOpen ||
+                                    navigationPanelStore.toggled
                                         ? 'initial'
                                         : 'center',
                                 px: 2.5,
@@ -240,21 +209,38 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 sx={{
                                     minWidth: 0,
                                     mr:
-                                        localStore.drawerOpen || localStore.toggled
+                                        navigationPanelStore.drawerOpen ||
+                                        navigationPanelStore.toggled
                                             ? 3
                                             : 'auto',
                                     justifyContent: 'center',
                                 }}
                             >
-                                <AbstractBackground value={cource.courseName} sx={{ borderRadius: '50%', height: '2.1875rem', width: '2.1875rem' }}>
-                                    <Typography textAlign="center" alignSelf="center" width="100%">{cource.courseName[0]}</Typography>
+                                <AbstractBackground
+                                    value={cource.courseName}
+                                    sx={{
+                                        borderRadius: '50%',
+                                        height: '2.1875rem',
+                                        width: '2.1875rem',
+                                    }}
+                                >
+                                    <Typography
+                                        textAlign="center"
+                                        alignSelf="center"
+                                        width="100%"
+                                    >
+                                        {cource.courseName[0]}
+                                    </Typography>
                                 </AbstractBackground>
                             </ListItemIcon>
                             <ListItemText
                                 primary={cource.courseName}
                                 sx={{
                                     opacity:
-                                        localStore.drawerOpen || localStore.toggled ? 1 : 0,
+                                        navigationPanelStore.drawerOpen ||
+                                        navigationPanelStore.toggled
+                                            ? 1
+                                            : 0,
                                     display: '-webkit-box',
                                     overflow: 'hidden',
                                     WebkitBoxOrient: 'vertical',
@@ -274,18 +260,19 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
         <>
             <PermanentDrawer
                 variant="permanent"
-                open={localStore.drawerOpen || localStore.toggled}
+                open={navigationPanelStore.drawerOpen || navigationPanelStore.toggled}
                 onMouseOverCapture={() => {
-                    if (!localStore.toggled) debounce(localStore.handleDrawerOpen, 100)();
+                    if (!navigationPanelStore.toggled)
+                        debounce(navigationPanelStore.handleDrawerOpen, 100)();
                 }}
                 onMouseLeave={() => {
-                    if (!localStore.toggled)
-                        debounce(localStore.handleDrawerClose, 100)();
+                    if (!navigationPanelStore.toggled)
+                        debounce(navigationPanelStore.handleDrawerClose, 100)();
                 }}
             >
                 {content}
             </PermanentDrawer>
-            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+            <Box component="main" sx={{ flexGrow: 1 }}>
                 <DrawerHeader />
                 {children}
             </Box>
@@ -296,8 +283,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
         <>
             <Drawer
                 sx={{ width: drawerWidth }}
-                open={localStore.drawerOpen}
-                onClose={localStore.handleDrawerClose}
+                open={navigationPanelStore.drawerOpen}
+                onClose={navigationPanelStore.handleDrawerClose}
             >
                 {content}
             </Drawer>
@@ -317,8 +304,14 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
 
     if (userStore.user === null || userStore.data === null) {
         return (
-            <Box display="flex" height="100svh" width="100%" alignItems="center"  justifyContent="center">
-                <CircularProgress/>
+            <Box
+                display="flex"
+                height="100svh"
+                width="100%"
+                alignItems="center"
+                justifyContent="center"
+            >
+                <CircularProgress />
             </Box>
         );
     }
@@ -334,75 +327,185 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                             aria-label="open drawer"
                             onClick={() =>
                                 isSmallScreen
-                                    ? localStore.handleDrawerOpen()
-                                    : localStore.toggleDrawer()
+                                    ? navigationPanelStore.handleDrawerOpen()
+                                    : navigationPanelStore.toggleDrawer()
                             }
                             edge="start"
                             sx={{
                                 marginRight: 5,
                                 // ...(localStore.open && { display: 'none' }),
-
                             }}
                         >
                             <MenuIcon />
                         </IconButton>
-                        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{ flexGrow: 1 }}
+                        >
                             {t('glossary.educationPlatform')}
                         </Typography>
-                        <ColoredAvatar sx={{ cursor: 'pointer' }} src={userStore.user.userImage} alt={userStore.user.userName} onClick={localStore.handleMenuOpen} />
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={localStore.anchorEl}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'center',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            sx={{ mt: 1 }}
-                            open={Boolean(localStore.anchorEl)}
-                            onClose={localStore.handleMenuClose}
+                        <Stack direction="row" spacing={2}>
+                            {pathname === '/dashboard' && (
+                                <>
+                                    {/* <IconButton
+                                        id="menu-button"
+                                        aria-controls={localStore.courseMenuAnchorEl ? 'course-menu' : undefined}
+                                        aria-haspopup="true"
+                                        aria-expanded={localStore.courseMenuAnchorEl ? 'true' : undefined}
+                                        onClick={localStore.handleCourseMenuOpen}
+                                        sx={{ zIndex: 1, position: 'relative', right: "2%" }}
+                                    >
+                                        <Add />
+                                    </IconButton>
+                                    <Menu
+                                        id="course-menu"
+                                        anchorEl={localStore.courseMenuAnchorEl}
+                                        open={Boolean(localStore.courseMenuAnchorEl)}
+                                        onClose={localStore.handleCourseMenuClose}
+                                        MenuListProps={{
+                                            'aria-labelledby': 'menu-button',
+                                        }}
+                                        anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'right',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                    >
+                                        <MenuItem onClick={localStore.handleCourseMenuClose}>Profile</MenuItem>
+                                        <MenuItem onClick={localStore.handleCourseMenuClose}>My account</MenuItem>
+                                        <MenuItem onClick={localStore.handleCourseMenuClose}>Logout</MenuItem>
+                                    </Menu> */}
 
-                        >
-                            <Stack width={300} height="100%" alignItems="center" p={2}>
-                                <ColoredAvatar sx={{ width: 120, height: 120 }} src={userStore.user.userImage} alt={userStore.user.userName} />
-                                <Typography variant="h5" mt={1}>{userStore.user.userName}</Typography>
-                                <Typography variant="caption" color="text.secondary">{userStore.user.email}</Typography>
-                                <Paper sx={{ width: 250, overflow: 'hidden', marginTop: 1, bgcolor: theme.palette.background.default, borderRadius: 5 }}>
-                                    <MenuItem onClick={localStore.handleSettingsOpen} sx={{ height: 50 }}>{t('common.settings')}</MenuItem>
-                                    <MenuItem onClick={() => userStore.signOut(navigate)} sx={{ height: 50 }}>{t('common.logout')}</MenuItem>
-                                </Paper>
-
-                            </Stack>
-
-                        </Menu>
+                                    <IconButton
+                                        onClick={
+                                            navigationPanelStore.handleCreateCourseOpen
+                                        }
+                                    >
+                                        <Add />
+                                    </IconButton>
+                                </>
+                            )}
+                            <ColoredAvatar
+                                sx={{ cursor: 'pointer' }}
+                                src={userStore.user.userImage}
+                                alt={userStore.user.userName}
+                                onClick={navigationPanelStore.handleUserMenuOpen}
+                            />
+                            <Menu
+                                id="menu-appbar"
+                                anchorEl={navigationPanelStore.userMenuAnchorEl}
+                                anchorOrigin={{
+                                    vertical: 'bottom',
+                                    horizontal: 'center',
+                                }}
+                                keepMounted
+                                transformOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'right',
+                                }}
+                                sx={{ mt: 1 }}
+                                open={Boolean(navigationPanelStore.userMenuAnchorEl)}
+                                onClose={navigationPanelStore.handleUserMenuClose}
+                            >
+                                <Stack
+                                    width={300}
+                                    height="100%"
+                                    alignItems="center"
+                                    p={2}
+                                >
+                                    <ColoredAvatar
+                                        sx={{ width: 120, height: 120 }}
+                                        src={userStore.user.userImage}
+                                        alt={userStore.user.userName}
+                                    />
+                                    <Typography variant="h5" mt={1}>
+                                        {userStore.user.userName}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {userStore.user.email}
+                                    </Typography>
+                                    <Paper
+                                        sx={{
+                                            width: 250,
+                                            overflow: 'hidden',
+                                            marginTop: 1,
+                                            bgcolor: theme.palette.background.default,
+                                            borderRadius: 5,
+                                        }}
+                                    >
+                                        <MenuItem
+                                            onClick={
+                                                navigationPanelStore.handleSettingsOpen
+                                            }
+                                            sx={{ height: 50 }}
+                                        >
+                                            {t('common.settings')}
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() => userStore.signOut(navigate)}
+                                            sx={{ height: 50 }}
+                                        >
+                                            {t('common.logout')}
+                                        </MenuItem>
+                                    </Paper>
+                                </Stack>
+                            </Menu>
+                        </Stack>
                     </Toolbar>
                 </AppBar>
                 {isSmallScreen ? temporaryDrawer : permanentDrawer}
             </Box>
-            <Modal open={localStore.settingsOpen} onClose={localStore.handleSettingsClose}
+            <Modal
+                open={navigationPanelStore.settingsOpen}
+                onClose={navigationPanelStore.handleSettingsClose}
             >
-                <Box bgcolor={theme.palette.background.paper} width="90%" height='70%'
-                    sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} overflow='auto'>
-                    <TabContext value={localStore.settingsTab}>
+                <Box
+                    bgcolor={theme.palette.background.paper}
+                    width="90%"
+                    height="70%"
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                    }}
+                    overflow="auto"
+                >
+                    <TabContext value={navigationPanelStore.settingsTab}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Stack direction="row" justifyContent="space-between" overflow="visible">
-                                <TabList onChange={localStore.handleSettingsTabChange}>
+                            <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                overflow="visible"
+                            >
+                                <TabList
+                                    onChange={
+                                        navigationPanelStore.handleSettingsTabChange
+                                    }
+                                >
                                     <Tab label={t('common.commonSettings')} value="1" />
                                     <Tab label={t('common.userSettings')} value="2" />
                                 </TabList>
-                                <IconButton size="large" onClick={localStore.handleSettingsClose}>
+                                <IconButton
+                                    size="large"
+                                    onClick={navigationPanelStore.handleSettingsClose}
+                                >
                                     <Close />
                                 </IconButton>
                             </Stack>
-
                         </Box>
                         <TabPanel value="1">
                             <Stack spacing={1}>
-                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                <Stack
+                                    direction="row"
+                                    justifyContent="space-between"
+                                    alignItems="center"
+                                >
                                     <Typography>{t('glossary.appLanguage')}</Typography>
                                     <ToggleButtonGroup
                                         value={i18n.language}
@@ -421,7 +524,6 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                             </Stack>
                         </TabPanel>
                         <TabPanel value="2">
-
                             <Stack width={300} height="100%" spacing={2}>
                                 <Typography variant="h5">
                                     {t('glossary.editUser')}
@@ -433,19 +535,53 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                     alignItems="center"
                                     width={300}
                                 >
-                                    <Stack direction="column" spacing={1} width="100%" alignItems="center">
-                                        <Box position="relative" height={100} width={100} overflow="hidden" sx={{
-                                            '&:hover': {
-                                                cursor: "pointer",
-                                                "& .darkener": {
-                                                    visibility: 'visible',
-                                                    bgcolor: 'rgba(0,0,0,0.5)'
-                                                }
-                                            }
-                                        }} borderRadius="50%">
-                                            <ColoredAvatar sx={{ width: '100%', height: '100%', objectFit: 'cover' }} src={userStore.previewImage} alt={userStore.data.userName} />
-                                            <Box className="darkener" visibility="hidden" position="absolute" left="0%" top="0%" width="100%" height="100%" display="flex" justifyContent="center" alignItems="center">
-                                                <IconButton sx={{ width: '100%', height: '100%' }} component="label">
+                                    <Stack
+                                        direction="column"
+                                        spacing={1}
+                                        width="100%"
+                                        alignItems="center"
+                                    >
+                                        <Box
+                                            position="relative"
+                                            height={100}
+                                            width={100}
+                                            overflow="hidden"
+                                            sx={{
+                                                '&:hover': {
+                                                    cursor: 'pointer',
+                                                    '& .darkener': {
+                                                        visibility: 'visible',
+                                                        bgcolor: 'rgba(0,0,0,0.5)',
+                                                    },
+                                                },
+                                            }}
+                                            borderRadius="50%"
+                                        >
+                                            <ColoredAvatar
+                                                sx={{
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    objectFit: 'cover',
+                                                }}
+                                                src={userStore.previewImage}
+                                                alt={userStore.data.userName}
+                                            />
+                                            <Box
+                                                className="darkener"
+                                                visibility="hidden"
+                                                position="absolute"
+                                                left="0%"
+                                                top="0%"
+                                                width="100%"
+                                                height="100%"
+                                                display="flex"
+                                                justifyContent="center"
+                                                alignItems="center"
+                                            >
+                                                <IconButton
+                                                    sx={{ width: '100%', height: '100%' }}
+                                                    component="label"
+                                                >
                                                     <Edit />
                                                     <input
                                                         width="100%"
@@ -453,9 +589,10 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                                         type="file"
                                                         hidden
                                                         accept=".jpg, .jpeg, .png"
-                                                        onChange={userStore.onUserImageChange}
+                                                        onChange={
+                                                            userStore.onUserImageChange
+                                                        }
                                                     />
-
                                                 </IconButton>
                                             </Box>
                                         </Box>
@@ -471,9 +608,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         >
                                             {userStore.errors.userImage !== null
                                                 ? t(
-                                                    userStore.errors.userImage.errorKey,
-                                                    userStore.errors.userImage.options,
-                                                )
+                                                      userStore.errors.userImage.errorKey,
+                                                      userStore.errors.userImage.options,
+                                                  )
                                                 : null}
                                         </Typography>
                                     </Stack>
@@ -488,9 +625,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         helperText={
                                             userStore.errors.email !== null
                                                 ? t(
-                                                    userStore.errors.email.errorKey,
-                                                    userStore.errors.email.options,
-                                                )
+                                                      userStore.errors.email.errorKey,
+                                                      userStore.errors.email.options,
+                                                  )
                                                 : null
                                         }
                                     />
@@ -504,9 +641,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         helperText={
                                             userStore.errors.userName !== null
                                                 ? t(
-                                                    userStore.errors.userName.errorKey,
-                                                    userStore.errors.userName.options,
-                                                )
+                                                      userStore.errors.userName.errorKey,
+                                                      userStore.errors.userName.options,
+                                                  )
                                                 : null
                                         }
                                     />
@@ -523,9 +660,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                     >
                                         {userStore.errors.meta !== null
                                             ? t(
-                                                userStore.errors.meta.errorKey,
-                                                userStore.errors.meta.options,
-                                            )
+                                                  userStore.errors.meta.errorKey,
+                                                  userStore.errors.meta.options,
+                                              )
                                             : null}
                                     </Typography>
                                     <Button
@@ -537,7 +674,6 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                     >
                                         {t('common.submit')}
                                     </Button>
-
                                 </Stack>
                                 <Typography variant="h5">
                                     {t('glossary.deleteUser')}
@@ -545,17 +681,96 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 <Button
                                     variant="contained"
                                     color="error"
-
                                     onClick={() => userStore.deleteUser(navigate)}
                                 >
                                     {t('glossary.deleteUser')}
                                 </Button>
-
-
                             </Stack>
                         </TabPanel>
                     </TabContext>
                 </Box>
+            </Modal>
+            <Modal
+                open={navigationPanelStore.createCourseOpen}
+                onClose={navigationPanelStore.handleCreateCourseClose}
+            >
+                <Stack
+                    bgcolor={theme.palette.background.paper}
+                    width={{ xs: '90%', md: '50%' }}
+                    height="fit-content"
+                    sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                    }}
+                    overflow="auto"
+                    justifyContent="center"
+                    spacing={{ xs: 1, md: 2 }}
+                    p={3}
+                    alignItems="center"
+                >
+                    <Typography textAlign="start" width="100%" variant="h6">
+                        {t('glossary.createCourseHeader')}
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        required
+                        type="text"
+                        label={t('common.name')}
+                        value={navigationPanelStore.data.name}
+                        onChange={navigationPanelStore.onNameChange}
+                        error={navigationPanelStore.errors.name !== null}
+                        helperText={
+                            navigationPanelStore.errors.name !== null
+                                ? t(
+                                      navigationPanelStore.errors.name.errorKey,
+                                      navigationPanelStore.errors.name.options,
+                                  )
+                                : null
+                        }
+                    />
+                    <TextField
+                        fullWidth
+                        multiline
+                        rows={4}
+                        label={t('common.description')}
+                        value={navigationPanelStore.data.description}
+                        onChange={navigationPanelStore.onDescriptionChange}
+                    />
+                    <Typography
+                        color="error"
+                        variant="caption"
+                        align="center"
+                        visibility={
+                            navigationPanelStore.errors.meta !== null
+                                ? 'visible'
+                                : 'collapse'
+                        }
+                    >
+                        {navigationPanelStore.errors.meta !== null
+                            ? t(
+                                  navigationPanelStore.errors.meta.errorKey,
+                                  navigationPanelStore.errors.meta.options,
+                              )
+                            : null}
+                    </Typography>
+                    <Stack direction="row" width="100%" justifyContent="end">
+                        <Button
+                            color="inherit"
+                            onClick={navigationPanelStore.handleCreateCourseClose}
+                        >
+                            {t('common.close')}
+                        </Button>
+                        <Button
+                            color="primary"
+                            onClick={navigationPanelStore.submit}
+                            disabled={!navigationPanelStore.isValid}
+                        >
+                            {t('common.create')}
+                        </Button>
+                    </Stack>
+                </Stack>
             </Modal>
         </>
     );

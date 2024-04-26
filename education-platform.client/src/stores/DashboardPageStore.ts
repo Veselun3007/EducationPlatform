@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable } from 'mobx';
 import IStore from './common/IStore';
 import AuthService from '../services/AuthService';
 import RootStore from './RootStore';
@@ -106,7 +106,9 @@ export default class DashboardPageStore implements IStore {
             reset: action.bound,
         });
     }
+
     reset(): void {
+        //this.courses = [];
         console.log('reset');
     }
 }

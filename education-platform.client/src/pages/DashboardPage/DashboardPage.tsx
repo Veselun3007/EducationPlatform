@@ -1,5 +1,14 @@
 import React, { useEffect } from 'react';
-import { Badge, Card, CardActionArea, Stack, Typography } from '@mui/material';
+import {
+    Badge,
+    Button,
+    Card,
+    CardActionArea,
+    Menu,
+    MenuItem,
+    Stack,
+    Typography,
+} from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import AbstractBackground from '../../components/AbstractBackground';
 import { useStore } from '../../context/RootStoreContext';
@@ -30,6 +39,38 @@ const DashboardPage = observer(() => {
                     overflow="hidden"
                 >
                     <Card sx={{ height: '100%' }}>
+                        {/* <Button
+                            id="menu-button"
+                            aria-controls={dashboardPageStore.isCourseMenuOpen ? 'course-menu' : undefined}
+                            aria-haspopup="true"
+                            aria-expanded={dashboardPageStore.isCourseMenuOpen ? 'true' : undefined}
+                            onClick={dashboardPageStore.handleCourseMenuOpen}
+                            sx={{zIndex:1, position: 'relative', right:"2%"}}
+                        >
+                            Dashboard
+                        </Button>
+                        <Menu
+                            elevation={4}
+                            id="course-menu"
+                            anchorEl={dashboardPageStore.courseMenuAnchorEl}
+                            open={dashboardPageStore.isCourseMenuOpen}
+                            onClose={dashboardPageStore.handleCourseMenuClose}
+                            MenuListProps={{
+                                'aria-labelledby': 'menu-button',
+                            }}
+                            anchorOrigin={{
+                                vertical: 'bottom',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                        >
+                            <MenuItem onClick={dashboardPageStore.handleCourseMenuClose}>Profile</MenuItem>
+                            <MenuItem onClick={dashboardPageStore.handleCourseMenuClose}>My account</MenuItem>
+                            <MenuItem onClick={dashboardPageStore.handleCourseMenuClose}>Logout</MenuItem>
+                        </Menu> */}
                         <CardActionArea
                             sx={{ height: '100%' }}
                             onClick={() => navigate(`/course/${course.courseId}`)}
@@ -50,8 +91,7 @@ const DashboardPage = observer(() => {
                                 >
                                     <AbstractBackground
                                         value={course.courseName}
-                                        sx={{ width:"100%",height:"7rem"}}
-
+                                        sx={{ width: '100%', height: '7rem' }}
                                     >
                                         <Typography
                                             variant="h5"

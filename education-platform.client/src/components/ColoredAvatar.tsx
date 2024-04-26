@@ -38,8 +38,7 @@ function stringAvatar(name: string | undefined) {
             },
             children: `${nameSplit[0][0]}${nameSplit[1][0]}`,
         };
-    }
-    else{
+    } else {
         return {
             sx: {
                 bgcolor: stringToColor(name),
@@ -47,8 +46,7 @@ function stringAvatar(name: string | undefined) {
             children: `${nameSplit[0][0]}`,
         };
     }
-    }
-    
+}
 
 const ColoredAvatar: React.FC<AvatarProps> = ({ ...props }) => {
     const stringProps = stringAvatar(props.alt);

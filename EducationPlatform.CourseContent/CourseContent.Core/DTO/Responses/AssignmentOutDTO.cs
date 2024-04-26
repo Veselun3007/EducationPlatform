@@ -4,6 +4,10 @@ namespace CourseContent.Core.DTO.Responses
 {
     public class AssignmentOutDTO
     {
+        public int Id { get; set; }
+
+        public int? TopicId { get; set; }
+
         public required string AssignmentName { get; set; }
 
         public string? AssignmentDescription { get; set; }
@@ -30,6 +34,8 @@ namespace CourseContent.Core.DTO.Responses
         {
             return new AssignmentOutDTO
             {
+                Id = assignment.Id,
+                TopicId = assignment.TopicId,
                 AssignmentName = assignment.AssignmentName,
                 AssignmentDescription = assignment.AssignmentDescription,
                 AssignmentDatePublication = assignment.AssignmentDatePublication,

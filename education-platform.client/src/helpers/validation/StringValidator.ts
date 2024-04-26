@@ -44,4 +44,24 @@ export default class StringValidator extends BaseValidator<string | undefined> {
             );
         }
     }
+
+    smallerThan(length: number): void {
+        if (this._value && this._value.length > length) {
+            this.errors.push(
+                new ValidationError('validation.lessThan', { value: length }),
+            );
+        }
+    }
+
+    isLink(): void {
+        if (
+            this._value &&
+            // eslint-disable-next-line no-useless-escape
+            !/^(https?:\/\/)?([\w\-]+(\.[\w\-]+)+\/?|localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(:\d+)?(\/\S*)?$/i.test(
+                this._value as string,
+            )
+        ) {
+            this.errors.push(new ValidationError('validation.invalidLink'));
+        }
+    }
 }
