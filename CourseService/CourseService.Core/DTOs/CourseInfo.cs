@@ -6,16 +6,22 @@ namespace CourseService.Application.DTOs {
             UserInfo = new UserInfo();
             AdminInfo = new AdminInfo();
         }
+        public CourseInfo(Course course, Courseuser courseuser) {
+            Course = course;
+            UserInfo = new UserInfo(courseuser);
+            AdminInfo = new AdminInfo();
+        }
         public Course Course { get; set; }
         public UserInfo UserInfo { get; set; }
         public AdminInfo AdminInfo { get; set; }
     }
     public class UserInfo {
+        public UserInfo() { }
+        public UserInfo(Courseuser courseuser) {
+            Role = courseuser.Role;
+            CourseuserId = courseuser.CourseuserId;
+        }
         public int Role { get; set; }
-        public bool IsAdmin { get; set; }
-    }
-    public class AdminInfo {
-        public string? ImageLink { get; set; }
-        public string AdminName { get; set; }
+        public int CourseuserId { get; set; }
     }
 }

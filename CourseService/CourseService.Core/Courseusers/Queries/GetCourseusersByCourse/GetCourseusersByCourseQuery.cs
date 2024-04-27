@@ -8,5 +8,6 @@ namespace CourseService.Application.Courseusers.Queries.GetCourseusersByCourse {
             CourseId = courseId;
         }
         public int CourseId { get; set; }
+        public string UserId { get; set; }
     }
 }

@@ -17,7 +17,6 @@ namespace CourseService.Application.Courseusers.Commands.CreateCourseuser {
             User? user = await _unitOfWork.GetRepository<User>().GetByIdAsync(request.UserId);
             if (course == null || user == null) return Errors.CourseuserError.TestError();
             Courseuser courseuser = new Courseuser() {
-                IsAdmin = request.IsAdmin,
                 Role = request.Role,
                 Course = course,
                 User = user,

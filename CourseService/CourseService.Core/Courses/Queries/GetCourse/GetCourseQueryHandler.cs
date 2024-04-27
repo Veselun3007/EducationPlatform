@@ -11,25 +11,20 @@ namespace CourseService.Application.Courses.Queries.GetCourse {
     public class GetCourseQueryHandler : IQueryHandler<GetCourseQuery, CourseInfo> {
         private readonly IUnitOfWork _unitOfWork;
         private readonly AmazonS3 _s3;
-        private readonly EducationPlatformContext _db;
-        public GetCourseQueryHandler(IUnitOfWork unitOfWork, AmazonS3 s3, EducationPlatformContext db) {
+        public GetCourseQueryHandler(IUnitOfWork unitOfWork, AmazonS3 s3) {
             _unitOfWork = unitOfWork;
             _s3 = s3;
-            _db = db;
         }
 
         public async Task<Result<CourseInfo>> Handle(GetCourseQuery request, CancellationToken cancellationToken) {
+            Course course = await _unitOfWork.GetRepository<Course>().FirstOrDefaultAsync(c => c.CourseId == request.CourseId && c.Courseusers.Any(cu => cu.UserId == request.UserId));
             //Course course = await _unitOfWork.GetRepository<Course>().GetByIdAsync(request.CourseId);
-            Course course = await _db.Courses.Include(c => c.Courseusers).FirstOrDefaultAsync(c => c.CourseId == request.CourseId);
+            if (course == null) return Errors.Global.Error404();
 
-            if (course == null) return Errors.CourseError.TestError();
-
-            CourseInfo courseInfo = new CourseInfo();
-            courseInfo.Course = course;
-
-            User admin = await _unitOfWork.GetRepository<User>().GetByIdAsync(course.Courseusers.FirstOrDefault(cu => cu.IsAdmin == true).UserId);
-
-            if (admin == null) return Errors.CourseError.TestError();
+            Courseuser courseuser = course.Courseusers.FirstOrDefault(cu => cu.UserId == request.UserId);
+            User admin = await _unitOfWork.GetRepository<User>().GetByIdAsync(course.Courseusers.FirstOrDefault(cu => cu.Role == 0).UserId);
+            if (admin == null || courseuser == null) return Errors.Global.Error404();
+            CourseInfo courseInfo = new CourseInfo(course, courseuser);
 
             courseInfo.AdminInfo.AdminName = admin.UserName;
             if (admin.UserImage != null) {
@@ -37,16 +32,12 @@ namespace CourseService.Application.Courses.Queries.GetCourse {
                     courseInfo.AdminInfo.ImageLink = await _s3.GetObjectTemporaryUrlAsync(admin.UserImage);
                 }
                 catch {
-                    return Errors.CourseError.TestError();
+                    courseInfo.AdminInfo.ImageLink = String.Empty;
                 }
             }
             else {
                 courseInfo.AdminInfo.ImageLink = String.Empty;
             }
-
-            Courseuser courseuser = course.Courseusers.FirstOrDefault(cu => cu.UserId == request.UserId);
-            courseInfo.UserInfo.IsAdmin = courseuser.IsAdmin;
-            courseInfo.UserInfo.Role = courseuser.Role;
 
             return courseInfo;
         }

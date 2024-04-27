@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 using CourseService.Infrastructure.AWS;
+using CourseService.Domain.Entities;
 
 //using Amazon.Extensions.NETCore.Setup;
 //using Amazon.S3;
@@ -33,13 +34,6 @@ namespace CourseService.Web {
             //    .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
             //var (awsOptions, dbOptions) = builder.Services.AddVariables();
 
-            //builder.Services.AddMediatR(cfg => {
-            //    cfg.RegisterServicesFromAssembly(CourseService.Application.AssemblyReference.Assembly);
-            //    cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-            //    cfg.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
-            //});
-            //builder.Services.AddValidatorsFromAssembly(CourseService.Application.AssemblyReference.Assembly);
-
             builder.Services.AddApplication();
 
             builder.Services.AddS3();
@@ -53,7 +47,9 @@ namespace CourseService.Web {
             string ep_connection = _configuration.GetConnectionString("EducationPlatformConnection") ?? "defaultConnectionString";
             builder.Services
                 .AddDbContext<EducationPlatformContext>(opt => opt.UseNpgsql(ep_connection))
-                .AddUnitOfWork<EducationPlatformContext>();
+                .AddUnitOfWork<EducationPlatformContext>()
+                .AddCustomRepository<Course, CourseRepository>()
+                .AddCustomRepository<Courseuser, CourseuserRepository>();
 
             builder.Services.AddScoped<AmazonS3>();
 

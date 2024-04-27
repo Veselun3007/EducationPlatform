@@ -1,11 +1,14 @@
-﻿using CourseService.Infrastructure.Interfaces;
+﻿using CourseService.Application.Abstractions;
+using CourseService.Infrastructure.Interfaces;
 using MediatR;
 using System.Transactions;
 
 namespace CourseService.Application.Behaviors {
     public class UnitOfWorkBehavior<TRequest, TResponse>
         : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : class, IRequest<TResponse> {
+        where TRequest : class, IRequest<TResponse> 
+        //where TResponse : Result 
+        {
 
         private readonly IUnitOfWork _unitOfWork;
         public UnitOfWorkBehavior(IUnitOfWork unitOfWork) {
@@ -22,6 +25,8 @@ namespace CourseService.Application.Behaviors {
             //}
             
             var response = await next();
+            //if(!response.IsSuccess) return response;
+            //перевірка результату
             await _unitOfWork.SaveChangesAsync();
             return response;
         }

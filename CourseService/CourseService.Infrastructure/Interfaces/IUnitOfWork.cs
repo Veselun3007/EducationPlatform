@@ -8,6 +8,6 @@ namespace CourseService.Infrastructure.Interfaces {
     public interface IUnitOfWork : IDisposable {
         int SaveChanges();
         Task<int> SaveChangesAsync();
-        IRepository<TEntity> GetRepository<TEntity>(bool hasCustomRepository = false) where TEntity : class;
+        IRepository<TEntity> GetRepository<TEntity>(bool hasCustomRepository = true) where TEntity : class;
     }
 }
