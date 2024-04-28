@@ -53,7 +53,6 @@ public partial class EducationPlatformContext : DbContext
             entity.Property(e => e.CourseId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("course_id");
-            entity.Property(e => e.IsAdmin).HasColumnName("is_admin");
             entity.Property(e => e.Role).HasColumnName("role");
             entity.Property(e => e.UserId)
                 .HasMaxLength(36)

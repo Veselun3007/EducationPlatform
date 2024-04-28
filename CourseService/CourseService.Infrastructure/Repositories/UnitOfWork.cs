@@ -10,12 +10,15 @@ namespace CourseService.Infrastructure.Repositories {
             DbContext = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public IRepository<TEntity> GetRepository<TEntity>(bool hasCustomRepository = false) where TEntity : class {
+        public IRepository<TEntity> GetRepository<TEntity>(bool hasCustomRepository = true) where TEntity : class {
             if (hasCustomRepository) {
-                var customRepo = DbContext.GetService<IRepository<TEntity>>();
-                if (customRepo != null) {
-                    return customRepo;
+                try {
+                    var customRepo = DbContext.GetService<IRepository<TEntity>>();
+                    if (customRepo != null) {
+                        return customRepo;
+                    }
                 }
+                catch { }
             }
 
             _repositories ??= new Dictionary<Type, object>();
