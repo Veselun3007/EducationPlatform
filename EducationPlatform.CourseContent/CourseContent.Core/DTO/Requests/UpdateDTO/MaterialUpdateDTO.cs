@@ -8,6 +8,8 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
     {
         public int Id { get; set; }
 
+        public int CourseId { get; set; }
+
         public int? TopicId { get; set; }
 
         public required string MaterialName { get; set; }
@@ -36,6 +38,7 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
             return new Material
             {
                 Id = materialDto.Id,    
+                CourseId = materialDto.CourseId,
                 TopicId = materialDto.TopicId,
                 MaterialName = materialDto.MaterialName,
                 MaterialDescription = materialDto.MaterialDescription,

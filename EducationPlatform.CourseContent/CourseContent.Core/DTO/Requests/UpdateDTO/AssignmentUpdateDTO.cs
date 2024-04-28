@@ -8,6 +8,8 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
     {
         public int Id { get; set; }
 
+        public int CourseId { get; set; }
+
         public int? TopicId { get; set; }
 
         public required string AssignmentName { get; set; }
@@ -44,6 +46,7 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
             return new Assignment
             {
                 Id = assignmentDto.Id,
+                CourseId = assignmentDto.CourseId,
                 TopicId = assignmentDto.TopicId,
                 AssignmentName = assignmentDto.AssignmentName,
                 AssignmentDescription = assignmentDto.AssignmentDescription,
