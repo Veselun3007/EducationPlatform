@@ -2,12 +2,11 @@
 using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
-namespace CourseContent.Core.DTO.Requests.AssignmentDTO
+namespace CourseContent.Core.DTO.Requests.UpdateDTO
 {
-    public class AssignmentDTO
+    public class AssignmentUpdateDTO
     {
-
-        public int CourseId { get; set; }
+        public int Id { get; set; }
 
         public int? TopicId { get; set; }
 
@@ -40,11 +39,11 @@ namespace CourseContent.Core.DTO.Requests.AssignmentDTO
 
         public List<string>? AssignmentLinks { get; set; }
 
-        public static Assignment FromAssignmentDto(AssignmentDTO assignmentDto)
+        public static Assignment FromAssignmentUpdateDto(AssignmentUpdateDTO assignmentDto)
         {
             return new Assignment
             {
-                CourseId = assignmentDto.CourseId,
+                Id = assignmentDto.Id,
                 TopicId = assignmentDto.TopicId,
                 AssignmentName = assignmentDto.AssignmentName,
                 AssignmentDescription = assignmentDto.AssignmentDescription,

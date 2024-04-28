@@ -58,18 +58,18 @@ public partial class EducationPlatformContext : DbContext
 
             entity.Property(e => e.MaxMark)
                 .HasColumnName("max_mark")
-                .IsRequired(); 
+                .IsRequired();
 
             entity.Property(e => e.MinMark)
                 .HasColumnName("min_mark")
-                .IsRequired(); 
+                .IsRequired();
 
             entity.Property(e => e.IsRequired)
                 .HasColumnName("is_required")
                 .IsRequired();
 
             entity.Property(e => e.IsEdited)
-                .HasColumnName("is_edited");                
+                .HasColumnName("is_edited");
 
             entity.Property(e => e.EditedTime)
                 .HasColumnType("timestamp with time zone")
@@ -157,14 +157,15 @@ public partial class EducationPlatformContext : DbContext
 
             entity.ToTable("topics");
 
-            entity.Property(e => e.Id).HasColumnName("topic_id");
-            entity.Property(e => e.Title)
-                .HasMaxLength(255)
-                .HasColumnName("topic_name");
+            entity.Property(e => e.Id).HasColumnName("topic_id");            
 
             entity.Property(e => e.CourseId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("course_id");
+
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasColumnName("topic_name");
 
             entity.HasOne(e => e.Course).WithMany(p => p.Topics)
                 .HasForeignKey(d => d.CourseId)
@@ -182,6 +183,10 @@ public partial class EducationPlatformContext : DbContext
             entity.Property(e => e.CourseId)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("course_id");
+
+            entity.Property(e => e.TopicId)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("topic_id");
 
             entity.Property(e => e.MaterialDatePublication)
                 .HasColumnType("timestamp with time zone")

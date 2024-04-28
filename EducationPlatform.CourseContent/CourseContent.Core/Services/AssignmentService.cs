@@ -1,17 +1,18 @@
 ﻿using CourseContent.Core.DTO.Requests.AssignmentDTO;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Models.ErrorModels;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
 using CSharpFunctionalExtensions;
-using Identity.Core.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
     public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
-        IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO>
+        IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly FileHelper _fileHelper = fileHelper;
@@ -52,11 +53,11 @@ namespace CourseContent.Core.Services
             await _unitOfWork.CompleteAsync();
         }
 
-        public async Task<Result<AssignmentOutDTO, Error>> UpdateAsync(AssignmentDTO entity, int id)
+        public async Task<Result<AssignmentOutDTO, Error>> UpdateAsync(AssignmentUpdateDTO entity, int id)
         {
             try
             {
-                var assignment = AssignmentDTO.FromAssignmentDto(entity);               
+                var assignment = AssignmentUpdateDTO.FromAssignmentUpdateDto(entity);               
                 assignment.IsEdited = true;
                 assignment.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);

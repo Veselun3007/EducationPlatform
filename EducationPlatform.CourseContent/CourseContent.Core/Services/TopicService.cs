@@ -1,14 +1,15 @@
 ﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Models.ErrorModels;
 using CourseContent.Infrastructure.Interfaces;
 using CSharpFunctionalExtensions;
-using Identity.Core.Models;
 
 namespace CourseContent.Core.Services
 {
     public class TopicService(IUnitOfWork unitOfWork) :
-        IBaseOperation<TopicOutDTO, Error, TopicDTO>
+        IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
@@ -36,12 +37,11 @@ namespace CourseContent.Core.Services
             }
         }
 
-        public async Task<Result<TopicOutDTO, Error>> UpdateAsync(TopicDTO entity, int id)
+        public async Task<Result<TopicOutDTO, Error>> UpdateAsync(TopicUpdateDTO entity, int id)
         {
             try
             {
-                var topic = TopicDTO.FromTopicDto(entity);
-
+                var topic = TopicUpdateDTO.FromTopicUpdateDto(entity);          
                 await _unitOfWork.TopicRepository.UpdateAsync(id, topic);
                 await _unitOfWork.CompleteAsync();
 

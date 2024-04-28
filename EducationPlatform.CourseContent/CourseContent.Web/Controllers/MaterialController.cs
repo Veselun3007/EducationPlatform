@@ -1,8 +1,10 @@
 ﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Models.ErrorModels;
+using CourseContent.Domain.Entities;
 using CourseContent.Web.Controllers.Base;
-using Identity.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +12,9 @@ namespace EducationPlatform.CourseContent.Controllers
 {
     [Route("api/material")]
     [ApiController]
-    public class MaterialController(IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO> operation) : BaseController
+    public class MaterialController(IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO> operation) : BaseController
     {
-        private readonly IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO> _operation = operation;
+        private readonly IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO> _operation = operation;
         
         [Authorize]
         [HttpPost("create")]
@@ -23,10 +25,10 @@ namespace EducationPlatform.CourseContent.Controllers
         }
 
         [Authorize]
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateMaterial(int id, [FromBody] MaterialDTO material)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateMaterial([FromBody] MaterialUpdateDTO material)
         {
-            var result = await _operation.UpdateAsync(material, id);
+            var result = await _operation.UpdateAsync(material, material.Id);
             return FromResult(result);
         }
 

@@ -2,16 +2,17 @@ using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using CourseContent.Core.DTO.Requests;
 using CourseContent.Core.DTO.Requests.AssignmentDTO;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Models.Config;
+using CourseContent.Core.Models.ErrorModels;
 using CourseContent.Core.Services;
 using CourseContent.Infrastructure;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces;
 using EducationPlatform.Identity;
-using Identity.Core.Models;
-using Identity.Domain.Config;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,9 +46,9 @@ namespace CourseContent.Web
             builder.Services.AddScoped<FileHelper>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            builder.Services.AddScoped<IBaseOperation<TopicOutDTO, Error, TopicDTO>, TopicService>();
-            builder.Services.AddScoped<IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO>, AssignmentService>();
-            builder.Services.AddScoped<IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO>, MaterialService>();
+            builder.Services.AddScoped<IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO>, TopicService>();
+            builder.Services.AddScoped<IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO>, AssignmentService>();
+            builder.Services.AddScoped<IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO>, MaterialService>();
 
 
             builder.Services.AddControllers();

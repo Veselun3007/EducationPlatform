@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Interfaces
 {
-    public interface IOperation<T, Error, E, F> : IBaseOperation<T, Error, E>
+    public interface IOperation<O, Error, I, F, U> : IBaseOperation<O, Error, I, U>
     {
         Task<Result<F, Error>> AddFileAsync(IFormFile formFile, int id);
 

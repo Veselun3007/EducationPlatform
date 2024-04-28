@@ -2,16 +2,16 @@
 
 namespace CourseContent.Core.Interfaces
 {
-    public interface IBaseOperation<T, Error, E>
+    public interface IBaseOperation<O, Error, I, U>
     {
-        Task<Result<T, Error>> CreateAsync(E entity);
+        Task<Result<O, Error>> CreateAsync(I entity);
 
-        Task<Result<T, Error>> UpdateAsync(E entity, int id);
+        Task<Result<O, Error>> UpdateAsync(U entity, int id);
 
-        Task<Result<T, Error>> GetByIdAsync(int id);
+        Task<Result<O, Error>> GetByIdAsync(int id);
 
         Task<Result<string, Error>> DeleteAsync(int id);
 
-        Task<IEnumerable<T>> GetAllByCourseAsync(int courseId);
+        Task<IEnumerable<O>> GetAllByCourseAsync(int courseId);
     }
 }

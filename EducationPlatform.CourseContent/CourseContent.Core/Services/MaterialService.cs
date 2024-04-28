@@ -1,16 +1,18 @@
 ﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Models.ErrorModels;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces;
 using CSharpFunctionalExtensions;
-using Identity.Core.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
-    public class MaterialService(IUnitOfWork unitOfWork, FileHelper fileHelper) : IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO>
+    public class MaterialService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
+        IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO>
     {
 
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -18,19 +20,19 @@ namespace CourseContent.Core.Services
 
         public async Task<Result<MaterialOutDTO, Error>> CreateAsync(MaterialDTO entity)
         {
-            var Material = MaterialDTO.FromMaterialDto(entity);
-            await _unitOfWork.MaterialRepository.AddAsync(Material);
+            var material = MaterialDTO.FromMaterialDto(entity);
+            await _unitOfWork.MaterialRepository.AddAsync(material);
             await _unitOfWork.CompleteAsync();
 
             if (entity.MaterialFiles is not null)
             {
-                await AddFilesAsync(Material, entity.MaterialFiles);
+                await AddFilesAsync(material, entity.MaterialFiles);
             }
             if (entity.MaterialLinks is not null)
             {
-                await AddLinksAsync(Material, entity.MaterialLinks);
+                await AddLinksAsync(material, entity.MaterialLinks);
             }
-            return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(Material));
+            return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(material));
         }
 
         private async Task AddFilesAsync(Material entity, List<IFormFile> files)
@@ -54,11 +56,11 @@ namespace CourseContent.Core.Services
         }
 
 
-        public async Task<Result<MaterialOutDTO, Error>> UpdateAsync(MaterialDTO entity, int id)
+        public async Task<Result<MaterialOutDTO, Error>> UpdateAsync(MaterialUpdateDTO entity, int id)
         {
             try
             {
-                var material = MaterialDTO.FromMaterialDto(entity);
+                var material = MaterialUpdateDTO.FromMaterialUpdateDto(entity);
                 material.IsEdited = true;
                 material.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.MaterialRepository.UpdateAsync(id, material);

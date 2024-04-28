@@ -1,4 +1,4 @@
-﻿namespace Identity.Core.Models
+﻿namespace CourseContent.Core.Models.ErrorModels
 {
     public sealed class Error
     {

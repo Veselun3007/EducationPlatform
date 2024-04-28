@@ -1,8 +1,9 @@
 ﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Models.ErrorModels;
 using CourseContent.Web.Controllers.Base;
-using Identity.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,11 @@ namespace CourseContent.Web.Controllers
 {
     [ApiController]
     [Route("api/topic")]
-    public class TopicController(IBaseOperation<TopicOutDTO, Error, TopicDTO> operation) : BaseController
+    public class TopicController(IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO> operation) : BaseController
     {
-        private readonly IBaseOperation<TopicOutDTO, Error, TopicDTO> _operation = operation;
+        private readonly IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO> _operation = operation;
 
-        //[Authorize]
+        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateTopic([FromForm] TopicDTO topic)
         {
@@ -23,10 +24,10 @@ namespace CourseContent.Web.Controllers
         }
 
         [Authorize]
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateTopic(int id, [FromBody] TopicDTO topic)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateTopic([FromBody] TopicUpdateDTO topic)
         {
-            var result = await _operation.UpdateAsync(topic, id);
+            var result = await _operation.UpdateAsync(topic, topic.Id);
             return FromResult(result);
         }
 
@@ -46,7 +47,7 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<TopicOutDTO>> GetAllTopic(int id)
         {

@@ -1,6 +1,6 @@
-﻿using CSharpFunctionalExtensions;
-using Identity.Core.Models;
-using Identity.Web.Models;
+﻿using CourseContent.Core.Models.ErrorModels;
+using CourseContent.Web.Models;
+using CSharpFunctionalExtensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseContent.Web.Controllers.Base

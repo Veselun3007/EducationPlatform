@@ -43,6 +43,7 @@ namespace CourseContent.Core.DTO.Responses
                 MaxMark = assignment.MaxMark,
                 MinMark = assignment.MinMark,
                 IsRequired = assignment.IsRequired,
+                IsEdited = assignment.IsEdited,
                 EditedTime = assignment.EditedTime,
                 Assignmentfiles = assignment
                     .Assignmentfiles.Select(af => AssignmentfileOutDTO

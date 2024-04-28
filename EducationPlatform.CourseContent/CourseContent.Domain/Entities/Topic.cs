@@ -6,7 +6,7 @@ namespace CourseContent.Domain.Entities
     {
         public int Id { get; set; }
 
-        public required int CourseId { get; set; }
+        public int CourseId { get; set; }
 
         public required string Title { get; set; }
 

@@ -1,4 +1,4 @@
-﻿using Identity.Domain.Config;
+﻿using CourseContent.Core.Models.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 

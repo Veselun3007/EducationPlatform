@@ -1,8 +1,9 @@
 ﻿using CourseContent.Core.DTO.Requests.AssignmentDTO;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Models.ErrorModels;
 using CourseContent.Web.Controllers.Base;
-using Identity.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,9 @@ namespace CourseContent.Web.Controllers
 {
     [Route("api/assignment")]
     [ApiController]
-    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO> operation) : BaseController
+    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO> operation) : BaseController
     {
-        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO> _operation = operation;
+        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO> _operation = operation;
 
         [Authorize]
         [HttpPost("create")]
@@ -23,10 +24,10 @@ namespace CourseContent.Web.Controllers
         }
 
         [Authorize]
-        [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateAssignment(int id, [FromBody] AssignmentDTO assignment)
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateAssignment([FromBody] AssignmentUpdateDTO assignment)
         {
-            var result = await _operation.UpdateAsync(assignment, id);
+            var result = await _operation.UpdateAsync(assignment, assignment.Id);
             return FromResult(result);
         }
 

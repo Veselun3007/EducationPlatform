@@ -1,6 +1,6 @@
-﻿using Identity.Core.Models;
+﻿using CourseContent.Core.Models.ErrorModels;
 
-namespace Identity.Web.Models
+namespace CourseContent.Web.Models
 {
     public class MessageWrapper<T>
     {
