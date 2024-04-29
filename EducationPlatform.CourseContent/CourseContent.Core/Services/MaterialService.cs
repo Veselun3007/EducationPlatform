@@ -169,7 +169,7 @@ namespace CourseContent.Core.Services
 
         public async Task<Result<MaterialOutDTO, Error>> GetByIdAsync(int id)
         {
-            var entity = await _unitOfWork.MaterialRepository.GetByIdAsync(id);
+            var entity = await _unitOfWork.MaterialRepository.GetByIdAsync(id, m => m.Materialfiles, m => m.Materiallinks); 
             if (entity is null)
             {
                 return Result.Failure<MaterialOutDTO, Error>(Errors.General.NotFound());

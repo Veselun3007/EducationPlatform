@@ -14,9 +14,9 @@ namespace CourseContent.Infrastructure.Repositories
             return await _contentRepository.AddAsync(entity);
         }
 
-        public async Task<Assignment?> GetByIdAsync(int id)
+        public async Task<Assignment?> GetByIdAsync(int id, params Expression<Func<Assignment, object>>[] includes)
         {
-            return await _contentRepository.GetByIdAsync(id);
+            return await _contentRepository.GetByIdAsync(id, includes);
         }
 
         public async Task<Assignment?> UpdateAsync(int id, Assignment entity)
@@ -46,6 +46,11 @@ namespace CourseContent.Infrastructure.Repositories
         public void AddLink(Assignment entity, string link)
         {
             _contentRepository.AddLink(entity, link);
+        }
+
+        public Task<Assignment?> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

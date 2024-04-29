@@ -48,5 +48,10 @@ namespace CourseContent.Infrastructure.Repositories
         {
             _contentRepository.AddLink(entity, link);
         }
+
+        public async Task<Material?> GetByIdAsync(int id, params Expression<Func<Material, object>>[] includes)
+        {
+            return await _contentRepository.GetByIdAsync(id, includes);
+        }
     }
 }

@@ -46,6 +46,18 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return await _dbSet.Where(filter).ToListAsync();
         }
 
+        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
+        {
+            IQueryable<T> query = _dbSet;
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+
+            return query.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public virtual async Task DeleteAsync(int id)
         {
             var entity = await _dbSet.FindAsync(id);
@@ -110,5 +122,6 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
                 _dbContext.Set<Assignmentlink>().Add(assignmentLink);
             }
         }
+
     }
 }

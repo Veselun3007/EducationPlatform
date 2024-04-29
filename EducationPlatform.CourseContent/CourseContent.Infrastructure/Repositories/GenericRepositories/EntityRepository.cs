@@ -1,4 +1,5 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Entities;
+using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;

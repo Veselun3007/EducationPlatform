@@ -1,5 +1,6 @@
 ﻿using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Interfaces.Base;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Interfaces
 {
@@ -10,5 +11,7 @@ namespace CourseContent.Infrastructure.Interfaces
         void AddFile(T entity, string file);
 
         void AddLink(T entity, string link);
+
+        Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes);
     }
 }
