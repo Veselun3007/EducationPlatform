@@ -80,16 +80,17 @@ public partial class EducationPlatformContext : DbContext
                 .HasColumnName("course_id");
 
             entity.Property(e => e.TopicId)
-                .ValueGeneratedOnAdd()
                 .HasColumnName("topic_id");
 
             entity.HasOne(d => d.Course).WithMany(p => p.Assignments)
                 .HasForeignKey(d => d.CourseId)
                 .HasConstraintName("fk_assignments_course");
 
-            entity.HasOne(d => d.Topic).WithMany(t => t.Assignments)
+            entity.HasOne(d => d.Topic)
+                .WithMany(t => t.Assignments)
                 .HasForeignKey(d => d.TopicId)
                 .HasConstraintName("fk_assignments_topics");
+
         });
 
         modelBuilder.Entity<Assignmentfile>(entity =>
@@ -157,7 +158,7 @@ public partial class EducationPlatformContext : DbContext
 
             entity.ToTable("topics");
 
-            entity.Property(e => e.Id).HasColumnName("topic_id");            
+            entity.Property(e => e.Id).HasColumnName("topic_id");
 
             entity.Property(e => e.CourseId)
                 .ValueGeneratedOnAdd()
@@ -185,7 +186,6 @@ public partial class EducationPlatformContext : DbContext
                 .HasColumnName("course_id");
 
             entity.Property(e => e.TopicId)
-                .ValueGeneratedOnAdd()
                 .HasColumnName("topic_id");
 
             entity.Property(e => e.MaterialDatePublication)

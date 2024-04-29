@@ -28,9 +28,9 @@ public class Assignment : IAggregateRoot
 
     public DateTime EditedTime { get; set; }
 
-    public virtual ICollection<Assignmentfile> Assignmentfiles { get; set; } = new List<Assignmentfile>();
+    public virtual ICollection<Assignmentfile> Assignmentfiles { get; set; } = [];
 
-    public virtual ICollection<Assignmentlink> Assignmentlinks { get; set; } = new List<Assignmentlink>();
+    public virtual ICollection<Assignmentlink> Assignmentlinks { get; set; } = [];
 
     public virtual Course Course { get; set; } = null!;
 
