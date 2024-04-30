@@ -65,8 +65,8 @@ namespace CourseContent.Core.Services
                 material.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.MaterialRepository.UpdateAsync(id, material);
                 await _unitOfWork.CompleteAsync();
-
-                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(material));
+                var updatedMaterial = await _unitOfWork.MaterialRepository.GetByIdAsync(id, m => m.Materialfiles, m => m.Materiallinks);
+                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(updatedMaterial));
             }
             catch (KeyNotFoundException)
             {
@@ -92,7 +92,7 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                await _unitOfWork.AssignmentfileRepository.DeleteAsync(linkId);
+                await _unitOfWork.MateriallinkRepository.DeleteAsync(linkId);
                 await _unitOfWork.CompleteAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }

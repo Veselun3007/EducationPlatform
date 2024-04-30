@@ -57,13 +57,13 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                var assignment = AssignmentUpdateDTO.FromAssignmentUpdateDto(entity);               
+                var assignment = AssignmentUpdateDTO.FromAssignmentUpdateDto(entity);
                 assignment.IsEdited = true;
                 assignment.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);
                 await _unitOfWork.CompleteAsync();
-
-                return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(assignment));
+                var updatedAssignment = await _unitOfWork.AssignmentRepository.GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
+                return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(updatedAssignment));
             }
             catch (KeyNotFoundException)
             {
@@ -122,7 +122,7 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                await _unitOfWork.AssignmentfileRepository.DeleteAsync(linkId);
+                await _unitOfWork.AssignmentlinkRepository.DeleteAsync(linkId);
                 await _unitOfWork.CompleteAsync();                            
                 return Result.Success<string, Error>("Deleted was successful");
             }

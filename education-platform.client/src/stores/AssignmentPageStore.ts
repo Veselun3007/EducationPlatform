@@ -17,6 +17,8 @@ import UpdateAssignmentModel from '../models/assignment/UpdateAssignmentModel';
 import AssignmentService from '../services/AssignmentService';
 import TopicService from '../services/TopicService';
 import CommonService from '../services/common/CommonService';
+import FileValidator from '../helpers/validation/FileValidator';
+import StringValidator from '../helpers/validation/StringValidator';
 
 export default class AssignmentPageStore {
     private readonly _rootStore: RootStore;
@@ -54,7 +56,9 @@ export default class AssignmentPageStore {
     fileLink = '';
 
     isLoading = true;
-    isEditLoading = true;
+
+    linkAdd = '';
+    isLinkAddOpen = false;
 
     constructor(rootStore: RootStore, assignmentService: AssignmentService, topicService: TopicService, commonService: CommonService) {
         this._rootStore = rootStore;
@@ -62,7 +66,8 @@ export default class AssignmentPageStore {
         this._topicService = topicService;
         this._commonService = commonService
         makeObservable(this, {
-            isEditLoading: observable,
+            linkAdd: observable,
+            isLinkAddOpen: observable,
             topics: observable,
             isLoading: observable,
             editAssignmentOpen: observable,
@@ -103,14 +108,15 @@ export default class AssignmentPageStore {
             onAssignmentMinMarkChange: action.bound,
             onAssignmentNameChange: action.bound,
             onAssignmentTopicChange: action.bound,
+            onLinkAddChange: action.bound,
+            handleLinkAddClose: action.bound,
+            handleLinkAddOpen: action.bound
         });
     }
 
     get isEditAssignmentValid(): boolean {
         return (
             this.editAssignmentData!.validateAssignmentDeadline().length === 0 &&
-            this.editAssignmentData!.validateAssignmentFiles().length === 0 &&
-            this.editAssignmentData!.validateAssignmentLinks().length === 0 &&
             this.editAssignmentData!.validateAssignmentName().length === 0 &&
             this.editAssignmentData!.validateIsRequired().length === 0 &&
             this.editAssignmentData!.validateMaxMark().length === 0 &&
@@ -131,6 +137,18 @@ export default class AssignmentPageStore {
                 this.assignment = assignment;
                 this.topics = topics;
                 this.isLoading = false;
+                this.editAssignmentData = new UpdateAssignmentModel(
+                    this.assignment!.id,
+                    courseId,
+                    this.assignment!.assignmentName,
+                    this.assignment!.maxMark,
+                    this.assignment!.minMark,
+                    this.assignment!.isRequired,
+                    this.assignment!.assignmentDeadline,
+                    this.assignment!.assignmentDatePublication,
+                    this.assignment!.topicId,
+                    this.assignment!.assignmentDescription ? this.assignment!.assignmentDescription : '',
+                );
             })
 
         } catch (error) {
@@ -144,44 +162,9 @@ export default class AssignmentPageStore {
         }
     }
 
-    async handleEditAssignmentOpen(courseId: number) {
-        runInAction(() => {
-            this.editAssignmentOpen = true;
-            this.closeAssignmentMenu();
-        });
-        const assignmentFiles: File[] = [];
-        if (this.assignment!.assignmentfiles) {
-            for (const file of this.assignment!.assignmentfiles) {
-                const link = await this._assignmentService.getAssignmentFileById(file.id);
-                const loadedFile = await this._commonService.loadFile(link);
-                if (loadedFile) assignmentFiles.push(loadedFile);
-            }
-        };
-
-        const assignmentLinks: string[] = [];
-        if (this.assignment!.assignmentlinks) {
-            this.assignment!.assignmentlinks.forEach(link => assignmentLinks.push(link.assignmentLink))
-        }
-        runInAction(() => {
-            this.editAssignmentData = new UpdateAssignmentModel(
-                this.assignment!.id,
-                courseId,
-                this.assignment!.assignmentName,
-                this.assignment!.maxMark,
-                this.assignment!.minMark,
-                this.assignment!.isRequired,
-                this.assignment!.assignmentDeadline,
-                assignmentFiles,
-                assignmentLinks,
-                this.assignment!.assignmentDatePublication,
-                this.assignment!.topicId,
-                this.assignment!.assignmentDescription ? this.assignment!.assignmentDescription : '',
-            );
-
-            this.isEditLoading = false;
-
-        })
-
+    handleEditAssignmentOpen() {
+        this.editAssignmentOpen = true;
+        this.closeAssignmentMenu();
     }
 
     handleEditAssignmentClose() {
@@ -324,50 +307,120 @@ export default class AssignmentPageStore {
         }
     }
 
-    onAssignmentFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
-        if (e.target.files) {
-            this.editAssignmentData!.assignmentFiles.push(...Array.from(e.target.files));
+    async onAssignmentFileAdd(e: React.ChangeEvent<HTMLInputElement>, navigate: NavigateFunction) {
+        if (!e.target.files) return;
+
+        const validator = new FileValidator(e.target.files[0]);
+        validator.validateFileExtension([
+            'png',
+            'jpg',
+            'jpeg',
+            'doc',
+            'pdf',
+            'docx',
+            'pptx',
+            'ppt',
+            'xls',
+            'xlsx',
+        ]);
+
+        if (validator.errors.length > 0) {
+            enqueueAlert(validator.errors[0].errorKey, 'error', validator.errors[0].options);
+            return;
         }
-        debounce(
-            action(() => {
-                const errors = this.editAssignmentData!.validateAssignmentFiles();
-                this.editAssignmentErrors.assignmentFiles =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
+
+        try {
+            const addedFile = await this._assignmentService.addFile(e.target.files[0], this.assignment!.id);
+            runInAction(() => {
+                this.assignment!.assignmentfiles!.push(addedFile);
+                enqueueAlert('glossary.editSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
-    onAssignmentFileDelete(id: number) {
-        this.editAssignmentData?.assignmentFiles.splice(id, 1);
-        debounce(
-            action(() => {
-                const errors = this.editAssignmentData!.validateAssignmentFiles();
-                this.editAssignmentErrors.assignmentFiles =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
+    async onAssignmentFileDelete(fileId: number, navigate: NavigateFunction) {
+        try {
+            await this._assignmentService.deleteFileById(fileId);
+            runInAction(() => {
+                const index = this.assignment!.assignmentfiles!.findIndex(f => f.id == fileId);
+                this.assignment!.assignmentfiles!.splice(index, 1);
+                enqueueAlert('glossary.deleteFileSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
-    onAssignmentLinkAdd(link: string) {
-        this.editAssignmentData?.assignmentLinks.push(link);
-        debounce(
-            action(() => {
-                const errors = this.editAssignmentData!.validateAssignmentLinks();
-                this.editAssignmentErrors.assignmentLinks =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
+    async onAssignmentLinkAdd(navigate: NavigateFunction) {
+        if (!this.linkAdd) return;
+
+        const validator = new StringValidator(this.linkAdd)
+        validator.isLink();
+        if (validator.errors.length > 0) {
+            enqueueAlert(validator.errors[0].errorKey, 'error', validator.errors[0].options);
+            return;
+        }
+
+        try {
+            const addedLink = await this._assignmentService.addLink(this.assignment!.id, this.linkAdd);
+            runInAction(() => {
+                this.assignment!.assignmentlinks!.push(addedLink);
+                enqueueAlert('glossary.editSuccess', 'success');
+                this.handleLinkAddClose();
+            })
+
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
-    onAssignmentLinkDelete(id: number) {
-        this.editAssignmentData?.assignmentLinks.splice(id, 1);
-        debounce(
-            action(() => {
-                const errors = this.editAssignmentData!.validateAssignmentLinks();
-                this.editAssignmentErrors.assignmentLinks =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
+    async onAssignmentLinkDelete(linkId: number, navigate: NavigateFunction) {
+        try {
+            await this._assignmentService.deleteLinkById(linkId);
+            runInAction(() => {
+                const index = this.assignment!.assignmentlinks!.findIndex(l => l.id == linkId);
+                this.assignment!.assignmentlinks!.splice(index, 1);
+                enqueueAlert('glossary.deleteLinkSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
+
+    handleLinkAddOpen() {
+        this.isLinkAddOpen = true;
+    }
+
+    handleLinkAddClose() {
+        this.linkAdd = '';
+        this.isLinkAddOpen = false;
+    }
+
+    onLinkAddChange(e: React.ChangeEvent<HTMLInputElement>) {
+        this.linkAdd = e.target.value;
+    }
+
 
     async submitEditAssignment(navigate: NavigateFunction) {
         try {
@@ -394,19 +447,28 @@ export default class AssignmentPageStore {
     }
 
     resetEditAssignment() {
-        this.isEditLoading = true;
-        this.editAssignmentData = null;
+        this.editAssignmentData!.assignmentDatePublication = this.assignment?.assignmentDatePublication;
+        this.editAssignmentData!.assignmentDeadline = this.assignment!.assignmentDeadline;
+        this.editAssignmentData!.assignmentDescription = this.assignment!.assignmentDescription;
+        this.editAssignmentData!.assignmentName = this.assignment!.assignmentName;
+        this.editAssignmentData!.id = this.assignment!.id;
+        this.editAssignmentData!.isRequired = this.assignment!.isRequired;
+        this.editAssignmentData!.maxMark = this.assignment!.maxMark;
+        this.editAssignmentData!.minMark = this.assignment!.minMark;
+        this.editAssignmentData!.topicId = this.assignment!.topicId;
+
         Object.keys(this.editAssignmentErrors).forEach(
             (key) => (this.editAssignmentErrors[key] = null),
         );
     }
 
     reset(): void {
-        this.resetEditAssignment();
         this.editAssignmentData = null;
         Object.keys(this.editAssignmentErrors).forEach(
             (key) => (this.editAssignmentErrors[key] = null),
         );
+        this.work.workFiles = [];
+        Object.keys(this.workErrors).forEach((key) => (this.workErrors[key] = null));
         this.resetWork();
         this.isLoading = true;
         this.isFileViewerOpen = false;
@@ -415,5 +477,8 @@ export default class AssignmentPageStore {
         this.fileLink = '';
         this.editAssignmentOpen = false;
         this.assignmentMenuAnchor = null;
+
+        this.linkAdd = '';
+        this.isLinkAddOpen = false;
     }
 }

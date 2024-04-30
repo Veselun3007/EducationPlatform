@@ -14,7 +14,7 @@ const COURSE_CONTENT_BASE_ROUTE = 'https://localhost:5002/api';
 
 export const CREATE_ASSIGNMENT = COURSE_CONTENT_BASE_ROUTE + '/assignment/create';
 export const UPDATE_ASSIGNMENT = COURSE_CONTENT_BASE_ROUTE + '/assignment/update';
-export const DELETE_ASSIGNMENT = COURSE_CONTENT_BASE_ROUTE + '/assignment/delete';
+export const DELETE_ASSIGNMENT = COURSE_CONTENT_BASE_ROUTE + '/assignment/delete/';
 export const GET_BY_ID_ASSIGNMENT = COURSE_CONTENT_BASE_ROUTE + '/assignment/getById/';
 export const GET_ALL_ASSIGNMENT = COURSE_CONTENT_BASE_ROUTE + '/assignment/getAll/';
 export const REMOVE_LIST_ASSIGNMENT =

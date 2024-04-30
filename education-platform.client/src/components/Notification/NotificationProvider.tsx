@@ -13,7 +13,7 @@ const store = new NotificationProviderStore();
 const NotificationProvider: React.FC<NotificationProviderProps> = observer(
     ({ autoHideDuration = 3000 }) => {
         const { t } = useTranslation();
-        const { key, variant, isOpen, dequeueAlert } = store;
+        const { key, variant, isOpen, dequeueAlert, options } = store;
         if (variant == 'default') {
             return (
                 <Snackbar
@@ -31,7 +31,7 @@ const NotificationProvider: React.FC<NotificationProviderProps> = observer(
                     onClose={dequeueAlert}
                 >
                     <Alert severity={variant as AlertColor} sx={{ width: '100%' }}>
-                        {t(key)}
+                        {t(key, options)}
                     </Alert>
                 </Snackbar>
             );

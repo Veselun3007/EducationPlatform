@@ -17,9 +17,6 @@ export default class UpdateAssignmentModel {
     public isRequired: boolean;
     public assignmentDatePublication?: Date;
     public assignmentDeadline: Date;
-    public assignmentFiles: File[];
-    public assignmentLinks: string[];
-
     constructor(
         id: number,
         courseId: number,
@@ -28,8 +25,6 @@ export default class UpdateAssignmentModel {
         minMark: number,
         isRequired: boolean,
         assignmentDeadline: Date,
-        assignmentFiles: File[],
-        assignmentLinks: string[],
         assignmentDatePublication?: Date,
         topicId?: number,
         assignmentDescription?: string,
@@ -44,8 +39,6 @@ export default class UpdateAssignmentModel {
         this.isRequired = isRequired;
         this.assignmentDatePublication = assignmentDatePublication;
         this.assignmentDeadline = assignmentDeadline;
-        this.assignmentFiles = assignmentFiles;
-        this.assignmentLinks = assignmentLinks;
 
         makeObservable(this, {
             courseId: observable,
@@ -57,8 +50,6 @@ export default class UpdateAssignmentModel {
             isRequired: observable,
             assignmentDatePublication: observable,
             assignmentDeadline: observable,
-            assignmentFiles: observable,
-            assignmentLinks: observable,
         });
     }
 
@@ -104,42 +95,42 @@ export default class UpdateAssignmentModel {
         return validator.errors;
     }
 
-    validateAssignmentFiles(): ValidationError[] {
-        const errors: ValidationError[] = [];
-        if (this.assignmentFiles.length !== 0) {
-            this.assignmentFiles.forEach((file) => {
-                const validator = new FileValidator(file);
+    // validateAssignmentFiles(): ValidationError[] {
+    //     const errors: ValidationError[] = [];
+    //     if (this.assignmentFiles.length !== 0) {
+    //         this.assignmentFiles.forEach((file) => {
+    //             const validator = new FileValidator(file);
 
-                validator.validateFileExtension([
-                    'png',
-                    'jpg',
-                    'jpeg',
-                    'doc',
-                    'pdf',
-                    'docx',
-                    'pptx',
-                    'ppt',
-                    'xls',
-                    'xlsx',
-                ]);
+    //             validator.validateFileExtension([
+    //                 'png',
+    //                 'jpg',
+    //                 'jpeg',
+    //                 'doc',
+    //                 'pdf',
+    //                 'docx',
+    //                 'pptx',
+    //                 'ppt',
+    //                 'xls',
+    //                 'xlsx',
+    //             ]);
 
-                errors.push(...validator.errors);
-            });
-        }
-        return errors;
-    }
+    //             errors.push(...validator.errors);
+    //         });
+    //     }
+    //     return errors;
+    // }
 
-    validateAssignmentLinks(): ValidationError[] {
-        const errors: ValidationError[] = [];
-        if (this.assignmentLinks.length !== 0) {
-            this.assignmentLinks.forEach((link) => {
-                const validator = new StringValidator(link);
+    // validateAssignmentLinks(): ValidationError[] {
+    //     const errors: ValidationError[] = [];
+    //     if (this.assignmentLinks.length !== 0) {
+    //         this.assignmentLinks.forEach((link) => {
+    //             const validator = new StringValidator(link);
 
-                validator.isLink();
+    //             validator.isLink();
 
-                errors.push(...validator.errors);
-            });
-        }
-        return errors;
-    }
+    //             errors.push(...validator.errors);
+    //         });
+    //     }
+    //     return errors;
+    // }
 }

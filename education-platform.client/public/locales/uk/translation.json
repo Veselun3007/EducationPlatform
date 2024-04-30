@@ -121,6 +121,12 @@
         "courseCreateSuccess":"Курс створено",
         "topicCreateSuccess":"Тему створено",
         "assignmentCreateSuccess":"Завдання створено",
-        "materialCreateSuccess":"Матеріал створено"
+        "materialCreateSuccess":"Матеріал створено",
+        "editFiles": "Редагувати файли",
+        "editLinks": "Редагувати посилання",
+        "deleteFileSuccess":"Файл видалено",
+        "deleteLinkSuccess":"Посилання видалено",
+        "fileNotFound":"Файл не знайдено",
+        "linkNotFound":"Посилання не знайдено"
     }
 }

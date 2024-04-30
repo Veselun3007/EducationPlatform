@@ -5,14 +5,20 @@ import CreateUpdateMaterialModel from '../models/material/CreateMaterialModel';
 import MaterialModel from '../models/material/MaterialModel';
 import httpClient from './common/httpClient';
 import {
+    ADD_MATERIAL_FILE,
+    ADD_MATERIAL_LINK,
     CREATE_MATERIAL,
     DELETE_MATERIAL,
+    DELETE_MATERIAL_FILE,
+    DELETE_MATERIAL_LINK,
     GET_ALL_MATERIAL,
     GET_BY_ID_MATERIAL,
     GET_MATERIAL_FILE,
     UPDATE_MATERIAL,
 } from './common/routesAPI';
 import AuthService from './AuthService';
+import MaterialFileModel from '../models/material/MaterialFileModel';
+import MaterialLinkModel from '../models/material/MaterialLinkModel';
 
 export default class MaterialService {
     private readonly _authService: AuthService;
@@ -135,6 +141,7 @@ export default class MaterialService {
             throw new ServiceError('glossary.somethingWentWrong');
         }
     }
+
     async getMaterialFileById(id: number) {
         try {
             const file = (await httpClient.get(GET_MATERIAL_FILE + id)).data
@@ -147,6 +154,98 @@ export default class MaterialService {
                     switch (error.response.status) {
                         case 404:
                             throw new ServiceError('glossary.materialFileNotFound');
+                        case 401:
+                            this._authService.clearTokens();
+                            throw new LoginRequiredError('glossary.loginToContinue');
+                        default:
+                            throw new ServiceError('glossary.somethingWentWrong');
+                    }
+                }
+            }
+            throw new ServiceError('glossary.somethingWentWrong');
+        }
+    }
+
+    async deleteFileById(fileId: number) {
+        try {
+            await httpClient.delete(DELETE_MATERIAL_FILE + fileId)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 404:
+                            throw new ServiceError('glossary.fileNotFound');
+                        case 401:
+                            this._authService.clearTokens();
+                            throw new LoginRequiredError('glossary.loginToContinue');
+                        default:
+                            throw new ServiceError('glossary.somethingWentWrong');
+                    }
+                }
+            }
+            throw new ServiceError('glossary.somethingWentWrong');
+        }
+    }
+
+    async addFile(file: File, materialId: number) {
+        try {
+            const createdFile = (await httpClient.postForm(ADD_MATERIAL_FILE + materialId, { file: file }))
+                .data.result as MaterialFileModel;
+
+            return createdFile;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 404:
+                            throw new ServiceError('glossary.materialNotFound');
+                        case 401:
+                            this._authService.clearTokens();
+                            throw new LoginRequiredError('glossary.loginToContinue');
+                        default:
+                            throw new ServiceError('glossary.somethingWentWrong');
+                    }
+                }
+            }
+            throw new ServiceError('glossary.somethingWentWrong');
+        }
+    }
+
+    async deleteLinkById(linkId: number) {
+        try {
+            await httpClient.delete(DELETE_MATERIAL_LINK + linkId);
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 404:
+                            throw new ServiceError('glossary.linkNotFound');
+                        case 401:
+                            this._authService.clearTokens();
+                            throw new LoginRequiredError('glossary.loginToContinue');
+                        default:
+                            throw new ServiceError('glossary.somethingWentWrong');
+                    }
+                }
+            }
+            throw new ServiceError('glossary.somethingWentWrong');
+        }
+    }
+
+    async addLink(materialId: number, link: string) {
+        try {
+            const createdLink = (await httpClient.post(ADD_MATERIAL_LINK + materialId, link, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })).data.result as MaterialLinkModel
+            return createdLink;
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 404:
+                            throw new ServiceError('glossary.materialNotFound');
                         case 401:
                             this._authService.clearTokens();
                             throw new LoginRequiredError('glossary.loginToContinue');
