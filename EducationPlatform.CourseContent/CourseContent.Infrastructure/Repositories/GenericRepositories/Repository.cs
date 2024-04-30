@@ -24,9 +24,18 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return entity;
         }
 
-        public virtual async Task<T?> GetByIdAsync(int id)
+        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[]? includes)
         {
-            return await _dbSet.FindAsync(id);
+            var query = _dbSet.AsQueryable();
+            if (includes is not null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return query.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public virtual async Task<T?> UpdateAsync(int id, T entity)

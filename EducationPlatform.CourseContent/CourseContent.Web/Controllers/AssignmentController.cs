@@ -25,7 +25,7 @@ namespace CourseContent.Web.Controllers
 
         [Authorize]
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateAssignment([FromBody] AssignmentUpdateDTO assignment)
+        public async Task<IActionResult> UpdateAssignment([FromForm] AssignmentUpdateDTO assignment)
         {
             var result = await _operation.UpdateAsync(assignment, assignment.Id);
             return FromResult(result);

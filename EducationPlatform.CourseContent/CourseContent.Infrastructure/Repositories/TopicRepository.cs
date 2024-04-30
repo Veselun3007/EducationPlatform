@@ -23,9 +23,9 @@ namespace CourseContent.Infrastructure.Repositories
             return await _repository.GetAllByCourseAsync(filter);
         }
 
-        public async Task<Topic?> GetByIdAsync(int id)
+        public async Task<Topic?> GetByIdAsync(int id, params Expression<Func<Topic, object>>[] includes)
         {
-            return await _repository.GetByIdAsync(id);
+            return await _repository.GetByIdAsync(id, includes);
         }
 
         public async Task<Topic?> UpdateAsync(int id, Topic entity)

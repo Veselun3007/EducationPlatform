@@ -47,10 +47,5 @@ namespace CourseContent.Infrastructure.Repositories
         {
             _contentRepository.AddLink(entity, link);
         }
-
-        public Task<Assignment?> GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

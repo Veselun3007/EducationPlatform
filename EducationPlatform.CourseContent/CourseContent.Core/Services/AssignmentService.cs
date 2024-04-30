@@ -169,7 +169,8 @@ namespace CourseContent.Core.Services
         public async Task<Result<AssignmentOutDTO, Error>> GetByIdAsync(int id)
         {
 
-            var entity = await _unitOfWork.AssignmentRepository.GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
+            var entity = await _unitOfWork.AssignmentRepository
+                .GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
             if (entity is null)
             {
                 return Result.Failure<AssignmentOutDTO, Error>(Errors.General.NotFound());

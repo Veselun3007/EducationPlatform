@@ -3,6 +3,7 @@ using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
@@ -17,9 +18,18 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             _dbSet = _dbContext.Set<T>();
         }
 
-        public virtual async Task<T?> GetByIdAsync(int id)
+        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
         {
-            return await _dbSet.FindAsync(id);
+            var query = _dbSet.AsQueryable();
+            if (includes is not null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return query.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public virtual async Task<T> AddAsync(T entity)

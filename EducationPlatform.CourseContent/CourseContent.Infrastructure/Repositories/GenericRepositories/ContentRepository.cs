@@ -24,11 +24,6 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return entity;
         }
 
-        public virtual async Task<T?> GetByIdAsync(int id)
-        {
-            return await _dbSet.FindAsync(id);
-        }
-
         public virtual async Task<T?> UpdateAsync(int id, T entity)
         {
             var existingEntity = await _dbSet.FindAsync(id);
@@ -44,18 +39,6 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
         public async Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter)
         {
             return await _dbSet.Where(filter).ToListAsync();
-        }
-
-        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
-        {
-            IQueryable<T> query = _dbSet;
-
-            foreach (var include in includes)
-            {
-                query = query.Include(include);
-            }
-
-            return query.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public virtual async Task DeleteAsync(int id)
@@ -123,5 +106,18 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             }
         }
 
+        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[]? includes)
+        {
+            var query = _dbSet.AsQueryable();
+            if (includes is not null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return query.FirstOrDefaultAsync(x => x.Id == id);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Interfaces.Base;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Repositories
 {
@@ -18,9 +19,9 @@ namespace CourseContent.Infrastructure.Repositories
             await _repository.DeleteAsync(id);
         }
 
-        public async Task<Materialfile?> GetByIdAsync(int id)
+        public async Task<Materialfile?> GetByIdAsync(int id, params Expression<Func<Materialfile, object>>[] includes)
         {
-            return await _repository.GetByIdAsync(id);
+            return await _repository.GetByIdAsync(id, includes);
         }
     }
 }

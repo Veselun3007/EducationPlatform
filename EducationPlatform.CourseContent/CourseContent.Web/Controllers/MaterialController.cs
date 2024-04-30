@@ -26,7 +26,7 @@ namespace EducationPlatform.CourseContent.Controllers
 
         [Authorize]
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateMaterial([FromBody] MaterialUpdateDTO material)
+        public async Task<IActionResult> UpdateMaterial([FromForm] MaterialUpdateDTO material)
         {
             var result = await _operation.UpdateAsync(material, material.Id);
             return FromResult(result);

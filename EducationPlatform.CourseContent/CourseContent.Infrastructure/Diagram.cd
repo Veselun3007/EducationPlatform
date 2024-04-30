@@ -19,19 +19,19 @@
   <Class Name="CourseContent.Infrastructure.Context.EducationPlatformContext">
     <Position X="14" Y="11.5" Width="4.25" />
     <TypeIdentifier>
-      <HashCode>AEIAAAAAAAAQAAAAAAAAAAAIEAAAAAAAwAAAABAAABA=</HashCode>
+      <HashCode>AEIAAAAAAAAQAAAAAAAAAAAIEAAAAAAAwAAAADAAABA=</HashCode>
       <FileName>Context\EducationPlatformContext.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.ContentRepository&lt;T&gt;">
     <Position X="8" Y="1.5" Width="4" />
-    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true">
       <Path>
-        <Point X="8" Y="2.875" />
-        <Point X="7.507" Y="2.875" />
-        <Point X="7.507" Y="15.54" />
-        <Point X="14.312" Y="15.54" />
-        <Point X="14.312" Y="14.915" />
+        <Point X="12" Y="2.469" />
+        <Point X="7.749" Y="2.469" />
+        <Point X="7.749" Y="8.52" />
+        <Point X="14.094" Y="8.52" />
+        <Point X="14.094" Y="11.5" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.024" Y="0.687" />
@@ -60,13 +60,13 @@
   </Class>
   <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.EntityRepository&lt;T&gt;">
     <Position X="19.5" Y="1.5" Width="4.25" />
-    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true">
       <Path>
-        <Point X="23.75" Y="2.938" />
-        <Point X="24.286" Y="2.938" />
-        <Point X="24.286" Y="15.575" />
-        <Point X="17.938" Y="15.575" />
-        <Point X="17.938" Y="14.915" />
+        <Point X="19.5" Y="2.031" />
+        <Point X="21.371" Y="2.031" />
+        <Point X="21.371" Y="8.375" />
+        <Point X="18.156" Y="8.375" />
+        <Point X="18.156" Y="11.5" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.918" Y="0.715" />
@@ -121,6 +121,8 @@
     <AssociationLine Name="_contentRepository" Type="CourseContent.Infrastructure.Interfaces.IContentRepository&lt;T&gt;" FixedFromPoint="true">
       <Path>
         <Point X="19.5" Y="10.188" />
+        <Point X="18.24" Y="10.188" Type="JumpStart" />
+        <Point X="18.073" Y="10.188" Type="JumpEnd" />
         <Point X="18" Y="10.188" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -164,6 +166,8 @@
     <AssociationLine Name="_contentRepository" Type="CourseContent.Infrastructure.Interfaces.IContentRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="12.75" Y="10.188" />
+        <Point X="14.01" Y="10.188" Type="JumpStart" />
+        <Point X="14.177" Y="10.188" Type="JumpEnd" />
         <Point X="14.25" Y="10.188" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">
