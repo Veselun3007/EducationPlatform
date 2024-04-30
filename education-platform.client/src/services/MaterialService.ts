@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import LoginRequiredError from '../errors/LoginRequiredError';
 import ServiceError from '../errors/ServiceError';
-import CreateUpdateMaterialModel from '../models/material/CreateUpdateMaterialModel';
+import CreateUpdateMaterialModel from '../models/material/CreateMaterialModel';
 import MaterialModel from '../models/material/MaterialModel';
 import httpClient from './common/httpClient';
 import {
@@ -43,10 +43,10 @@ export default class MaterialService {
         }
     }
 
-    async updateMaterial(id: number, material: CreateUpdateMaterialModel) {
+    async updateMaterial(material: CreateUpdateMaterialModel) {
         try {
             const updatedMaterial = (
-                await httpClient.putForm(UPDATE_MATERIAL + id, material)
+                await httpClient.putForm(UPDATE_MATERIAL, material)
             ).data.result as MaterialModel;
 
             return updatedMaterial;
@@ -115,8 +115,7 @@ export default class MaterialService {
 
     async getMaterials(courseId: number) {
         try {
-            const materials = (await httpClient.get(GET_ALL_MATERIAL + courseId)).data
-                .result as MaterialModel[];
+            const materials = (await httpClient.get(GET_ALL_MATERIAL + courseId)).data as MaterialModel[];
 
             return materials;
         } catch (error) {

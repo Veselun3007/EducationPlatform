@@ -44,7 +44,7 @@ const MaterialPage = observer(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         materialPageStore.init(Number.parseInt(courseId!), Number.parseInt(materialId!));
         return () => materialPageStore.reset();
-    }, []);
+    }, [courseId, materialId]);
 
     if (materialPageStore.isLoading) {
         return (
@@ -62,7 +62,7 @@ const MaterialPage = observer(() => {
     const editString = materialPageStore.material!.isEdited
         ? ` (${t(
               'glossary.changed',
-          )}: ${materialPageStore.material!.editedTime?.toLocaleDateString(
+          )}: ${materialPageStore.material!.editedTime?.toLocaleString(
               i18n.language,
           )})`
         : '';
@@ -137,7 +137,7 @@ const MaterialPage = observer(() => {
                             </Menu>
                         </Stack>
                         <Typography variant="caption">
-                            {materialPageStore.material!.materialDatePublication.toLocaleDateString(
+                            {materialPageStore.material!.materialDatePublication.toLocaleString(
                                 i18n.language,
                             ) + editString}
                         </Typography>
@@ -187,8 +187,8 @@ const MaterialPage = observer(() => {
                     onClose={materialPageStore.onFileViewerClose}
                 >
                     <Box
-                        maxWidth="80%"
-                        maxHeight="90%"
+                        width="80%"
+                        height="90%"
                         sx={{
                             position: 'absolute',
                             top: '50%',
@@ -206,6 +206,12 @@ const MaterialPage = observer(() => {
                             }}
                             documents={[{ uri: materialPageStore.fileLink }]}
                             pluginRenderers={DocViewerRenderers}
+                            theme={{
+                                primary: theme.palette.background.default,
+                                secondary: theme.palette.secondary.main,
+                                textPrimary: theme.palette.text.primary,
+                                textSecondary: theme.palette.text.secondary,
+                            }}
                         />
                     </Box>
                 </Modal>

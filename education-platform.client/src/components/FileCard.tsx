@@ -30,7 +30,7 @@ interface FileCardProps {
 const FileCard: React.FC<FileCardProps> = observer(({ file, onClick }) => {
     const theme = useTheme();
     return (
-        <Paper sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+        <Paper sx={{maxWidth: '100%', height: '100%', overflow: 'hidden' }}>
             <CardActionArea
                 onClick={onClick}
                 sx={{ width: '100%', height: '100%', alignContent: 'center' }}
@@ -58,6 +58,7 @@ const FileCard: React.FC<FileCardProps> = observer(({ file, onClick }) => {
                             textOverflow: 'ellipsis',
                             whiteSpace: 'normal',
                         }}
+                        
                     >
                         {file}
                     </Typography>

@@ -1,4 +1,4 @@
 export default interface AssignmentLinkModel {
     id: number;
-    assignmentLink?: string;
+    assignmentLink: string;
 }

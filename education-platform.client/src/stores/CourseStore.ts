@@ -1,16 +1,21 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import ValidationError from '../helpers/validation/ValidationError';
-import CreateUpdateCourseModel from '../models/course/CreateUpdateCourseModel';
+import CreateCourseModel from '../models/course/CreateCourseModel';
 import CourseService from '../services/CourseService';
 import FormStore from './common/FormStore';
 import RootStore from './RootStore';
 import debounce from '../helpers/debounce';
+import { NavigateFunction } from 'react-router-dom';
+import LoginRequiredError from '../errors/LoginRequiredError';
+import ServiceError from '../errors/ServiceError';
+import { enqueueAlert } from '../components/Notification/NotificationProvider';
+import CourseInfoModel from '../models/course/CourseInfoModel';
 
-export default class NavigationPanelStore extends FormStore {
+export default class CourseStore extends FormStore {
     private readonly _courseService: CourseService;
     private readonly _rootStore: RootStore;
 
-    data: CreateUpdateCourseModel = new CreateUpdateCourseModel('');
+    data: CreateCourseModel = new CreateCourseModel('');
     errors: Record<string, ValidationError | null> = {
         name: null,
         meta: null,
@@ -21,8 +26,12 @@ export default class NavigationPanelStore extends FormStore {
     userMenuAnchorEl = null as null | HTMLElement;
     settingsOpen = false;
     settingsTab = '1';
-    courseMenuAnchorEl = null as null | HTMLElement;
     createCourseOpen = false;
+
+    coursesInfo: CourseInfoModel[] = [];
+    isLoading = true;
+    needRefresh = false;
+
 
     constructor(rootStore: RootStore, courseService: CourseService) {
         super();
@@ -30,6 +39,9 @@ export default class NavigationPanelStore extends FormStore {
         this._courseService = courseService;
 
         makeObservable(this, {
+            needRefresh: observable,
+            coursesInfo: observable,
+            isLoading: observable,
             drawerOpen: observable,
             createCourseOpen: observable,
             toggled: observable,
@@ -55,7 +67,29 @@ export default class NavigationPanelStore extends FormStore {
             reset: action.bound,
             onNameChange: action.bound,
             onDescriptionChange: action.bound,
+            resetCourse: action.bound,
+            init: action.bound,
+            setNeedRefresh: action.bound,
         });
+    }
+
+    async init(navigate: NavigateFunction) {
+        try {
+            const data = await this._courseService.getCourses();
+            runInAction(() => {
+                this.coursesInfo = data;
+                this.isLoading = false;
+                this.needRefresh = false;
+            });
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                navigate('/');
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
     get isValid(): boolean {
@@ -82,14 +116,6 @@ export default class NavigationPanelStore extends FormStore {
         this.userMenuAnchorEl = null;
     }
 
-    handleCourseMenuOpen(event: React.MouseEvent<HTMLButtonElement>): void {
-        this.courseMenuAnchorEl = event.currentTarget;
-    }
-
-    handleCourseMenuClose(): void {
-        this.courseMenuAnchorEl = null;
-    }
-
     handleSettingsClose(): void {
         this.settingsOpen = false;
     }
@@ -108,11 +134,11 @@ export default class NavigationPanelStore extends FormStore {
 
     handleCreateCourseClose(): void {
         this.createCourseOpen = false;
-        this.reset();
+        this.resetCourse();
     }
 
     onNameChange(e: React.ChangeEvent<HTMLInputElement>): void {
-        this.data.name = e.target.value;
+        this.data.courseName = e.target.value;
         debounce(
             action(() => {
                 const nameErrors = this.data.validateName();
@@ -122,17 +148,48 @@ export default class NavigationPanelStore extends FormStore {
     }
 
     onDescriptionChange(e: React.ChangeEvent<HTMLInputElement>): void {
-        this.data.description = e.target.value;
+        this.data.courseDescription = e.target.value;
     }
 
-    submit(...params: unknown[]): void {
-        throw new Error('Method not implemented.');
+    async submit(navigate: NavigateFunction) {
+        try {
+            const newCourse = await this._courseService.createCourse(this.data);
+            runInAction(() => {
+                this.coursesInfo.push(newCourse);
+                this.handleCreateCourseClose();
+                navigate(`/course/${newCourse.course.courseId}`);
+                enqueueAlert('glossary.courseCreateSuccess', 'success');
+            });
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+    }
+
+    resetCourse() {
+        this.data.courseName = '';
+        this.data.courseDescription = '';
+        super.reset();
+    }
+
+    setNeedRefresh() {
+        this.needRefresh = true;
     }
 
     reset(): void {
-        this.data.name = '';
-        this.data.description = '';
-
-        super.reset();
+        this.drawerOpen = false;
+        this.toggled = false;
+        this.userMenuAnchorEl = null
+        this.settingsOpen = false;
+        this.settingsTab = '1';
+        this.createCourseOpen = false;
+        this.isLoading = true;
+        this.needRefresh = false;
+        this.coursesInfo = [];
+        this.resetCourse();
     }
 }

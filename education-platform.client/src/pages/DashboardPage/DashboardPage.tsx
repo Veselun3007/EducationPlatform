@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import {
     Badge,
+    Box,
     Button,
     Card,
     CardActionArea,
+    CircularProgress,
     Menu,
     MenuItem,
     Stack,
@@ -18,19 +20,36 @@ import { useNavigate } from 'react-router-dom';
 import ColoredAvatar from '../../components/ColoredAvatar';
 
 const DashboardPage = observer(() => {
-    const { dashboardPageStore } = useStore();
+    const { courseStore } = useStore();
     const { t } = useTranslation();
     const navigate = useNavigate();
 
     useEffect(() => {
-        return () => dashboardPageStore.reset();
+        if(courseStore.needRefresh){
+            courseStore.init(navigate);
+        }
+        return () => courseStore.setNeedRefresh();
     }, []);
+
+    if (courseStore.isLoading) {
+        return (
+            <Box
+                display="flex"
+                height="100svh"
+                width="100%"
+                alignItems="center"
+                justifyContent="center"
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     return (
         <Grid container alignItems="center" justifyItems="center">
-            {dashboardPageStore.courses.map((course) => (
+            {courseStore.coursesInfo.map((info) => (
                 <Grid
-                    key={course.courseId}
+                    key={info.course.courseId}
                     sx={{ borderRadius: 2 }}
                     marginInline={2}
                     marginBlock={2}
@@ -39,41 +58,9 @@ const DashboardPage = observer(() => {
                     overflow="hidden"
                 >
                     <Card sx={{ height: '100%' }}>
-                        {/* <Button
-                            id="menu-button"
-                            aria-controls={dashboardPageStore.isCourseMenuOpen ? 'course-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={dashboardPageStore.isCourseMenuOpen ? 'true' : undefined}
-                            onClick={dashboardPageStore.handleCourseMenuOpen}
-                            sx={{zIndex:1, position: 'relative', right:"2%"}}
-                        >
-                            Dashboard
-                        </Button>
-                        <Menu
-                            elevation={4}
-                            id="course-menu"
-                            anchorEl={dashboardPageStore.courseMenuAnchorEl}
-                            open={dashboardPageStore.isCourseMenuOpen}
-                            onClose={dashboardPageStore.handleCourseMenuClose}
-                            MenuListProps={{
-                                'aria-labelledby': 'menu-button',
-                            }}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                        >
-                            <MenuItem onClick={dashboardPageStore.handleCourseMenuClose}>Profile</MenuItem>
-                            <MenuItem onClick={dashboardPageStore.handleCourseMenuClose}>My account</MenuItem>
-                            <MenuItem onClick={dashboardPageStore.handleCourseMenuClose}>Logout</MenuItem>
-                        </Menu> */}
                         <CardActionArea
                             sx={{ height: '100%' }}
-                            onClick={() => navigate(`/course/${course.courseId}`)}
+                            onClick={() => navigate(`/course/${info.course.courseId}`)}
                         >
                             <Stack direction="column" height="100%">
                                 <Badge
@@ -83,51 +70,73 @@ const DashboardPage = observer(() => {
                                     }}
                                     badgeContent={
                                         <ColoredAvatar
-                                            alt="Bohdan Fedyshen"
+                                            alt={info.adminInfo.adminName}
                                             sx={{ width: 70, height: 70, right: 45 }}
-                                            src="/assets/Sobolyev.jpg"
+                                            src={info.adminInfo.imageLink}
                                         />
                                     }
                                 >
                                     <AbstractBackground
-                                        value={course.courseName}
+                                        value={info.course.courseName}
                                         sx={{ width: '100%', height: '7rem' }}
                                     >
+                                        <Stack alignSelf="center" pl={2}>
+                                            <Typography
+                                                variant="h5"
+                                                textAlign="left"
+                                                alignSelf="start"
+
+                                                sx={{
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitBoxOrient: 'vertical',
+                                                    WebkitLineClamp: 1,
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                }}
+                                            >
+                                                {info.course.courseName}
+                                            </Typography>
+                                            <Typography
+
+                                                textAlign="left"
+                                                justifyItems="start"
+                                                sx={{
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitBoxOrient: 'vertical',
+                                                    WebkitLineClamp: 1,
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                }}
+                                            >
+                                                {info.adminInfo.adminName}
+                                            </Typography>
+                                        </Stack>
+                                    </AbstractBackground>
+                                </Badge>
+                                {info.course.courseDescription &&
+                                    <>
+                                        <Typography mt={2} ml={2} variant="h6">
+                                            {t('glossary.courseDescription')}
+                                        </Typography>
                                         <Typography
-                                            variant="h5"
-                                            textAlign="left"
                                             ml={2}
-                                            alignSelf="center"
+                                            mr={2}
                                             sx={{
                                                 display: '-webkit-box',
                                                 overflow: 'hidden',
                                                 WebkitBoxOrient: 'vertical',
-                                                WebkitLineClamp: 1,
+                                                WebkitLineClamp: 5,
                                                 textOverflow: 'ellipsis',
                                                 whiteSpace: 'normal',
                                             }}
                                         >
-                                            {course.courseName}
+                                            {info.course.courseDescription}
                                         </Typography>
-                                    </AbstractBackground>
-                                </Badge>
-                                <Typography mt={2} ml={2} variant="h6">
-                                    {t('glossary.courseDescription')}
-                                </Typography>
-                                <Typography
-                                    ml={2}
-                                    mr={2}
-                                    sx={{
-                                        display: '-webkit-box',
-                                        overflow: 'hidden',
-                                        WebkitBoxOrient: 'vertical',
-                                        WebkitLineClamp: 5,
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'normal',
-                                    }}
-                                >
-                                    {course.courseDescription}
-                                </Typography>
+                                    </>
+                                }
+
                             </Stack>
                         </CardActionArea>
                     </Card>

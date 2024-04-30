@@ -1,5 +1,5 @@
 import { AxiosError } from 'axios';
-import CreateUpdateTopicModel from '../models/topic/CreateUpdateTopicModel';
+import CreateTopicModel from '../models/topic/CreateTopicModel';
 import TopicModel from '../models/topic/TopicModel';
 import AuthService from './AuthService';
 import httpClient from './common/httpClient';
@@ -12,6 +12,7 @@ import {
 } from './common/routesAPI';
 import LoginRequiredError from '../errors/LoginRequiredError';
 import ServiceError from '../errors/ServiceError';
+import UpdateTopicModel from '../models/topic/UpdateTopicModel';
 
 export default class TopicService {
     private readonly _authService: AuthService;
@@ -20,7 +21,7 @@ export default class TopicService {
         this._authService = authService;
     }
 
-    async createTopic(topic: CreateUpdateTopicModel) {
+    async createTopic(topic: CreateTopicModel) {
         try {
             const createdTopic = (await httpClient.postForm(CREATE_TOPIC, topic)).data
                 .result as TopicModel;
@@ -42,9 +43,9 @@ export default class TopicService {
         }
     }
 
-    async updateTopic(id: number, topic: CreateUpdateTopicModel) {
+    async updateTopic(topic: UpdateTopicModel) {
         try {
-            const updatedTopic = (await httpClient.put(UPDATE_TOPIC + id, topic)).data
+            const updatedTopic = (await httpClient.put(UPDATE_TOPIC, topic)).data
                 .result as TopicModel;
 
             return updatedTopic;
@@ -113,8 +114,7 @@ export default class TopicService {
 
     async getTopics(courseId: number) {
         try {
-            const topics = (await httpClient.get(GET_ALL_TOPIC + courseId)).data
-                .result as TopicModel[];
+            const topics = (await httpClient.get(GET_ALL_TOPIC + courseId)).data as TopicModel[];
 
             return topics;
         } catch (error) {

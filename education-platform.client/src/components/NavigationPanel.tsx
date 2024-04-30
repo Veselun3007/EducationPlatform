@@ -123,12 +123,30 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
     const { pathname } = useLocation();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('md'));
     const { t, i18n } = useTranslation();
-    const { dashboardPageStore, userStore, navigationPanelStore } = useStore();
+    const { courseStore, userStore } = useStore();
 
     useEffect(() => {
         userStore.getUser(navigate);
-        return () => userStore.reset();
+        courseStore.init(navigate);
+        return () => {
+            userStore.reset()
+            courseStore.reset();
+        };
     }, []);
+
+    if (courseStore.isLoading) {
+        return (
+            <Box
+                display="flex"
+                height="100svh"
+                width="100%"
+                alignItems="center"
+                justifyContent="center"
+            >
+                <CircularProgress />
+            </Box>
+        );
+    }
 
     const courseTopLevelPath = pathname.replace(/(\/course\/\d+).*/, '$1');
 
@@ -143,8 +161,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                     sx={{
                         minHeight: 48,
                         justifyContent:
-                            navigationPanelStore.drawerOpen ||
-                            navigationPanelStore.toggled
+                            courseStore.drawerOpen ||
+                                courseStore.toggled
                                 ? 'initial'
                                 : 'center',
                         px: 2.5,
@@ -159,8 +177,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         sx={{
                             minWidth: 0,
                             mr:
-                                navigationPanelStore.drawerOpen ||
-                                navigationPanelStore.toggled
+                            courseStore.drawerOpen ||
+                            courseStore.toggled
                                     ? 3
                                     : 'auto',
                             justifyContent: 'center',
@@ -172,8 +190,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         primary={'Dashboard'}
                         sx={{
                             opacity:
-                                navigationPanelStore.drawerOpen ||
-                                navigationPanelStore.toggled
+                            courseStore.drawerOpen ||
+                            courseStore.toggled
                                     ? 1
                                     : 0,
                         }}
@@ -182,19 +200,19 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
             </ListItem>
             <Divider />
             <List>
-                {dashboardPageStore.courses.map((cource) => (
+                {courseStore.coursesInfo.map((info) => (
                     <ListItem
-                        key={cource.courseId}
+                        key={info.course.courseId}
                         disablePadding
                         sx={{ display: 'block' }}
-                        onClick={() => navigate(`/course/${cource.courseId}`)}
+                        onClick={() => navigate(`/course/${info.course.courseId}`)}
                     >
                         <ListItemButton
                             sx={{
                                 minHeight: 48,
                                 justifyContent:
-                                    navigationPanelStore.drawerOpen ||
-                                    navigationPanelStore.toggled
+                                courseStore.drawerOpen ||
+                                courseStore.toggled
                                         ? 'initial'
                                         : 'center',
                                 px: 2.5,
@@ -203,21 +221,21 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 maxWidth: drawerWidth,
                                 mr: 1,
                             }}
-                            selected={`/course/${cource.courseId}` === courseTopLevelPath}
+                            selected={`/course/${info.course.courseId}` === courseTopLevelPath}
                         >
                             <ListItemIcon
                                 sx={{
                                     minWidth: 0,
                                     mr:
-                                        navigationPanelStore.drawerOpen ||
-                                        navigationPanelStore.toggled
+                                    courseStore.drawerOpen ||
+                                    courseStore.toggled
                                             ? 3
                                             : 'auto',
                                     justifyContent: 'center',
                                 }}
                             >
                                 <AbstractBackground
-                                    value={cource.courseName}
+                                    value={info.course.courseName}
                                     sx={{
                                         borderRadius: '50%',
                                         height: '2.1875rem',
@@ -229,16 +247,16 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         alignSelf="center"
                                         width="100%"
                                     >
-                                        {cource.courseName[0]}
+                                        {info.course.courseName[0]}
                                     </Typography>
                                 </AbstractBackground>
                             </ListItemIcon>
                             <ListItemText
-                                primary={cource.courseName}
+                                primary={info.course.courseName}
                                 sx={{
                                     opacity:
-                                        navigationPanelStore.drawerOpen ||
-                                        navigationPanelStore.toggled
+                                    courseStore.drawerOpen ||
+                                    courseStore.toggled
                                             ? 1
                                             : 0,
                                     display: '-webkit-box',
@@ -260,14 +278,14 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
         <>
             <PermanentDrawer
                 variant="permanent"
-                open={navigationPanelStore.drawerOpen || navigationPanelStore.toggled}
+                open={courseStore.drawerOpen || courseStore.toggled}
                 onMouseOverCapture={() => {
-                    if (!navigationPanelStore.toggled)
-                        debounce(navigationPanelStore.handleDrawerOpen, 100)();
+                    if (!courseStore.toggled)
+                        debounce(courseStore.handleDrawerOpen, 100)();
                 }}
                 onMouseLeave={() => {
-                    if (!navigationPanelStore.toggled)
-                        debounce(navigationPanelStore.handleDrawerClose, 100)();
+                    if (!courseStore.toggled)
+                        debounce(courseStore.handleDrawerClose, 100)();
                 }}
             >
                 {content}
@@ -283,8 +301,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
         <>
             <Drawer
                 sx={{ width: drawerWidth }}
-                open={navigationPanelStore.drawerOpen}
-                onClose={navigationPanelStore.handleDrawerClose}
+                open={courseStore.drawerOpen}
+                onClose={courseStore.handleDrawerClose}
             >
                 {content}
             </Drawer>
@@ -327,8 +345,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                             aria-label="open drawer"
                             onClick={() =>
                                 isSmallScreen
-                                    ? navigationPanelStore.handleDrawerOpen()
-                                    : navigationPanelStore.toggleDrawer()
+                                    ? courseStore.handleDrawerOpen()
+                                    : courseStore.toggleDrawer()
                             }
                             edge="start"
                             sx={{
@@ -383,7 +401,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
 
                                     <IconButton
                                         onClick={
-                                            navigationPanelStore.handleCreateCourseOpen
+                                            courseStore.handleCreateCourseOpen
                                         }
                                     >
                                         <Add />
@@ -394,11 +412,11 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 sx={{ cursor: 'pointer' }}
                                 src={userStore.user.userImage}
                                 alt={userStore.user.userName}
-                                onClick={navigationPanelStore.handleUserMenuOpen}
+                                onClick={courseStore.handleUserMenuOpen}
                             />
                             <Menu
                                 id="menu-appbar"
-                                anchorEl={navigationPanelStore.userMenuAnchorEl}
+                                anchorEl={courseStore.userMenuAnchorEl}
                                 anchorOrigin={{
                                     vertical: 'bottom',
                                     horizontal: 'center',
@@ -409,8 +427,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                     horizontal: 'right',
                                 }}
                                 sx={{ mt: 1 }}
-                                open={Boolean(navigationPanelStore.userMenuAnchorEl)}
-                                onClose={navigationPanelStore.handleUserMenuClose}
+                                open={Boolean(courseStore.userMenuAnchorEl)}
+                                onClose={courseStore.handleUserMenuClose}
                             >
                                 <Stack
                                     width={300}
@@ -440,7 +458,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                     >
                                         <MenuItem
                                             onClick={
-                                                navigationPanelStore.handleSettingsOpen
+                                                courseStore.handleSettingsOpen
                                             }
                                             sx={{ height: 50 }}
                                         >
@@ -461,8 +479,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                 {isSmallScreen ? temporaryDrawer : permanentDrawer}
             </Box>
             <Modal
-                open={navigationPanelStore.settingsOpen}
-                onClose={navigationPanelStore.handleSettingsClose}
+                open={courseStore.settingsOpen}
+                onClose={courseStore.handleSettingsClose}
             >
                 <Box
                     bgcolor={theme.palette.background.paper}
@@ -476,7 +494,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                     }}
                     overflow="auto"
                 >
-                    <TabContext value={navigationPanelStore.settingsTab}>
+                    <TabContext value={courseStore.settingsTab}>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                             <Stack
                                 direction="row"
@@ -485,7 +503,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                             >
                                 <TabList
                                     onChange={
-                                        navigationPanelStore.handleSettingsTabChange
+                                        courseStore.handleSettingsTabChange
                                     }
                                 >
                                     <Tab label={t('common.commonSettings')} value="1" />
@@ -493,7 +511,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 </TabList>
                                 <IconButton
                                     size="large"
-                                    onClick={navigationPanelStore.handleSettingsClose}
+                                    onClick={courseStore.handleSettingsClose}
                                 >
                                     <Close />
                                 </IconButton>
@@ -608,9 +626,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         >
                                             {userStore.errors.userImage !== null
                                                 ? t(
-                                                      userStore.errors.userImage.errorKey,
-                                                      userStore.errors.userImage.options,
-                                                  )
+                                                    userStore.errors.userImage.errorKey,
+                                                    userStore.errors.userImage.options,
+                                                )
                                                 : null}
                                         </Typography>
                                     </Stack>
@@ -625,9 +643,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         helperText={
                                             userStore.errors.email !== null
                                                 ? t(
-                                                      userStore.errors.email.errorKey,
-                                                      userStore.errors.email.options,
-                                                  )
+                                                    userStore.errors.email.errorKey,
+                                                    userStore.errors.email.options,
+                                                )
                                                 : null
                                         }
                                     />
@@ -641,9 +659,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         helperText={
                                             userStore.errors.userName !== null
                                                 ? t(
-                                                      userStore.errors.userName.errorKey,
-                                                      userStore.errors.userName.options,
-                                                  )
+                                                    userStore.errors.userName.errorKey,
+                                                    userStore.errors.userName.options,
+                                                )
                                                 : null
                                         }
                                     />
@@ -660,9 +678,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                     >
                                         {userStore.errors.meta !== null
                                             ? t(
-                                                  userStore.errors.meta.errorKey,
-                                                  userStore.errors.meta.options,
-                                              )
+                                                userStore.errors.meta.errorKey,
+                                                userStore.errors.meta.options,
+                                            )
                                             : null}
                                     </Typography>
                                     <Button
@@ -691,8 +709,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                 </Box>
             </Modal>
             <Modal
-                open={navigationPanelStore.createCourseOpen}
-                onClose={navigationPanelStore.handleCreateCourseClose}
+                open={courseStore.createCourseOpen}
+                onClose={courseStore.handleCreateCourseClose}
             >
                 <Stack
                     bgcolor={theme.palette.background.paper}
@@ -718,15 +736,15 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         required
                         type="text"
                         label={t('common.name')}
-                        value={navigationPanelStore.data.name}
-                        onChange={navigationPanelStore.onNameChange}
-                        error={navigationPanelStore.errors.name !== null}
+                        value={courseStore.data.courseName}
+                        onChange={courseStore.onNameChange}
+                        error={courseStore.errors.name !== null}
                         helperText={
-                            navigationPanelStore.errors.name !== null
+                            courseStore.errors.name !== null
                                 ? t(
-                                      navigationPanelStore.errors.name.errorKey,
-                                      navigationPanelStore.errors.name.options,
-                                  )
+                                    courseStore.errors.name.errorKey,
+                                    courseStore.errors.name.options,
+                                )
                                 : null
                         }
                     />
@@ -735,37 +753,37 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         multiline
                         rows={4}
                         label={t('common.description')}
-                        value={navigationPanelStore.data.description}
-                        onChange={navigationPanelStore.onDescriptionChange}
+                        value={courseStore.data.courseDescription}
+                        onChange={courseStore.onDescriptionChange}
                     />
                     <Typography
                         color="error"
                         variant="caption"
                         align="center"
                         visibility={
-                            navigationPanelStore.errors.meta !== null
+                            courseStore.errors.meta !== null
                                 ? 'visible'
                                 : 'collapse'
                         }
                     >
-                        {navigationPanelStore.errors.meta !== null
+                        {courseStore.errors.meta !== null
                             ? t(
-                                  navigationPanelStore.errors.meta.errorKey,
-                                  navigationPanelStore.errors.meta.options,
-                              )
+                                courseStore.errors.meta.errorKey,
+                                courseStore.errors.meta.options,
+                            )
                             : null}
                     </Typography>
                     <Stack direction="row" width="100%" justifyContent="end">
                         <Button
                             color="inherit"
-                            onClick={navigationPanelStore.handleCreateCourseClose}
+                            onClick={courseStore.handleCreateCourseClose}
                         >
                             {t('common.close')}
                         </Button>
                         <Button
                             color="primary"
-                            onClick={navigationPanelStore.submit}
-                            disabled={!navigationPanelStore.isValid}
+                            onClick={() => courseStore.submit(navigate)}
+                            disabled={!courseStore.isValid}
                         >
                             {t('common.create')}
                         </Button>

@@ -2,7 +2,9 @@ import axios from 'axios';
 import { REFRESH_TOKEN } from './routesAPI';
 import TokenResponseModel from '../../models/auth/TokenResponseModel';
 
-const httpClient = axios.create();
+const httpClient = axios.create({
+    formSerializer:{indexes:null}
+});
 
 // httpClient.defaults.headers.common['Authorization'] =
 //     'Bearer ' + localStorage.getItem('accessToken');
@@ -46,5 +48,29 @@ httpClient.interceptors.response.use(
         return Promise.reject(error);
     },
 );
+
+const isoDateFormat =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)((-(\d{2}):(\d{2})|Z)?)$/;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isIsoDateString(value: any): boolean {
+    return value && typeof value === 'string' && isoDateFormat.test(value);
+}
+export function convertResponseDates(body: any) {
+    if (body === null || body === undefined || typeof body !== 'object') return body;
+
+    for (const key of Object.keys(body)) {
+        const value = body[key];
+        if (isIsoDateString(value)) {
+            body[key] = new Date(value)
+        }
+        else if (typeof value === 'object') convertResponseDates(value);
+    }
+}
+
+httpClient.interceptors.response.use((response) => {
+    convertResponseDates(response.data);
+    return response;
+});
 
 export default httpClient;

@@ -97,7 +97,7 @@ export default class AuthService {
     get UserId(): string {
         const accessToken = localStorage.getItem('accessToken');
         if (accessToken) {
-            return JSON.parse(window.atob(accessToken.split('.')[1])).sub;
+            return JSON.parse(window.atob(accessToken.split('.')[1])).username;
         }
 
         return '';

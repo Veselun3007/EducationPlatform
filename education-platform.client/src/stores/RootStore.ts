@@ -1,18 +1,19 @@
 import AssignmentService from '../services/AssignmentService';
 import AuthService from '../services/AuthService';
 import CourseService from '../services/CourseService';
+import CourseUserService from '../services/CourseUserService';
 import MaterialService from '../services/MaterialService';
 import TopicService from '../services/TopicService';
 import UserService from '../services/UserService';
 import AssignmentPageStore from './AssignmentPageStore';
 import ConfirmUserPageStore from './ConfirmUserPageStore';
 import CoursePageStore from './CoursePageStore';
-import DashboardPageStore from './DashboardPageStore';
 import LoginPageStore from './LoginPageStore';
 import MaterialPageStore from './MaterialPageStore';
-import NavigationPanelStore from './NavigationPanelStore';
+import CourseStore from './CourseStore';
 import SignUpPageStore from './SignUpPageStore';
 import UserStore from './UserStore';
+import CommonService from '../services/common/CommonService';
 
 export default class RootStore {
     readonly authService: AuthService;
@@ -21,13 +22,14 @@ export default class RootStore {
     readonly assignmentService: AssignmentService;
     readonly materialService: MaterialService;
     readonly topicService: TopicService;
+    readonly courseUserService: CourseUserService;
+    readonly commonService: CommonService;
 
     readonly signUpPageStore: SignUpPageStore;
     readonly loginPageStore: LoginPageStore;
     readonly confirmUserPageStore: ConfirmUserPageStore;
-    readonly dashboardPageStore: DashboardPageStore;
     readonly userStore: UserStore;
-    readonly navigationPanelStore: NavigationPanelStore;
+    readonly courseStore: CourseStore;
     readonly coursePageStore: CoursePageStore;
     readonly assignmentPageStore: AssignmentPageStore;
     readonly materialPageStore: MaterialPageStore;
@@ -37,18 +39,19 @@ export default class RootStore {
         this.authService = new AuthService();
         this.userService = new UserService(this.authService);
         this.courseService = new CourseService(this.authService);
+        this.courseUserService = new CourseUserService(this.authService);
         this.assignmentService = new AssignmentService(this.authService);
         this.materialService = new MaterialService(this.authService);
         this.topicService = new TopicService(this.authService);
+        this.commonService = new CommonService();
         //Store creation
         this.signUpPageStore = new SignUpPageStore(this, this.authService);
         this.loginPageStore = new LoginPageStore(this, this.authService);
         this.confirmUserPageStore = new ConfirmUserPageStore(this, this.authService);
-        this.dashboardPageStore = new DashboardPageStore(this, this.authService);
         this.userStore = new UserStore(this, this.authService, this.userService);
-        this.navigationPanelStore = new NavigationPanelStore(this, this.courseService);
-        this.coursePageStore = new CoursePageStore(this);
-        this.assignmentPageStore = new AssignmentPageStore(this);
-        this.materialPageStore = new MaterialPageStore(this);
+        this.courseStore = new CourseStore(this, this.courseService);
+        this.coursePageStore = new CoursePageStore(this, this.courseService, this.assignmentService,this.materialService, this.topicService);
+        this.assignmentPageStore = new AssignmentPageStore(this, this.assignmentService, this.topicService, this.commonService);
+        this.materialPageStore = new MaterialPageStore(this, this.materialService, this.topicService, this.commonService);
     }
 }
