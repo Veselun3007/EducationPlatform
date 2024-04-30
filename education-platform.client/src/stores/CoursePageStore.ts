@@ -1,25 +1,38 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import RootStore from './RootStore';
 import CourseModel from '../models/course/CourseModel';
 import ValidationError from '../helpers/validation/ValidationError';
-import CreateUpdateCourseModel from '../models/course/CreateUpdateCourseModel';
+import CreateCourseModel from '../models/course/CreateCourseModel';
 import debounce from '../helpers/debounce';
 import { enqueueAlert } from '../components/Notification/NotificationProvider';
 import { NavigateFunction } from 'react-router-dom';
-import CreateUpdateTopicModel from '../models/topic/CreateUpdateTopicModel';
-import CreateUpdateMaterialModel from '../models/material/CreateUpdateMaterialModel';
-import CreateUpdateAssignmentModel from '../models/assignment/CreateUpdateAssignmentModel';
+import CreateTopicModel from '../models/topic/CreateTopicModel';
+import CreateUpdateMaterialModel from '../models/material/CreateMaterialModel';
+import CreateAssignmentModel from '../models/assignment/CreateAssignmentModel';
 import TopicModel from '../models/topic/TopicModel';
 import { SelectChangeEvent } from '@mui/material';
 import { Dayjs } from 'dayjs';
 import AssignmentModel from '../models/assignment/AssignmentModel';
 import MaterialModel from '../models/material/MaterialModel';
+import CourseService from '../services/CourseService';
+import AssignmentService from '../services/AssignmentService';
+import MaterialService from '../services/MaterialService';
+import TopicService from '../services/TopicService';
+import LoginRequiredError from '../errors/LoginRequiredError';
+import ServiceError from '../errors/ServiceError';
+import CourseInfoModel from '../models/course/CourseInfoModel';
+import UpdateCourseModel from '../models/course/UpdateCourseModel';
+import UpdateTopicModel from '../models/topic/UpdateTopicModel';
 
 export default class CoursePageStore {
     private readonly _rootStore: RootStore;
+    private readonly _courseService: CourseService;
+    private readonly _assignmetnService: AssignmentService;
+    private readonly _materialService: MaterialService;
+    private readonly _topicService: TopicService;
 
-    course: CourseModel | null = null;
+    course: CourseInfoModel | null = null;
     topics: TopicModel[] | null = [];
     assignments: AssignmentModel[] | null = null;
     materials: MaterialModel[] | null = null;
@@ -33,25 +46,23 @@ export default class CoursePageStore {
     createAssignmentOpen = false;
     editTopicOpen = false;
 
-    courseData: CreateUpdateCourseModel | null = null;
+    courseData: UpdateCourseModel | null = null;
     courseErrors: Record<string, ValidationError | null> = {
         name: null,
         meta: null,
     };
 
-    createTopicData: CreateUpdateTopicModel | null = null;
+    createTopicData: CreateTopicModel | null = null;
     createTopicErrors: Record<string, ValidationError | null> = {
         title: null,
         meta: null,
     };
 
-    editTopicData: CreateUpdateTopicModel | null = null;
+    editTopicData: UpdateTopicModel | null = null;
     editTopicErrors: Record<string, ValidationError | null> = {
         title: null,
         meta: null,
     };
-    editTopicId: number | null = null;
-
     materialData: CreateUpdateMaterialModel | null = null;
     materialErrors: Record<string, ValidationError | null> = {
         materialName: null,
@@ -60,7 +71,7 @@ export default class CoursePageStore {
         meta: null,
     };
 
-    assignmentData: CreateUpdateAssignmentModel | null = null;
+    assignmentData: CreateAssignmentModel | null = null;
     assignmentErrors: Record<string, ValidationError | null> = {
         assignmentName: null,
         maxMark: null,
@@ -74,12 +85,15 @@ export default class CoursePageStore {
 
     isLoading = true;
 
-    constructor(rootStore: RootStore) {
+    constructor(rootStore: RootStore, courseService: CourseService, assignmentService: AssignmentService, materialService: MaterialService, topicService: TopicService) {
         this._rootStore = rootStore;
+        this._assignmetnService = assignmentService;
+        this._materialService = materialService;
+        this._courseService = courseService;
+        this._topicService = topicService;
 
         makeObservable(this, {
             isLoading: observable,
-            editTopicId: observable,
             editTopicData: observable,
             editTopicErrors: observable,
             editTopicOpen: observable,
@@ -193,204 +207,62 @@ export default class CoursePageStore {
         );
     }
 
-    init() {
-        this.course = {
-            courseId: 1,
-            courseName: 'Course name 1 ВАП ВФ ІАР ПВІАПВАП ВАПВА ВІПІПІВП',
-            courseDescription:
-                'ThiThis is description for cource 1s is description for cource 1 This is description for cource 1, This is description for cource 1 This is description for cource 1This is description for cource 1',
-            courseLink: 'link 1',
-        };
+    async init(courseId: number, navigate: NavigateFunction) {
+        try {
+            const course = await this._courseService.getCourse(courseId);
+            const assignments = await this._assignmetnService.getAssignments(course.course.courseId);
+            const materials = await this._materialService.getMaterials(course.course.courseId);
+            const topics = await this._topicService.getTopics(course.course.courseId);
 
-        this.courseData = new CreateUpdateCourseModel(
-            this.course.courseName,
-            this.course.courseDescription,
-        );
+            runInAction(() => {
+                this.course = course;
+                this.assignments = assignments;
+                this.materials = materials;
+                this.topics = topics;
 
-        this.createTopicData = new CreateUpdateTopicModel(this.course.courseId, '');
-        this.materialData = new CreateUpdateMaterialModel(
-            this.course.courseId,
-            '',
-            [],
-            [],
-            new Date(Date.now()),
-        );
-        this.assignmentData = new CreateUpdateAssignmentModel(
-            this.course.courseId,
-            '',
-            100,
-            0,
-            false,
-            new Date(Date.now() + 86400000),
-            [],
-            [],
-            new Date(Date.now()),
-        );
-        this.editTopicData = new CreateUpdateTopicModel(this.course.courseId, '');
-        this.topics = [
-            {
-                courseId: 1,
-                id: 1,
-                title: 'topic1',
-            },
-            {
-                courseId: 1,
-                id: 2,
-                title: 'topic2',
-            },
-            {
-                courseId: 1,
-                id: 3,
-                title: 'topic3',
-            },
-        ];
+                this.courseData = new UpdateCourseModel(this.course.course.courseId,
+                    this.course.course.courseName,
+                    this.course.course.courseDescription);
 
-        this.assignments = [
-            {
-                id: 1,
-                topicId: 1,
-                assignmentName: 'Introduction to JavaScript',
-                assignmentDescription:
-                    'Write a simple JavaScript program to calculate the factorial of a number.',
-                maxMark: 10,
-                minMark: 0,
-                isRequired: true,
-                assignmentDatePublication: new Date(Date.now()),
-                assignmentDeadline: new Date('2024-05-05'),
-                isEdited: false,
-                editedTime: undefined,
-                assignmentfiles: [
-                    {
-                        id: 1,
-                        assignmentFile:
-                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
-                    },
-                ],
-                assignmentlinks: [
-                    {
-                        id: 1,
-                        assignmentLink:
-                            'https://developer.mozilla.org/en-US/docs/Web/JavaScript',
-                    },
-                ],
-            },
-            {
-                id: 2,
-                topicId: 2,
-                assignmentName: 'Introduction to HTML',
-                maxMark: 5,
-                minMark: 0,
-                isRequired: false,
-                assignmentDatePublication: new Date(Date.now()),
-                assignmentDeadline: new Date('2024-05-10'),
-                isEdited: false,
-                editedTime: undefined,
-                assignmentfiles: [
-                    {
-                        id: 1,
-                        assignmentFile:
-                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
-                    },
-                ],
-                assignmentlinks: [
-                    { id: 1, assignmentLink: 'https://www.w3schools.com/html/' },
-                ],
-            },
-            {
-                id: 3,
-                assignmentName: 'Research Paper on Artificial Intelligence',
-                maxMark: 20,
-                minMark: 0,
-                isRequired: true,
-                assignmentDatePublication: new Date(Date.now()),
-                assignmentDeadline: new Date('2024-05-15'),
-                isEdited: true,
-                editedTime: new Date('2024-04-23'),
-                assignmentfiles: [
-                    {
-                        id: 1,
-                        assignmentFile:
-                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
-                    },
-                ],
-                assignmentlinks: [{ id: 1, assignmentLink: 'https://ai.stanford.edu/' }],
-            },
-        ];
+                this.createTopicData = new CreateTopicModel(this.course.course.courseId, '');
 
-        this.materials = [
-            {
-                id: 1,
-                topicId: 1,
-                materialName: 'Introduction to Algorithms',
-                materialDescription: 'Overview of basic algorithms and their analysis.',
-                materialDatePublication: new Date('2024-04-20'),
-                isEdited: false,
-                editedTime: undefined,
-                materialfiles: [
-                    {
-                        id: 1,
-                        materialFile:
-                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
-                    },
-                ],
-                materiallinks: [
-                    {
-                        id: 1,
-                        materialLink:
-                            'https://mitpress.mit.edu/books/introduction-algorithms',
-                    },
-                ],
-            },
-            {
-                id: 2,
-                topicId: 2,
-                materialName: 'Database Design Basics',
-                materialDatePublication: new Date('2024-04-22'),
-                isEdited: false,
-                editedTime: undefined,
-                materialfiles: [
-                    {
-                        id: 1,
-                        materialFile:
-                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
-                    },
-                ],
-                materiallinks: [
-                    {
-                        id: 1,
-                        materialLink:
-                            'https://www.tutorialspoint.com/dbms/database_design.htm',
-                    },
-                ],
-            },
-            {
-                id: 3,
-                materialName: 'Introduction to Machine Learning',
-                materialDescription:
-                    'An overview of machine learning concepts and algorithms.',
-                materialDatePublication: new Date('2024-04-18'),
-                isEdited: true,
-                editedTime: new Date('2024-04-23'),
-                materialfiles: [
-                    {
-                        id: 1,
-                        materialFile:
-                            'https://docs.google.com/document/d/1MAp9AFXbTTa-nRQW1_eacevqBuRb188_j_NGr_oBddU/edit?usp=sharing',
-                    },
-                ],
-                materiallinks: [
-                    {
-                        id: 1,
-                        materialLink: 'https://www.coursera.org/learn/machine-learning',
-                    },
-                ],
-            },
-        ];
-        this.isLoading = false;
+                this.materialData = new CreateUpdateMaterialModel(
+                    this.course.course.courseId,
+                    '',
+                    [],
+                    [],
+                    new Date(Date.now()),
+                );
+
+                this.assignmentData = new CreateAssignmentModel(
+                    this.course.course.courseId,
+                    '',
+                    100,
+                    0,
+                    false,
+                    new Date(Date.now() + 86400000),
+                    [],
+                    [],
+                    new Date(Date.now()),
+                );
+
+                this.editTopicData = new CreateTopicModel(this.course.course.courseId, '');
+
+                this.isLoading = false;
+            });
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                navigate('/dashboard');
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
     onNameChange(e: React.ChangeEvent<HTMLInputElement>): void {
-        this.courseData!.name = e.target.value;
+        this.courseData!.courseName = e.target.value;
         debounce(
             action(() => {
                 const nameErrors = this.courseData!.validateName();
@@ -400,7 +272,7 @@ export default class CoursePageStore {
     }
 
     onDescriptionChange(e: React.ChangeEvent<HTMLInputElement>): void {
-        this.courseData!.description = e.target.value;
+        this.courseData!.courseDescription = e.target.value;
     }
 
     onCreateTopicTitleChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -556,7 +428,7 @@ export default class CoursePageStore {
 
     onAssignmentFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files) {
-            this.assignmentData!.assignmentFiles.push(...Array.from(e.target.files));
+            this.assignmentData!.AssignmentFiles.push(...Array.from(e.target.files));
         }
         debounce(
             action(() => {
@@ -567,7 +439,7 @@ export default class CoursePageStore {
         )();
     }
     onAssignmentFileDelete(id: number) {
-        this.assignmentData?.assignmentFiles.splice(id, 1);
+        this.assignmentData?.AssignmentFiles.splice(id, 1);
         debounce(
             action(() => {
                 const errors = this.assignmentData!.validateAssignmentFiles();
@@ -610,24 +482,104 @@ export default class CoursePageStore {
         )();
     }
 
-    submitCourse() {
-        this.handleEditCourseClose();
+    async submitCourse(navigate: NavigateFunction) {
+        try {
+            const updatedCourse = await this._courseService.updateCourse(this.courseData!);
+
+            runInAction(() => {
+                const index = this._rootStore.courseStore.coursesInfo.findIndex(c => c.course.courseId === updatedCourse.course.courseId);
+                this._rootStore.courseStore.coursesInfo[index] = updatedCourse;
+                this.course = updatedCourse;
+                this.handleEditCourseClose();
+                enqueueAlert('glossary.editSuccess', 'success');
+            });
+
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
     }
 
-    submitCreateTopic() {
-        this.handleCreateTopicClose();
+    async submitCreateTopic(navigate: NavigateFunction) {
+        try {
+            const createdTopic = await this._topicService.createTopic(this.createTopicData!);
+            runInAction(() => {
+                this.topics!.push(createdTopic);
+                this.handleCreateTopicClose();
+                enqueueAlert('glossary.topicCreateSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
     }
 
-    submitMaterial() {
-        this.handleCreateMaterialClose();
+    async submitMaterial(navigate: NavigateFunction) {
+        try {
+            const createdMaterial = await this._materialService.createMaterial(this.materialData!);
+            runInAction(() => {
+                this.materials!.push(createdMaterial);
+                this.handleCreateMaterialClose();
+                enqueueAlert('glossary.materialCreateSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
     }
 
-    submitAssignment() {
-        this.handleCreateAssignmentClose();
+    async submitAssignment(navigate: NavigateFunction) {
+        try {
+            const createdAssignment = await this._assignmetnService.createAssignment(this.assignmentData!);
+            runInAction(() => {
+                this.assignments!.push(createdAssignment);
+                this.handleCreateAssignmentClose();
+                enqueueAlert('glossary.assignmentCreateSuccess', 'success');
+            })
+        } catch (error) {
+            this.handleCreateAssignmentClose();
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
-    submitEditTopic() {
-        this.handleEditTopicClose();
+    async submitEditTopic(navigate: NavigateFunction) {
+        try {
+            const updatedTopic = await this._topicService.updateTopic(this.editTopicData!);
+            runInAction(() => {
+                const index = this.topics!.findIndex(t => t.id === updatedTopic.id);
+                this.topics![index] = updatedTopic;
+                this.handleEditTopicClose();
+                enqueueAlert('glossary.editSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
     }
 
     openCourseMenu(event: React.MouseEvent<HTMLButtonElement>) {
@@ -660,7 +612,7 @@ export default class CoursePageStore {
     handleEditTopicOpen(id: number) {
         const topic = this.topics!.find((c) => c.id === id);
         this.editTopicData!.title = topic!.title;
-        this.editTopicId = topic!.id;
+        this.editTopicData!.id = topic!.id;
         this.editTopicOpen = true;
     }
 
@@ -702,32 +654,58 @@ export default class CoursePageStore {
     }
 
     deleteCourse(navigate: NavigateFunction) {
-        enqueueAlert('glossary.deleteCourseSuccess', 'success');
-        navigate('/dashboard');
-        this.closeCourseMenu();
+        try {
+            this._courseService.deleteCourse(this.course!.course.courseId);
+            runInAction(() => {
+                const index = this._rootStore.courseStore.coursesInfo.findIndex(c => c.course.courseId === this.course!.course.courseId);
+                this._rootStore.courseStore.coursesInfo.splice(index, 1);
+                enqueueAlert('glossary.deleteCourseSuccess', 'success');
+                navigate('/dashboard');
+                this.closeCourseMenu();
+            });
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
-    deleteTopic(id: number) {
-        this.assignments!.forEach((a) => {
-            if (a.topicId === id) {
-                a.topicId = undefined;
-            }
-        });
+    async deleteTopic(id: number, navigate: NavigateFunction) {
+        try {
+            await this._topicService.deleteTopic(id);
+            runInAction(() => {
+                this.assignments!.forEach((a) => {
+                    if (a.topicId === id) {
+                        a.topicId = undefined;
+                    }
+                });
 
-        this.materials!.forEach((m) => {
-            if (m.topicId === id) {
-                m.topicId = undefined;
-            }
-        });
-        const index = this.topics!.findIndex((t) => t.id === id);
+                this.materials!.forEach((m) => {
+                    if (m.topicId === id) {
+                        m.topicId = undefined;
+                    }
+                });
+                const index = this.topics!.findIndex((t) => t.id === id);
 
-        this.topics!.splice(index, 1);
-        enqueueAlert('glossary.deleteTopicSuccess', 'success');
+                this.topics!.splice(index, 1);
+                enqueueAlert('glossary.deleteTopicSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
     resetEditTopic() {
         this.editTopicData!.title = '';
-        this.editTopicId = null;
+        this.editTopicData!.id = undefined;
         Object.keys(this.editTopicErrors).forEach(
             (key) => (this.editTopicErrors[key] = null),
         );
@@ -741,8 +719,8 @@ export default class CoursePageStore {
     }
 
     resetCourse() {
-        this.courseData!.name = this.course!.courseName;
-        this.courseData!.description = this.course!.courseDescription;
+        this.courseData!.courseName = this.course!.course.courseName;
+        this.courseData!.courseDescription = this.course!.course.courseDescription;
         Object.keys(this.courseErrors).forEach((key) => (this.courseErrors[key] = null));
     }
 
@@ -751,7 +729,7 @@ export default class CoursePageStore {
         this.assignmentData!.assignmentDeadline = new Date(Date.now() + 86400000);
         this.assignmentData!.assignmentDescription = '';
         this.assignmentData!.assignmentDatePublication = new Date(Date.now());
-        this.assignmentData!.assignmentFiles = [];
+        this.assignmentData!.AssignmentFiles = [];
         this.assignmentData!.assignmentLinks = [];
         this.assignmentData!.isRequired = false;
         this.assignmentData!.maxMark = 100;
@@ -777,12 +755,31 @@ export default class CoursePageStore {
 
     reset(): void {
         this.isLoading = true;
-        this.resetAssignment();
-        this.resetCourse();
-        this.resetMaterial();
-        this.resetCreateTopic();
-        this.resetEditTopic();
-        //this.course = null;
+
+        this.course = null;
+        this.assignments = null;
+        this.topics = null;
+        this.materials = null;
+
+        Object.keys(this.materialErrors).forEach(
+            (key) => (this.materialErrors[key] = null),
+        );
+        Object.keys(this.assignmentErrors).forEach(
+            (key) => (this.assignmentErrors[key] = null),
+        );
+        Object.keys(this.courseErrors).forEach((key) => (this.courseErrors[key] = null));
+        Object.keys(this.createTopicErrors).forEach(
+            (key) => (this.createTopicErrors[key] = null),
+        );
+        Object.keys(this.editTopicErrors).forEach(
+            (key) => (this.editTopicErrors[key] = null),
+        );
+
+        this.createTopicData = null;
+        this.courseData = null;
+        this.editTopicData = null;
+        this.assignmentData = null;
+        this.materialData = null;
 
         this.courseMenuAnchor = null;
         this.contentMenuAnchor = null;

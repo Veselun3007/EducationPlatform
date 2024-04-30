@@ -1,17 +1,23 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { action, computed, makeObservable, observable } from 'mobx';
-import RootStore from './RootStore';
-import MaterialModel from '../models/material/MaterialModel';
-import TopicModel from '../models/topic/TopicModel';
-import ValidationError from '../helpers/validation/ValidationError';
-import CreateUpdateMaterialModel from '../models/material/CreateUpdateMaterialModel';
-import { NavigateFunction } from 'react-router-dom';
-import { enqueueAlert } from '../components/Notification/NotificationProvider';
-import debounce from '../helpers/debounce';
-import { avatarClasses, SelectChangeEvent } from '@mui/material';
+import { action, computed, makeObservable, observable } from "mobx";
+import RootStore from "./RootStore";
+import MaterialModel from "../models/material/MaterialModel";
+import TopicModel from "../models/topic/TopicModel";
+import ValidationError from "../helpers/validation/ValidationError";
+import CreateUpdateMaterialModel from "../models/material/CreateMaterialModel";
+import { NavigateFunction } from "react-router-dom";
+import { enqueueAlert } from "../components/Notification/NotificationProvider";
+import debounce from "../helpers/debounce";
+import { avatarClasses, SelectChangeEvent } from "@mui/material";
+import MaterialService from "../services/MaterialService";
+import TopicService from "../services/TopicService";
+import CommonService from "../services/common/CommonService";
 
 export default class MaterialPageStore {
     private readonly _rootStore: RootStore;
+    private readonly _materialService: MaterialService;
+    private readonly _topicService: TopicService;
+    private readonly _commonService: CommonService;
 
     isLoading = true;
 
@@ -32,8 +38,11 @@ export default class MaterialPageStore {
     isFileViewerOpen = false;
     fileLink = '';
 
-    constructor(rootStore: RootStore) {
+    constructor(rootStore: RootStore, materialService: MaterialService, topicService: TopicService, commonService: CommonService) {
         this._rootStore = rootStore;
+        this._materialService = materialService;
+        this._topicService = topicService;
+        this._commonService = commonService;
         makeObservable(this, {
             isLoading: observable,
             material: observable,
@@ -65,6 +74,7 @@ export default class MaterialPageStore {
             closeMaterialMenu: action.bound,
             reset: action.bound,
             resetEditMaterial: action.bound,
+
         });
     }
 
@@ -77,6 +87,7 @@ export default class MaterialPageStore {
     }
 
     init(courseId: number, materialId: number) {
+
         this.topics = [
             {
                 courseId: 1,
@@ -92,7 +103,7 @@ export default class MaterialPageStore {
                 courseId: 1,
                 id: 3,
                 title: 'topic3',
-            },
+            }
         ];
 
         this.material = {
@@ -119,15 +130,8 @@ export default class MaterialPageStore {
             ],
         };
 
-        this.editMaterialData = new CreateUpdateMaterialModel(
-            courseId,
-            this.material.materialName,
-            [],
-            [],
-            this.material.materialDatePublication,
-            this.material.topicId,
-            this.material.materialDescription,
-        );
+        this.editMaterialData = new CreateUpdateMaterialModel(courseId, this.material.materialName, [], [],
+            this.material.materialDatePublication, this.material.topicId, this.material.materialDescription);
 
         //add autofill for files
 
@@ -139,8 +143,7 @@ export default class MaterialPageStore {
         debounce(
             action(() => {
                 const errors = this.editMaterialData!.validateMaterialName();
-                this.editMaterialErrors.materialName =
-                    errors.length !== 0 ? errors[0] : null;
+                this.editMaterialErrors.materialName = errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
@@ -229,7 +232,7 @@ export default class MaterialPageStore {
 
     handleEditMaterialClose() {
         this.resetEditMaterial();
-        this.editMaterialOpen = false;
+        this.editMaterialOpen = false
     }
 
     openMaterialMenu(event: React.MouseEvent<HTMLButtonElement>) {
@@ -241,21 +244,20 @@ export default class MaterialPageStore {
     }
 
     resetEditMaterial() {
-        this.editMaterialData!.materialDatePublication =
-            this.material!.materialDatePublication;
+        this.editMaterialData!.materialDatePublication = this.material!.materialDatePublication;
         this.editMaterialData!.materialDescription = this.material!.materialDescription;
         this.editMaterialData!.materialFiles = [];
-        this.editMaterialData!.materialLinks = []; //change it with real files
+        this.editMaterialData!.materialLinks = [];//change it with real files
         this.editMaterialData!.materialName = this.material!.materialName;
         this.editMaterialData!.topicId = this.material!.topicId;
-        Object.keys(this.editMaterialErrors).forEach(
-            (key) => (this.editMaterialErrors[key] = null),
-        );
+        Object.keys(this.editMaterialErrors).forEach((key) => (this.editMaterialErrors[key] = null));
     }
 
     reset() {
-        this.resetEditMaterial();
         this.isLoading = true;
+
+        this.editMaterialData = null;
+        Object.keys(this.editMaterialErrors).forEach((key) => (this.editMaterialErrors[key] = null));
 
         this.isFileViewerOpen = false;
         this.fileLink = '';

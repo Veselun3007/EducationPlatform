@@ -3,7 +3,7 @@ import FileValidator from '../../helpers/validation/FileValidator';
 import StringValidator from '../../helpers/validation/StringValidator';
 import ValidationError from '../../helpers/validation/ValidationError';
 
-export default class CreateUpdateModelModel {
+export default class CreateModelModel {
     courseId: number;
     topicId?: number;
     materialName: string;

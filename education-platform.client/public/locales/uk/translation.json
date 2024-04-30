@@ -115,6 +115,12 @@
         "markWorks": "Оцінити роботи",
         "deleteAssignmentSuccess": "Завдання видалено",
         "deleteTopicSuccess": "Тему видалено",
-        "deleteMaterialSuccess": "Матеріал видалено"
+        "deleteMaterialSuccess": "Матеріал видалено",
+        "courseNotFound": "Курс не знайдено",
+        "noPermissions": "Немає прав",
+        "courseCreateSuccess":"Курс створено",
+        "topicCreateSuccess":"Тему створено",
+        "assignmentCreateSuccess":"Завдання створено",
+        "materialCreateSuccess":"Матеріал створено"
     }
 }

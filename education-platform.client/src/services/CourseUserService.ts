@@ -1,28 +1,28 @@
-import { AxiosError } from 'axios';
-import CourseModel from '../models/course/CourseModel';
-import CreateCourseModel from '../models/course/CreateCourseModel';
-import AuthService from './AuthService';
-import httpClient from './common/httpClient';
-import { CREATE_COURSE, DELETE_COURSE, GET_ALL_COURSE, GET_COURSE, UPDATE_COURSE } from './common/routesAPI';
-import LoginRequiredError from '../errors/LoginRequiredError';
-import ServiceError from '../errors/ServiceError';
-import UpdateCourseModel from '../models/course/UpdateCourseModel';
-import DeleteCourseModel from '../models/course/DeleteCourseModel';
-import CourseInfoModel from '../models/course/CourseInfoModel';
+import { AxiosError } from "axios";
+import AuthService from "./AuthService";
+import httpClient from "./common/httpClient";
+import { CREATE_COURSE_USER, DELETE_COURSE_USER, GET_COURSE_USERS, UPDATE_COURSE_USER } from "./common/routesAPI";
+import LoginRequiredError from "../errors/LoginRequiredError";
+import ServiceError from "../errors/ServiceError";
+import CourseInfoModel from "../models/course/CourseInfoModel";
+import CourseUserInfoModel from "../models/courseUser/CourseUserInfoModel";
+import CreateCourseUserModel from "../models/courseUser/CreateCourseUserModel";
+import UpdateCourseUserModel from "../models/courseUser/UpdateCourseUserModel";
+import DeleteCourseUserModel from "../models/courseUser/DeleteCourseUserModel";
 
-export default class CourseService {
+export default class CourseUserService {
     private readonly _authService: AuthService;
 
     constructor(authService: AuthService) {
         this._authService = authService;
     }
 
-    async getCourses() {
+    async getUsers(courseId: number) {
         try {
-            const courses = (await httpClient.get(GET_ALL_COURSE))
-                .data as CourseInfoModel[];
+            const users = (await httpClient.get(GET_COURSE_USERS+'?courseId='+courseId))
+                .data as CourseUserInfoModel[];
 
-            return courses;
+            return users;
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
@@ -39,12 +39,32 @@ export default class CourseService {
         }
     }
 
-    async getCourse(id: number) {
+    async createUser(courseLink: string) {
         try {
-            const course = (await httpClient.get(GET_COURSE+'?courseId='+id))
-                .data as CourseInfoModel;
+            await httpClient.post(CREATE_COURSE_USER, new CreateCourseUserModel(courseLink, this._authService.UserId))
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 401:
+                            this._authService.clearTokens();
+                            throw new LoginRequiredError('glossary.loginToContinue');
+                        default:
+                            throw new ServiceError('glossary.somethingWentWrong');
+                    }
+                }
+            }
+            throw new ServiceError('glossary.somethingWentWrong');
+        }
+    }
 
-            return course;
+    async updateCourseUser(user: UpdateCourseUserModel) {
+        try {
+            user.userId = this._authService.UserId;
+            const updatedUser = (await httpClient.put(UPDATE_COURSE_USER, user))
+                .data as CourseUserInfoModel;
+
+            return updatedUser;
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
@@ -53,54 +73,7 @@ export default class CourseService {
                             this._authService.clearTokens();
                             throw new LoginRequiredError('glossary.loginToContinue');
                         case 404:
-                            throw new ServiceError('glossary.courseNotFound')
-                        default:
-                            throw new ServiceError('glossary.somethingWentWrong');
-                    }
-                }
-            }
-            throw new ServiceError('glossary.somethingWentWrong');
-        }
-    }
-
-    async createCourse(course: CreateCourseModel) {
-        try {
-            const createdCourse = (await httpClient.post(CREATE_COURSE, course))
-                .data as CourseInfoModel;
-
-            return createdCourse;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                if (error.response) {
-                    switch (error.response.status) {
-                        case 401:
-                            this._authService.clearTokens();
-                            throw new LoginRequiredError('glossary.loginToContinue');
-                        default:
-                            throw new ServiceError('glossary.somethingWentWrong');
-                    }
-                }
-            }
-            throw new ServiceError('glossary.somethingWentWrong');
-        }
-    }
-
-    async updateCourse(course: UpdateCourseModel) {
-        try {
-            course.userId = this._authService.UserId;
-            const updatedCourse = (await httpClient.put(UPDATE_COURSE, course))
-                .data as CourseInfoModel;
-
-            return updatedCourse;
-        } catch (error) {
-            if (error instanceof AxiosError) {
-                if (error.response) {
-                    switch (error.response.status) {
-                        case 401:
-                            this._authService.clearTokens();
-                            throw new LoginRequiredError('glossary.loginToContinue');
-                        case 404:
-                            throw new ServiceError('glossary.courseNotFound');
+                            throw new ServiceError('glossary.userNotFound');
                         case 403:
                             throw new ServiceError('glossary.noPermissions');
                         default:
@@ -112,16 +85,19 @@ export default class CourseService {
         }
     }
 
-    async deleteCourse(courseId: number) {
+    async deleteCourseUser(user: DeleteCourseUserModel) {
         try {
-            const course = new DeleteCourseModel(courseId, this._authService.UserId);
-            await httpClient.delete(DELETE_COURSE, { data: course });
+            user.userId = this._authService.UserId;
+            await httpClient.delete(DELETE_COURSE_USER, { data: user });
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
                     switch (error.response.status) {
+                        case 401:
+                            this._authService.clearTokens();
+                            throw new LoginRequiredError('glossary.loginToContinue');
                         case 404:
-                            throw new ServiceError('glossary.courseNotFound');
+                            throw new ServiceError('glossary.userNotFound');
                         case 403:
                             throw new ServiceError('glossary.noPermissions');
                         default:

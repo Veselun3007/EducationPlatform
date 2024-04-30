@@ -13,6 +13,7 @@ import {
     Modal,
     Paper,
     Select,
+    Skeleton,
     Stack,
     TextField,
     Typography,
@@ -32,6 +33,7 @@ import dayjs from 'dayjs';
 import LinkCard from '../../components/LinkCard';
 import FileCard from '../../components/FileCard';
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
+import ValidationError from '../../helpers/validation/ValidationError';
 
 const AssignmentPage = observer(() => {
     const { assignmentPageStore } = useStore();
@@ -49,9 +51,10 @@ const AssignmentPage = observer(() => {
         assignmentPageStore.init(
             Number.parseInt(courseId!),
             Number.parseInt(assignmentId!),
+            navigate
         );
         return () => assignmentPageStore.reset();
-    }, []);
+    }, [courseId, assignmentId]);
 
     if (assignmentPageStore.isLoading) {
         return (
@@ -68,10 +71,10 @@ const AssignmentPage = observer(() => {
     }
     const editString = assignmentPageStore.assignment!.isEdited
         ? ` (${t(
-              'glossary.changed',
-          )}: ${assignmentPageStore.assignment!.editedTime?.toLocaleDateString(
-              i18n.language,
-          )})`
+            'glossary.changed',
+        )}: ${assignmentPageStore.assignment!.editedTime?.toLocaleString(
+            i18n.language,
+        )})`
         : '';
 
     return (
@@ -134,7 +137,7 @@ const AssignmentPage = observer(() => {
                                 >
                                     <MenuItem
                                         onClick={
-                                            assignmentPageStore.handleEditAssignmentOpen
+                                            () => assignmentPageStore.handleEditAssignmentOpen(Number.parseInt(courseId!))
                                         }
                                     >
                                         {t('glossary.editAssignment')}
@@ -162,14 +165,14 @@ const AssignmentPage = observer(() => {
                                 </Menu>
                             </Stack>
                             <Typography variant="caption">
-                                {assignmentPageStore.assignment!.assignmentDatePublication.toLocaleDateString(
+                                {assignmentPageStore.assignment!.assignmentDatePublication.toLocaleString(
                                     i18n.language,
                                 ) + editString}
                             </Typography>
                             <Typography variant="body2" textAlign="end">
                                 {`${t(
                                     'common.deadline',
-                                )}: ${assignmentPageStore.assignment!.assignmentDeadline.toLocaleDateString(
+                                )}: ${assignmentPageStore.assignment!.assignmentDeadline.toLocaleString(
                                     i18n.language,
                                 )}`}
                             </Typography>
@@ -177,12 +180,12 @@ const AssignmentPage = observer(() => {
                         <Typography>
                             {assignmentPageStore.assignment!.assignmentDescription}
                         </Typography>
-                        <Grid container>
+                        <Grid container spacing={1}>
                             {
                                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                 assignmentPageStore.assignment!.assignmentlinks!.map(
                                     (link) => (
-                                        <Grid key={link.id} xs={12} md={6} height={50}>
+                                        <Grid key={link.id} xs={12} md={6} height={55}>
                                             <LinkCard
                                                 link={
                                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -195,19 +198,19 @@ const AssignmentPage = observer(() => {
                             }
                         </Grid>
 
-                        <Grid container>
+                        <Grid container spacing={1}>
                             {
                                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                 assignmentPageStore.assignment!.assignmentfiles!.map(
-                                    (file, index) => (
-                                        <Grid key={file.id} xs={12} md={6} height={50}>
+                                    (file) => (
+                                        <Grid key={file.id} xs={12} md={6} height={55}>
                                             <FileCard
                                                 file={
                                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                                    file.assignmentFile!
+                                                   file.assignmentFile!.slice(file.assignmentFile!.indexOf('_')+1)
                                                 }
                                                 onClick={() =>
-                                                    assignmentPageStore.onFileClick(index)
+                                                    assignmentPageStore.onFileClick(file.id)
                                                 }
                                             />
                                         </Grid>
@@ -221,8 +224,8 @@ const AssignmentPage = observer(() => {
                         onClose={assignmentPageStore.onFileViewerClose}
                     >
                         <Box
-                            maxWidth="80%"
-                            maxHeight="90%"
+                            width="80%"
+                            height="90%"
                             sx={{
                                 position: 'absolute',
                                 top: '50%',
@@ -240,257 +243,282 @@ const AssignmentPage = observer(() => {
                                 }}
                                 documents={[{ uri: assignmentPageStore.fileLink }]}
                                 pluginRenderers={DocViewerRenderers}
+                                theme={{
+                                    primary: theme.palette.background.default,
+                                    secondary: theme.palette.secondary.main,
+                                    textPrimary: theme.palette.text.primary,
+                                    textSecondary: theme.palette.text.secondary,
+                                }}
                             />
                         </Box>
                     </Modal>
+
                     <Modal
                         open={assignmentPageStore.editAssignmentOpen}
                         onClose={assignmentPageStore.handleEditAssignmentClose}
                     >
-                        <Stack
-                            bgcolor={theme.palette.background.paper}
-                            width={{ xs: '90%', md: '40%' }}
-                            maxHeight={{ xs: '90%' }}
-                            sx={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -50%)',
-                            }}
-                            overflow="auto"
-                            spacing={{ xs: 1, md: 2 }}
-                            p={3}
-                        >
-                            <Typography textAlign="start" width="100%" variant="h6">
-                                {t('glossary.editAssignment')}
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                required
-                                type="text"
-                                label={t('common.name')}
-                                value={
-                                    assignmentPageStore.editAssignmentData!.assignmentName
-                                }
-                                onChange={assignmentPageStore.onAssignmentNameChange}
-                                error={
-                                    assignmentPageStore.editAssignmentErrors
-                                        .assignmentName !== null
-                                }
-                                helperText={
-                                    assignmentPageStore.editAssignmentErrors
-                                        .assignmentName !== null
-                                        ? t(
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .assignmentName.errorKey,
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .assignmentName.options,
-                                          )
-                                        : null
-                                }
-                            />
-
-                            <TextField
-                                fullWidth
-                                multiline
-                                rows={4}
-                                label={t('common.description')}
-                                value={
-                                    assignmentPageStore.editAssignmentData
-                                        ?.assignmentDescription
-                                }
-                                onChange={
-                                    assignmentPageStore.onAssignmentDescriptionChange
-                                }
-                            />
-                            <FormControl fullWidth>
-                                <InputLabel id="assignmentTopicSelect">
-                                    {t('common.topic')}
-                                </InputLabel>
-                                <Select
-                                    labelId="assignmentTopicSelect"
-                                    value={
-                                        assignmentPageStore.editAssignmentData?.topicId
-                                            ? assignmentPageStore.editAssignmentData?.topicId.toString()
-                                            : '0'
-                                    }
-                                    label={t('common.topic')}
-                                    onChange={assignmentPageStore.onAssignmentTopicChange}
-                                    fullWidth
-                                >
-                                    <MenuItem value={0}>{t('glossary.noTopic')}</MenuItem>
-                                    {assignmentPageStore.topics?.map((topic) => (
-                                        <MenuItem key={topic.id} value={topic.id}>
-                                            {topic.title}
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <InputLabel id="assignmentIsRequiredSelect">
-                                    {t('common.isRequired')}
-                                </InputLabel>
-                                <Select
-                                    labelId="assignmentIsRequiredSelect"
-                                    value={
-                                        assignmentPageStore.editAssignmentData?.isRequired
-                                            ? '1'
-                                            : '0'
-                                    }
-                                    label={t('common.isRequired')}
-                                    onChange={
-                                        assignmentPageStore.onAssignmentIsRequiredChange
-                                    }
-                                    fullWidth
-                                >
-                                    <MenuItem value={0}>
-                                        {t('glossary.notRequired')}
-                                    </MenuItem>
-                                    <MenuItem value={1}>
-                                        {t('glossary.required')}
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <DateTimePicker
-                                    sx={{ width: '100%' }}
-                                    label={t('common.deadline')}
-                                    value={dayjs(
-                                        assignmentPageStore.editAssignmentData
-                                            ?.assignmentDeadline,
-                                    )}
-                                    onChange={(newValue) =>
-                                        assignmentPageStore.onAssignmentDeadlineChange(
-                                            newValue,
-                                        )
-                                    }
-                                    minDateTime={dayjs()}
-                                    ampm={false}
-                                    disablePast
-                                />
-                                <FormHelperText error>
-                                    {assignmentPageStore.editAssignmentErrors
-                                        .assignmentDeadline !== null
-                                        ? t(
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .assignmentDeadline.errorKey,
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .assignmentDeadline.options,
-                                          )
-                                        : null}
-                                </FormHelperText>
-                            </FormControl>
-                            <TextField
-                                fullWidth
-                                required
-                                type="number"
-                                label={t('common.minMark')}
-                                value={assignmentPageStore.editAssignmentData?.minMark}
-                                onChange={assignmentPageStore.onAssignmentMinMarkChange}
-                                error={
-                                    assignmentPageStore.editAssignmentErrors.minMark !==
-                                    null
-                                }
-                                helperText={
-                                    assignmentPageStore.editAssignmentErrors.minMark !==
-                                    null
-                                        ? t(
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .minMark.errorKey,
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .minMark.options,
-                                          )
-                                        : null
-                                }
-                            />
-
-                            <TextField
-                                fullWidth
-                                required
-                                type="number"
-                                label={t('common.maxMark')}
-                                value={assignmentPageStore.editAssignmentData?.maxMark}
-                                onChange={assignmentPageStore.onAssignmentMaxMarkChange}
-                                error={
-                                    assignmentPageStore.editAssignmentErrors.maxMark !==
-                                    null
-                                }
-                                helperText={
-                                    assignmentPageStore.editAssignmentErrors.maxMark !==
-                                    null
-                                        ? t(
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .maxMark.errorKey,
-                                              assignmentPageStore.editAssignmentErrors
-                                                  .maxMark.options,
-                                          )
-                                        : null
-                                }
-                            />
-                            <FilesPicker
-                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                files={
-                                    assignmentPageStore.editAssignmentData!
-                                        .assignmentFiles
-                                }
-                                error={
-                                    assignmentPageStore.editAssignmentErrors
-                                        .assignmentFiles
-                                }
-                                onFileAdd={assignmentPageStore.onAssignmentFileAdd}
-                                onFileDelete={assignmentPageStore.onAssignmentFileDelete}
-                            />
-
-                            <LinksPicker
-                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                links={
-                                    assignmentPageStore.editAssignmentData!
-                                        .assignmentLinks
-                                }
-                                error={
-                                    assignmentPageStore.editAssignmentErrors
-                                        .assignmentLinks
-                                }
-                                onLinkAdd={assignmentPageStore.onAssignmentLinkAdd}
-                                onLinkDelete={assignmentPageStore.onAssignmentLinkDelete}
-                            />
-                            <Typography
-                                color="error"
-                                variant="caption"
-                                align="center"
-                                visibility={
-                                    assignmentPageStore.editAssignmentErrors.meta !== null
-                                        ? 'visible'
-                                        : 'collapse'
-                                }
+                        {assignmentPageStore.isEditLoading ?
+                            <Box
+                                bgcolor={theme.palette.background.paper}
+                                width={{ xs: '90%', md: '40%' }}
+                                height={{ xs: '80%' }}
+                                sx={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                }}
+                                alignContent="center"
+                                textAlign="center"
                             >
-                                {assignmentPageStore.editAssignmentErrors.meta !== null
-                                    ? t(
-                                          assignmentPageStore.editAssignmentErrors.meta
-                                              .errorKey,
-                                          assignmentPageStore.editAssignmentErrors.meta
-                                              .options,
-                                      )
-                                    : null}
-                            </Typography>
-                            <Stack direction="row" width="100%" justifyContent="end">
-                                <Button
-                                    color="inherit"
-                                    onClick={
-                                        assignmentPageStore.handleEditAssignmentClose
+                                <CircularProgress />
+                            </Box>
+
+                            : <Stack
+                                bgcolor={theme.palette.background.paper}
+                                width={{ xs: '90%', md: '40%' }}
+                                maxHeight={{ xs: '90%' }}
+                                sx={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                }}
+                                overflow="auto"
+                                spacing={{ xs: 1, md: 2 }}
+                                p={3}
+                            >
+                                <Typography textAlign="start" width="100%" variant="h6">
+                                    {t('glossary.editAssignment')}
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    type="text"
+                                    label={t('common.name')}
+                                    value={
+                                        assignmentPageStore.editAssignmentData!.assignmentName
+                                    }
+                                    onChange={assignmentPageStore.onAssignmentNameChange}
+                                    error={
+                                        assignmentPageStore.editAssignmentErrors
+                                            .assignmentName !== null
+                                    }
+                                    helperText={
+                                        assignmentPageStore.editAssignmentErrors
+                                            .assignmentName !== null
+                                            ? t(
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .assignmentName.errorKey,
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .assignmentName.options,
+                                            )
+                                            : null
+                                    }
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    multiline
+                                    rows={4}
+                                    label={t('common.description')}
+                                    value={
+                                        assignmentPageStore.editAssignmentData
+                                            ?.assignmentDescription
+                                    }
+                                    onChange={
+                                        assignmentPageStore.onAssignmentDescriptionChange
+                                    }
+                                />
+                                <FormControl fullWidth>
+                                    <InputLabel id="assignmentTopicSelect">
+                                        {t('common.topic')}
+                                    </InputLabel>
+                                    <Select
+                                        labelId="assignmentTopicSelect"
+                                        value={
+                                            assignmentPageStore.editAssignmentData?.topicId
+                                                ? assignmentPageStore.editAssignmentData?.topicId.toString()
+                                                : '0'
+                                        }
+                                        label={t('common.topic')}
+                                        onChange={assignmentPageStore.onAssignmentTopicChange}
+                                        fullWidth
+                                    >
+                                        <MenuItem value={0}>{t('glossary.noTopic')}</MenuItem>
+                                        {assignmentPageStore.topics?.map((topic) => (
+                                            <MenuItem key={topic.id} value={topic.id}>
+                                                {topic.title}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth>
+                                    <InputLabel id="assignmentIsRequiredSelect">
+                                        {t('common.isRequired')}
+                                    </InputLabel>
+                                    <Select
+                                        labelId="assignmentIsRequiredSelect"
+                                        value={
+                                            assignmentPageStore.editAssignmentData?.isRequired
+                                                ? '1'
+                                                : '0'
+                                        }
+                                        label={t('common.isRequired')}
+                                        onChange={
+                                            assignmentPageStore.onAssignmentIsRequiredChange
+                                        }
+                                        fullWidth
+                                    >
+                                        <MenuItem value={0}>
+                                            {t('glossary.notRequired')}
+                                        </MenuItem>
+                                        <MenuItem value={1}>
+                                            {t('glossary.required')}
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth>
+                                    <DateTimePicker
+                                        sx={{ width: '100%' }}
+                                        label={t('common.deadline')}
+                                        value={dayjs(
+                                            assignmentPageStore.editAssignmentData
+                                                ?.assignmentDeadline,
+                                        )}
+                                        onChange={(newValue) =>
+                                            assignmentPageStore.onAssignmentDeadlineChange(
+                                                newValue,
+                                            )
+                                        }
+                                        minDateTime={dayjs()}
+                                        ampm={false}
+                                        disablePast
+                                    />
+                                    <FormHelperText error>
+                                        {assignmentPageStore.editAssignmentErrors
+                                            .assignmentDeadline !== null
+                                            ? t(
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .assignmentDeadline.errorKey,
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .assignmentDeadline.options,
+                                            )
+                                            : null}
+                                    </FormHelperText>
+                                </FormControl>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    type="number"
+                                    label={t('common.minMark')}
+                                    value={assignmentPageStore.editAssignmentData?.minMark}
+                                    onChange={assignmentPageStore.onAssignmentMinMarkChange}
+                                    error={
+                                        assignmentPageStore.editAssignmentErrors.minMark !==
+                                        null
+                                    }
+                                    helperText={
+                                        assignmentPageStore.editAssignmentErrors.minMark !==
+                                            null
+                                            ? t(
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .minMark.errorKey,
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .minMark.options,
+                                            )
+                                            : null
+                                    }
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    required
+                                    type="number"
+                                    label={t('common.maxMark')}
+                                    value={assignmentPageStore.editAssignmentData?.maxMark}
+                                    onChange={assignmentPageStore.onAssignmentMaxMarkChange}
+                                    error={
+                                        assignmentPageStore.editAssignmentErrors.maxMark !==
+                                        null
+                                    }
+                                    helperText={
+                                        assignmentPageStore.editAssignmentErrors.maxMark !==
+                                            null
+                                            ? t(
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .maxMark.errorKey,
+                                                assignmentPageStore.editAssignmentErrors
+                                                    .maxMark.options,
+                                            )
+                                            : null
+                                    }
+                                />
+                                <FilesPicker
+                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                    files={
+                                        assignmentPageStore.editAssignmentData!
+                                            .assignmentFiles
+                                    }
+                                    error={
+                                        assignmentPageStore.editAssignmentErrors
+                                            .assignmentFiles
+                                    }
+                                    onFileAdd={assignmentPageStore.onAssignmentFileAdd}
+                                    onFileDelete={assignmentPageStore.onAssignmentFileDelete}
+                                />
+
+                                <LinksPicker
+                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                    links={
+                                        assignmentPageStore.editAssignmentData!
+                                            .assignmentLinks
+                                    }
+                                    error={
+                                        assignmentPageStore.editAssignmentErrors
+                                            .assignmentLinks
+                                    }
+                                    onLinkAdd={assignmentPageStore.onAssignmentLinkAdd}
+                                    onLinkDelete={assignmentPageStore.onAssignmentLinkDelete}
+                                />
+                                <Typography
+                                    color="error"
+                                    variant="caption"
+                                    align="center"
+                                    visibility={
+                                        assignmentPageStore.editAssignmentErrors.meta !== null
+                                            ? 'visible'
+                                            : 'collapse'
                                     }
                                 >
-                                    {t('common.close')}
-                                </Button>
-                                <Button
-                                    color="primary"
-                                    onClick={assignmentPageStore.submitEditAssignment}
-                                    disabled={!assignmentPageStore.isEditAssignmentValid}
-                                >
-                                    {t('common.edit')}
-                                </Button>
+                                    {assignmentPageStore.editAssignmentErrors.meta !== null
+                                        ? t(
+                                            assignmentPageStore.editAssignmentErrors.meta
+                                                .errorKey,
+                                            assignmentPageStore.editAssignmentErrors.meta
+                                                .options,
+                                        )
+                                        : null}
+                                </Typography>
+                                <Stack direction="row" width="100%" justifyContent="end">
+                                    <Button
+                                        color="inherit"
+                                        onClick={
+                                            assignmentPageStore.handleEditAssignmentClose
+                                        }
+                                    >
+                                        {t('common.close')}
+                                    </Button>
+                                    <Button
+                                        color="primary"
+                                        onClick={()=>assignmentPageStore.submitEditAssignment(navigate)}
+                                        disabled={!assignmentPageStore.isEditAssignmentValid}
+                                    >
+                                        {t('common.edit')}
+                                    </Button>
+                                </Stack>
                             </Stack>
-                        </Stack>
+                        }
                     </Modal>
                 </Grid>
                 <Grid xs={12} lg={4}>

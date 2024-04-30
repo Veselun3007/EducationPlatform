@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { action, computed, makeObservable, observable } from 'mobx';
+import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import RootStore from './RootStore';
 import ValidationError from '../helpers/validation/ValidationError';
-import CreateUpdateAssignmentModel from '../models/assignment/CreateUpdateAssignmentModel';
+import CreateAssignmentModel from '../models/assignment/CreateAssignmentModel';
 import AssignmentModel from '../models/assignment/AssignmentModel';
 import debounce from '../helpers/debounce';
 import CreateUpdateWorkModel from '../models/work/CreateUpdateWorkModel';
@@ -11,11 +11,20 @@ import { NavigateFunction } from 'react-router-dom';
 import { SelectChangeEvent } from '@mui/material';
 import { Dayjs } from 'dayjs';
 import TopicModel from '../models/topic/TopicModel';
+import LoginRequiredError from '../errors/LoginRequiredError';
+import ServiceError from '../errors/ServiceError';
+import UpdateAssignmentModel from '../models/assignment/UpdateAssignmentModel';
+import AssignmentService from '../services/AssignmentService';
+import TopicService from '../services/TopicService';
+import CommonService from '../services/common/CommonService';
 
 export default class AssignmentPageStore {
     private readonly _rootStore: RootStore;
+    private readonly _assignmentService: AssignmentService;
+    private readonly _topicService: TopicService;
+    private readonly _commonService: CommonService
 
-    editAssignmentData: CreateUpdateAssignmentModel | null = null;
+    editAssignmentData: UpdateAssignmentModel | null = null;
     editAssignmentErrors: Record<string, ValidationError | null> = {
         assignmentName: null,
         maxMark: null,
@@ -45,10 +54,15 @@ export default class AssignmentPageStore {
     fileLink = '';
 
     isLoading = true;
+    isEditLoading = true;
 
-    constructor(rootStore: RootStore) {
+    constructor(rootStore: RootStore, assignmentService: AssignmentService, topicService: TopicService, commonService: CommonService) {
         this._rootStore = rootStore;
+        this._assignmentService = assignmentService;
+        this._topicService = topicService;
+        this._commonService = commonService
         makeObservable(this, {
+            isEditLoading: observable,
             topics: observable,
             isLoading: observable,
             editAssignmentOpen: observable,
@@ -108,70 +122,66 @@ export default class AssignmentPageStore {
         return this.work!.validateWorkFiles().length === 0;
     }
 
-    init(courseId: number, assignmentId: number) {
-        this.assignment = {
-            id: 3,
-            topicId: 2,
-            assignmentName: 'Research Paper on Artificial Intelligence',
-            assignmentDescription:
-                'Research Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial IntelligenceResearch Paper on Artificial Intelligence',
-            maxMark: 20,
-            minMark: 0,
-            isRequired: true,
-            assignmentDatePublication: new Date(Date.now()),
-            assignmentDeadline: new Date('2024-05-15'),
-            isEdited: true,
-            editedTime: new Date('2024-04-23'),
-            assignmentfiles: [
-                {
-                    id: 1,
-                    assignmentFile:
-                        'https://cdn.discordapp.com/attachments/1147229890538639370/1232728676240457768/IMG_20231205_194138_748.png?ex=662a838b&is=6629320b&hm=4d6c883c4ce6c372c05a099c370c06e46eb0bb88731eeca2cec84626af4422c4&',
-                },
-            ],
-            assignmentlinks: [{ id: 1, assignmentLink: 'https://ai.stanford.edu/' }],
-        };
+    async init(courseId: number, assignmentId: number, navigate: NavigateFunction) {
+        try {
+            const assignment = await this._assignmentService.getAssignmentById(assignmentId);
+            const topics = await this._topicService.getTopics(courseId);
 
-        this.topics = [
-            {
-                courseId: 1,
-                id: 1,
-                title: 'topic1',
-            },
-            {
-                courseId: 1,
-                id: 2,
-                title: 'topic2',
-            },
-            {
-                courseId: 1,
-                id: 3,
-                title: 'topic3',
-            },
-        ];
+            runInAction(() => {
+                this.assignment = assignment;
+                this.topics = topics;
+                this.isLoading = false;
+            })
 
-        this.editAssignmentData = new CreateUpdateAssignmentModel(
-            courseId,
-            this.assignment.assignmentName,
-            this.assignment.maxMark,
-            this.assignment.minMark,
-            this.assignment.isRequired,
-            this.assignment.assignmentDeadline,
-            [],
-            [],
-            this.assignment.assignmentDatePublication,
-            this.assignment.topicId,
-            this.assignment.assignmentDescription,
-        );
-
-        //add autofill for files getAssihnmentfile -> load file -> convert it to file
-
-        this.isLoading = false;
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                navigate(`/course/${courseId}`);
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
-    handleEditAssignmentOpen() {
-        this.editAssignmentOpen = true;
-        this.closeAssignmentMenu();
+    async handleEditAssignmentOpen(courseId: number) {
+        runInAction(() => {
+            this.editAssignmentOpen = true;
+            this.closeAssignmentMenu();
+        });
+        const assignmentFiles: File[] = [];
+        if (this.assignment!.assignmentfiles) {
+            for (const file of this.assignment!.assignmentfiles) {
+                const link = await this._assignmentService.getAssignmentFileById(file.id);
+                const loadedFile = await this._commonService.loadFile(link);
+                if (loadedFile) assignmentFiles.push(loadedFile);
+            }
+        };
+
+        const assignmentLinks: string[] = [];
+        if (this.assignment!.assignmentlinks) {
+            this.assignment!.assignmentlinks.forEach(link => assignmentLinks.push(link.assignmentLink))
+        }
+        runInAction(() => {
+            this.editAssignmentData = new UpdateAssignmentModel(
+                this.assignment!.id,
+                courseId,
+                this.assignment!.assignmentName,
+                this.assignment!.maxMark,
+                this.assignment!.minMark,
+                this.assignment!.isRequired,
+                this.assignment!.assignmentDeadline,
+                assignmentFiles,
+                assignmentLinks,
+                this.assignment!.assignmentDatePublication,
+                this.assignment!.topicId,
+                this.assignment!.assignmentDescription ? this.assignment!.assignmentDescription : '',
+            );
+
+            this.isEditLoading = false;
+
+        })
+
     }
 
     handleEditAssignmentClose() {
@@ -187,10 +197,23 @@ export default class AssignmentPageStore {
         this.assignmentMenuAnchor = null;
     }
 
-    deleteAssignment(courseId: number, navigate: NavigateFunction) {
-        enqueueAlert('glossary.deleteAssignmentSuccess', 'success');
-        navigate(`/course/${courseId}`);
-        this.closeAssignmentMenu();
+    async deleteAssignment(courseId: number, navigate: NavigateFunction) {
+        try {
+            await this._assignmentService.deleteAssignment(this.assignment!.id)
+            runInAction(() => {
+                enqueueAlert('glossary.deleteAssignmentSuccess', 'success');
+                navigate(`/course/${courseId}`);
+                this.closeAssignmentMenu();
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
     }
 
     onWorkFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
@@ -215,9 +238,12 @@ export default class AssignmentPageStore {
         )();
     }
 
-    onFileClick(id: number) {
-        this.isFileViewerOpen = true;
-        this.fileLink = this.assignment!.assignmentfiles![id].assignmentFile!;
+    async onFileClick(id: number) {
+        const link = await this._assignmentService.getAssignmentFileById(id)
+        runInAction(() => {
+            this.isFileViewerOpen = true;
+            this.fileLink = link;
+        })
     }
 
     onFileViewerClose() {
@@ -343,8 +369,23 @@ export default class AssignmentPageStore {
         )();
     }
 
-    submitEditAssignment(...params: unknown[]): void {
-        throw new Error('Method not implemented.');
+    async submitEditAssignment(navigate: NavigateFunction) {
+        try {
+            const updatedAssignment = await this._assignmentService.updateAssignment(this.editAssignmentData!);
+            runInAction(() => {
+                this.assignment = updatedAssignment;
+                this.handleEditAssignmentClose();
+                enqueueAlert('glossary.editSuccess', 'success');
+            })
+        }
+        catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
     resetWork() {
@@ -353,18 +394,8 @@ export default class AssignmentPageStore {
     }
 
     resetEditAssignment() {
-        this.editAssignmentData!.assignmentDatePublication =
-            this.assignment!.assignmentDatePublication;
-        this.editAssignmentData!.assignmentDeadline = this.assignment!.assignmentDeadline;
-        this.editAssignmentData!.assignmentDescription =
-            this.assignment!.assignmentDescription;
-        //this.editAssignmentData!.assignmentFiles add logic
-        //this.editAssignmentData?.assignmentLinks add logic
-        this.editAssignmentData!.assignmentName = this.assignment!.assignmentName;
-        this.editAssignmentData!.isRequired = this.assignment!.isRequired;
-        this.editAssignmentData!.maxMark = this.assignment!.maxMark;
-        this.editAssignmentData!.minMark = this.assignment!.minMark;
-        this.editAssignmentData!.topicId = this.assignment!.topicId;
+        this.isEditLoading = true;
+        this.editAssignmentData = null;
         Object.keys(this.editAssignmentErrors).forEach(
             (key) => (this.editAssignmentErrors[key] = null),
         );
@@ -372,6 +403,10 @@ export default class AssignmentPageStore {
 
     reset(): void {
         this.resetEditAssignment();
+        this.editAssignmentData = null;
+        Object.keys(this.editAssignmentErrors).forEach(
+            (key) => (this.editAssignmentErrors[key] = null),
+        );
         this.resetWork();
         this.isLoading = true;
         this.isFileViewerOpen = false;

@@ -6,7 +6,8 @@ import NumberValidator from '../../helpers/validation/NumberValidator';
 import StringValidator from '../../helpers/validation/StringValidator';
 import ValidationError from '../../helpers/validation/ValidationError';
 
-export default class CreateUpdateAssignmentModel {
+export default class UpdateAssignmentModel {
+    public id: number;
     public courseId: number;
     public topicId?: number;
     public assignmentName: string;
@@ -20,6 +21,7 @@ export default class CreateUpdateAssignmentModel {
     public assignmentLinks: string[];
 
     constructor(
+        id: number,
         courseId: number,
         assignmentName: string,
         maxMark: number,
@@ -32,6 +34,7 @@ export default class CreateUpdateAssignmentModel {
         topicId?: number,
         assignmentDescription?: string,
     ) {
+        this.id = id;
         this.courseId = courseId;
         this.topicId = topicId;
         this.assignmentName = assignmentName;

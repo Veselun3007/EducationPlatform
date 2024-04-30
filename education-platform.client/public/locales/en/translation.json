@@ -21,7 +21,7 @@
         "edit": "Edit",
         "topic": "Topic",
         "addFile": "Add file",
-        "addLink": "AddLink",
+        "addLink": "Add Link",
         "add": "Add",
         "link": "Link",
         "isRequired": "Requirency",
@@ -115,6 +115,12 @@
         "markWorks": "Mark works",
         "deleteAssignmentSuccess": "Assignment have been deleted",
         "deleteTopicSuccess": "Topic have been deleted",
-        "deleteMaterialSuccess": "Material have been deleted"
+        "deleteMaterialSuccess": "Material have been deleted",
+        "courseNotFound": "Course was not found",
+        "noPermissions": "No permissons",
+        "courseCreateSuccess":"Course have been created",
+        "topicCreateSuccess":"Topic have been created",
+        "assignmentCreateSuccess":"Assignment have been created",
+        "materialCreateSuccess":"Material have been created"
     }
 }

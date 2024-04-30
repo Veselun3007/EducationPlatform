@@ -141,7 +141,7 @@ const LinksPicker: React.FC<LinksPickerProps> = observer(
                         alignItems="center"
                     >
                         <Typography textAlign="start" width="100%" variant="h6">
-                            {t('glossary.createTopic')}
+                            {t('common.addLink')}
                         </Typography>
                         <TextField
                             fullWidth
