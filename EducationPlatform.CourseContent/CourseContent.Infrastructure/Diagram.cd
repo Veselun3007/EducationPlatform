@@ -25,13 +25,13 @@
   </Class>
   <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.ContentRepository&lt;T&gt;">
     <Position X="8" Y="1.5" Width="4" />
-    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true">
+    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="12" Y="2.469" />
-        <Point X="7.749" Y="2.469" />
-        <Point X="7.749" Y="8.52" />
-        <Point X="14.094" Y="8.52" />
-        <Point X="14.094" Y="11.5" />
+        <Point X="8" Y="2.188" />
+        <Point X="7.625" Y="2.188" />
+        <Point X="7.625" Y="15.483" />
+        <Point X="14.312" Y="15.483" />
+        <Point X="14.312" Y="15.108" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.024" Y="0.687" />
@@ -60,13 +60,13 @@
   </Class>
   <Class Name="CourseContent.Infrastructure.Repositories.GenericRepositories.EntityRepository&lt;T&gt;">
     <Position X="19.5" Y="1.5" Width="4.25" />
-    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true">
+    <AssociationLine Name="_dbContext" Type="CourseContent.Infrastructure.Context.EducationPlatformContext" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="19.5" Y="2.031" />
-        <Point X="21.371" Y="2.031" />
-        <Point X="21.371" Y="8.375" />
-        <Point X="18.156" Y="8.375" />
-        <Point X="18.156" Y="11.5" />
+        <Point X="23.75" Y="2.188" />
+        <Point X="24.125" Y="2.188" />
+        <Point X="24.125" Y="15.483" />
+        <Point X="18" Y="15.483" />
+        <Point X="18" Y="15.108" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
         <Position X="-0.918" Y="0.715" />
@@ -121,8 +121,6 @@
     <AssociationLine Name="_contentRepository" Type="CourseContent.Infrastructure.Interfaces.IContentRepository&lt;T&gt;" FixedFromPoint="true">
       <Path>
         <Point X="19.5" Y="10.188" />
-        <Point X="18.24" Y="10.188" Type="JumpStart" />
-        <Point X="18.073" Y="10.188" Type="JumpEnd" />
         <Point X="18" Y="10.188" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
@@ -166,8 +164,6 @@
     <AssociationLine Name="_contentRepository" Type="CourseContent.Infrastructure.Interfaces.IContentRepository&lt;T&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="12.75" Y="10.188" />
-        <Point X="14.01" Y="10.188" Type="JumpStart" />
-        <Point X="14.177" Y="10.188" Type="JumpEnd" />
         <Point X="14.25" Y="10.188" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true" ManuallySized="true">

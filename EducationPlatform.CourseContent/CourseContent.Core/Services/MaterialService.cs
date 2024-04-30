@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 namespace CourseContent.Core.Services
 {
     public class MaterialService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
-        IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO>
+        IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink>
     {
 
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -147,7 +147,7 @@ namespace CourseContent.Core.Services
             return Result.Success<MaterialfileOutDTO, Error>(MaterialfileOutDTO.FromMaterialFile(addedFile));
         }
 
-        public async Task<Result<string, Error>> AddLinkAsync(string link, int id)
+        public async Task<Result<Materiallink, Error>> AddLinkAsync(string link, int id)
         {
             Materiallink materialLink = new()
             {
@@ -159,11 +159,11 @@ namespace CourseContent.Core.Services
 
             if (addedLink.MaterialLink is not null)
             {
-                return Result.Success<string, Error>(addedLink.MaterialLink);
+                return Result.Success<Materiallink, Error>(addedLink);
             }
             else
             {
-                return Result.Failure<string, Error>(Errors.General.NotAdded());
+                return Result.Failure<Materiallink, Error>(Errors.General.NotAdded());
             }
         }
 

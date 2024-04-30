@@ -3,6 +3,7 @@ using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
 using CourseContent.Core.Models.ErrorModels;
+using CourseContent.Domain.Entities;
 using CourseContent.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +12,9 @@ namespace CourseContent.Web.Controllers
 {
     [Route("api/assignment")]
     [ApiController]
-    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO> operation) : BaseController
+    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> operation) : BaseController
     {
-        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO> _operation = operation;
+        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> _operation = operation;
 
         [Authorize]
         [HttpPost("create")]
@@ -88,7 +89,7 @@ namespace CourseContent.Web.Controllers
 
         [Authorize]
         [HttpPost("addLink/{id}")]
-        public async Task<IActionResult> AddAssignmentLink([FromForm] string link, int id)
+        public async Task<IActionResult> AddAssignmentLink([FromBody] string link, int id)
         {
             var result = await _operation.AddLinkAsync(link, id);
             return FromResult(result);

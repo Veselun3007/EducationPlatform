@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 namespace CourseContent.Core.Services
 {
     public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
-        IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO>
+        IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly FileHelper _fileHelper = fileHelper;
@@ -146,7 +146,7 @@ namespace CourseContent.Core.Services
             return Result.Success<AssignmentfileOutDTO, Error>(AssignmentfileOutDTO.FromAssignmentFile(addedFile));
         }
 
-        public async Task<Result<string, Error>> AddLinkAsync(string link, int id)
+        public async Task<Result<Assignmentlink, Error>> AddLinkAsync(string link, int id)
         {
             Assignmentlink assignmentLink = new()
             {
@@ -158,11 +158,11 @@ namespace CourseContent.Core.Services
 
             if (addedLink.AssignmentLink is not null)
             {
-                return Result.Success<string, Error>(addedLink.AssignmentLink);
+                return Result.Success<Assignmentlink, Error>(addedLink);
             }
             else
             {
-                return Result.Failure<string, Error>(Errors.General.NotAdded());
+                return Result.Failure<Assignmentlink, Error>(Errors.General.NotAdded());
             }
         }
 

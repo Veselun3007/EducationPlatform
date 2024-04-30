@@ -12,9 +12,9 @@ namespace EducationPlatform.CourseContent.Controllers
 {
     [Route("api/material")]
     [ApiController]
-    public class MaterialController(IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO> operation) : BaseController
+    public class MaterialController(IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink> operation) : BaseController
     {
-        private readonly IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO> _operation = operation;
+        private readonly IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink> _operation = operation;
         
         [Authorize]
         [HttpPost("create")]
@@ -89,7 +89,7 @@ namespace EducationPlatform.CourseContent.Controllers
 
         [Authorize]
         [HttpPost("addLink/{id}")]
-        public async Task<IActionResult> AddMaterialLink([FromForm] string link, int id)
+        public async Task<IActionResult> AddMaterialLink([FromBody] string link, int id)
         {
             var result = await _operation.AddLinkAsync(link, id);
             return FromResult(result);

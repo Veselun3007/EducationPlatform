@@ -9,6 +9,7 @@ using CourseContent.Core.Interfaces;
 using CourseContent.Core.Models.Config;
 using CourseContent.Core.Models.ErrorModels;
 using CourseContent.Core.Services;
+using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces;
@@ -47,8 +48,8 @@ namespace CourseContent.Web
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             builder.Services.AddScoped<IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO>, TopicService>();
-            builder.Services.AddScoped<IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO>, AssignmentService>();
-            builder.Services.AddScoped<IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO>, MaterialService>();
+            builder.Services.AddScoped<IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink>, AssignmentService>();
+            builder.Services.AddScoped<IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink>, MaterialService>();
 
 
             builder.Services.AddControllers();

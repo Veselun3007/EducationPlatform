@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Interfaces
 {
-    public interface IOperation<O, Error, I, F, U> : IBaseOperation<O, Error, I, U>
+    public interface IOperation<O, Error, I, F, U, L> : IBaseOperation<O, Error, I, U>
     {
         Task<Result<F, Error>> AddFileAsync(IFormFile formFile, int id);
 
-        Task<Result<string, Error>> AddLinkAsync(string link, int id);
+        Task<Result<L, Error>> AddLinkAsync(string link, int id);
 
         Task<Result<string, Error>> RemoveRangeAsync(List<int> entities);
 
