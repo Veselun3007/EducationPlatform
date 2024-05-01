@@ -135,18 +135,25 @@ const CoursePage = observer(() => {
                                         horizontal: 'right',
                                     }}
                                 >
-                                    <MenuItem
+                                    {coursePageStore.isAdmin && <MenuItem
                                         onClick={coursePageStore.handleEditCourseOpen}
                                     >
                                         {t('glossary.editCourse')}
-                                    </MenuItem>
-                                    <MenuItem
+                                    </MenuItem>}
+                                    {coursePageStore.isAdmin && <MenuItem
                                         onClick={() =>
                                             coursePageStore.deleteCourse(navigate)
                                         }
                                     >
                                         {t('glossary.deleteCourse')}
-                                    </MenuItem>
+                                    </MenuItem>}
+                                    {(coursePageStore.isStudent) && <MenuItem
+                                        onClick={() =>
+                                            coursePageStore.leaveCourse(navigate)
+                                        }
+                                    >
+                                        {t('glossary.leaveCourse')}
+                                    </MenuItem>}
                                     <MenuItem
                                         onClick={() => {
                                             coursePageStore.closeCourseMenu();
@@ -185,7 +192,7 @@ const CoursePage = observer(() => {
                                     >
                                         <Typography>{t('glossary.joinLink')}</Typography>
                                         <Typography sx={{ fontStyle: 'italic' }}>
-                                            {coursePageStore.course!.course.courseLink}
+                                            {`${window.location.origin}/course/${id}/join/${coursePageStore.course!.course.courseLink}`}
                                         </Typography>
                                         <IconButton
                                             onClick={() => {
@@ -195,7 +202,7 @@ const CoursePage = observer(() => {
                                                 );
                                                 navigator.clipboard.writeText(
                                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                                    coursePageStore.course!.course.courseLink,
+                                                    `${window.location.origin}/course/${id}/join/${coursePageStore.course!.course.courseLink}`
                                                 );
                                             }}
                                         >
@@ -218,7 +225,7 @@ const CoursePage = observer(() => {
                         </Stack>
                     </Paper>}
 
-                    <Button
+                    {(coursePageStore.isAdmin || coursePageStore.isTeacher) && <Button
                         id="contentMenu-button"
                         aria-controls={
                             coursePageStore.contentMenuAnchor ? 'content-menu' : undefined
@@ -234,7 +241,7 @@ const CoursePage = observer(() => {
                         color="secondary"
                     >
                         {t('common.create')}
-                    </Button>
+                    </Button>}
                     <Menu
                         elevation={4}
                         id="content-menu"
@@ -277,7 +284,7 @@ const CoursePage = observer(() => {
                         {
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             coursePageStore
-                                .materials!.filter((m) => m.topicId === null)
+                                .materials!.filter((m) => !m.topicId)
                                 .map((material) => {
                                     const editString = material.isEdited
                                         ? ` (${t(
@@ -326,7 +333,7 @@ const CoursePage = observer(() => {
                         {
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             coursePageStore
-                                .assignments!.filter((m) => m.topicId === null)
+                                .assignments!.filter((m) => !m.topicId)
                                 .map((assignment) => {
                                     const editString = assignment.isEdited
                                         ? ` (${t(
@@ -411,7 +418,7 @@ const CoursePage = observer(() => {
                                     >
                                         {topic.title}
                                     </Typography>
-                                    <Stack direction="row">
+                                    {(coursePageStore.isAdmin || coursePageStore.isTeacher) && <Stack direction="row">
                                         <IconButton
                                             onClick={() =>
                                                 coursePageStore.handleEditTopicOpen(
@@ -428,7 +435,7 @@ const CoursePage = observer(() => {
                                         >
                                             <Delete />
                                         </IconButton>
-                                    </Stack>
+                                    </Stack>}
                                 </Stack>
                                 {
                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -546,7 +553,7 @@ const CoursePage = observer(() => {
                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                     (!coursePageStore.assignments!.some(
                                         (m) => m.topicId === topic.id,
-                                    ) ||
+                                    ) &&
                                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                         !coursePageStore.materials!.some(
                                             (m) => m.topicId === topic.id,

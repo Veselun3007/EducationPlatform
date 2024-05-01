@@ -19,6 +19,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AssignmentPage from './pages/AssignmentPage/AssignmentPage';
 import MaterialPage from './pages/MaterialPage/MaterialPage';
+import JoinCoursePage from './pages/JoinCoursePage/JoinCoursePage';
+import UsersPage from './pages/UsersPage/UsersPage';
 
 const darkTheme = createTheme({
     palette: {
@@ -126,7 +128,7 @@ function App() {
                         <Route element={<AuthRoutes />}>
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/course/:id" element={<CoursePage />} />
-
+                            <Route path="/course/:courseId/join/:courseLink" element={<JoinCoursePage />} />
                             <Route
                                 path="/course/:courseId/material/:materialId"
                                 element={<MaterialPage />}
@@ -141,8 +143,8 @@ function App() {
                             />
 
                             <Route
-                                path="/course/:id/users"
-                                element={<Typography>Users</Typography>}
+                                path="/course/:courseId/users"
+                                element={<UsersPage/>}
                             />
                             <Route
                                 path="/course/:courseId/assignment/:assignmentId/mark"

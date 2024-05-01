@@ -1,7 +1,6 @@
 import { AxiosError } from 'axios';
 import LoginRequiredError from '../errors/LoginRequiredError';
 import ServiceError from '../errors/ServiceError';
-import CreateUpdateMaterialModel from '../models/material/CreateMaterialModel';
 import MaterialModel from '../models/material/MaterialModel';
 import httpClient from './common/httpClient';
 import {
@@ -19,6 +18,8 @@ import {
 import AuthService from './AuthService';
 import MaterialFileModel from '../models/material/MaterialFileModel';
 import MaterialLinkModel from '../models/material/MaterialLinkModel';
+import CreateMaterialModel from '../models/material/CreateMaterialModel';
+import UpdateMaterialModel from '../models/material/UpdateMaterialModel';
 
 export default class MaterialService {
     private readonly _authService: AuthService;
@@ -27,7 +28,7 @@ export default class MaterialService {
         this._authService = authService;
     }
 
-    async createMaterial(material: CreateUpdateMaterialModel) {
+    async createMaterial(material: CreateMaterialModel) {
         try {
             const createdMaterial = (await httpClient.postForm(CREATE_MATERIAL, material))
                 .data.result as MaterialModel;
@@ -49,7 +50,7 @@ export default class MaterialService {
         }
     }
 
-    async updateMaterial(material: CreateUpdateMaterialModel) {
+    async updateMaterial(material: UpdateMaterialModel) {
         try {
             const updatedMaterial = (
                 await httpClient.putForm(UPDATE_MATERIAL, material)

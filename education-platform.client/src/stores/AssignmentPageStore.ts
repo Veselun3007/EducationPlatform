@@ -60,12 +60,15 @@ export default class AssignmentPageStore {
     linkAdd = '';
     isLinkAddOpen = false;
 
+    isTeacher = false;
+
     constructor(rootStore: RootStore, assignmentService: AssignmentService, topicService: TopicService, commonService: CommonService) {
         this._rootStore = rootStore;
         this._assignmentService = assignmentService;
         this._topicService = topicService;
         this._commonService = commonService
         makeObservable(this, {
+            isTeacher: observable,
             linkAdd: observable,
             isLinkAddOpen: observable,
             topics: observable,
@@ -136,7 +139,7 @@ export default class AssignmentPageStore {
             runInAction(() => {
                 this.assignment = assignment;
                 this.topics = topics;
-                this.isLoading = false;
+
                 this.editAssignmentData = new UpdateAssignmentModel(
                     this.assignment!.id,
                     courseId,
@@ -149,7 +152,11 @@ export default class AssignmentPageStore {
                     this.assignment!.topicId,
                     this.assignment!.assignmentDescription ? this.assignment!.assignmentDescription : '',
                 );
-            })
+                this.isLoading = false;
+                const course = this._rootStore.courseStore.coursesInfo.find(c=>c.course.courseId === courseId);
+                if(!course) navigate('/');
+                this.isTeacher =  course?.userInfo.role === 0 || course?.userInfo.role === 1;
+            });
 
         } catch (error) {
             if (error instanceof LoginRequiredError) {
@@ -185,8 +192,8 @@ export default class AssignmentPageStore {
             await this._assignmentService.deleteAssignment(this.assignment!.id)
             runInAction(() => {
                 enqueueAlert('glossary.deleteAssignmentSuccess', 'success');
-                navigate(`/course/${courseId}`);
                 this.closeAssignmentMenu();
+                navigate(`/course/${courseId}`);
             })
         } catch (error) {
             if (error instanceof LoginRequiredError) {
@@ -221,12 +228,22 @@ export default class AssignmentPageStore {
         )();
     }
 
-    async onFileClick(id: number) {
-        const link = await this._assignmentService.getAssignmentFileById(id)
-        runInAction(() => {
-            this.isFileViewerOpen = true;
-            this.fileLink = link;
-        })
+    async onFileClick(id: number, navigate: NavigateFunction) {
+        try {
+            const link = await this._assignmentService.getAssignmentFileById(id)
+            runInAction(() => {
+                this.isFileViewerOpen = true;
+                this.fileLink = link;
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
     }
 
     onFileViewerClose() {
@@ -463,14 +480,16 @@ export default class AssignmentPageStore {
     }
 
     reset(): void {
+        this.isLoading = true;
         this.editAssignmentData = null;
         Object.keys(this.editAssignmentErrors).forEach(
             (key) => (this.editAssignmentErrors[key] = null),
         );
+
         this.work.workFiles = [];
         Object.keys(this.workErrors).forEach((key) => (this.workErrors[key] = null));
         this.resetWork();
-        this.isLoading = true;
+
         this.isFileViewerOpen = false;
 
         this.assignment = null;
@@ -480,5 +499,8 @@ export default class AssignmentPageStore {
 
         this.linkAdd = '';
         this.isLinkAddOpen = false;
+
+
+        this.isTeacher = false;
     }
 }

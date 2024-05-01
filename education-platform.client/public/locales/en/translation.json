@@ -28,7 +28,8 @@
         "deadline": "Deadline",
         "minMark":"Min mark",
         "maxMark":"Max mark",
-        "send":"Send"
+        "send":"Send",
+        "role": "Role"
     },
     "validation":{
         "isRequired": "Field is required",
@@ -111,7 +112,7 @@
         "editAssignment": "Edit assignment",
         "editMaterial": "Edit material",
         "deleteAssignment": "Delete assignment",
-        "deleteMaterial": "Edit material",
+        "deleteMaterial": "Delete material",
         "markWorks": "Mark works",
         "deleteAssignmentSuccess": "Assignment have been deleted",
         "deleteTopicSuccess": "Topic have been deleted",
@@ -127,6 +128,19 @@
         "deleteFileSuccess":"File have beem deleted",
         "deleteLinkSuccess":"Link have been deleted",
         "fileNotFound":"File not found",
-        "linkNotFound":"Link not found"
+        "linkNotFound":"Link not found",
+        "joinCourseSuccess": "Successfully joined to the course",
+        "noCourses": "Course list is empty. Add one or join existing course",
+        "alreadyJoinedCourse": "You're already joined the course",
+        "kickUserSuccess": "User have been kicked",
+        "admins": "Admins",
+        "teachers":"Teachers",
+        "students":"Students",
+        "admin": "Admin",
+        "teacher":"Teacher",
+        "student":"Student",
+        "userEmpty":"There is no users with that role",
+        "leaveCourseSuccess": "You left the course",
+        "leaveCourse":"Leave course"
     }
 }

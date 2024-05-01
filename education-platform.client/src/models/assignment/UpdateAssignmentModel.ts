@@ -94,43 +94,4 @@ export default class UpdateAssignmentModel {
 
         return validator.errors;
     }
-
-    // validateAssignmentFiles(): ValidationError[] {
-    //     const errors: ValidationError[] = [];
-    //     if (this.assignmentFiles.length !== 0) {
-    //         this.assignmentFiles.forEach((file) => {
-    //             const validator = new FileValidator(file);
-
-    //             validator.validateFileExtension([
-    //                 'png',
-    //                 'jpg',
-    //                 'jpeg',
-    //                 'doc',
-    //                 'pdf',
-    //                 'docx',
-    //                 'pptx',
-    //                 'ppt',
-    //                 'xls',
-    //                 'xlsx',
-    //             ]);
-
-    //             errors.push(...validator.errors);
-    //         });
-    //     }
-    //     return errors;
-    // }
-
-    // validateAssignmentLinks(): ValidationError[] {
-    //     const errors: ValidationError[] = [];
-    //     if (this.assignmentLinks.length !== 0) {
-    //         this.assignmentLinks.forEach((link) => {
-    //             const validator = new StringValidator(link);
-
-    //             validator.isLink();
-
-    //             errors.push(...validator.errors);
-    //         });
-    //     }
-    //     return errors;
-    // }
 }

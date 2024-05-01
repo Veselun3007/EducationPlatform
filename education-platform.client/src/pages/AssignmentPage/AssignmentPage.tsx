@@ -82,7 +82,7 @@ const AssignmentPage = observer(() => {
         <Grid container mt={2}>
             <Grid xs />
             <Grid container xs={12} md={10} xl={8} spacing={2}>
-                <Grid xs={12} lg={8}>
+                <Grid xs={12} lg={!assignmentPageStore.isTeacher? 8: 12}>
                     <Stack spacing={2}>
                         <Stack
                             borderBottom={2}
@@ -98,7 +98,7 @@ const AssignmentPage = observer(() => {
                                 >
                                     {assignmentPageStore.assignment!.assignmentName}
                                 </Typography>
-                                <IconButton
+                                {assignmentPageStore.isTeacher && <><IconButton
                                     id="menu-button"
                                     aria-controls={
                                         assignmentPageStore.assignmentMenuAnchor
@@ -116,54 +116,54 @@ const AssignmentPage = observer(() => {
                                 >
                                     <MoreVert />
                                 </IconButton>
-                                <Menu
-                                    elevation={4}
-                                    id="assignment-menu"
-                                    anchorEl={assignmentPageStore.assignmentMenuAnchor}
-                                    open={Boolean(
-                                        assignmentPageStore.assignmentMenuAnchor,
-                                    )}
-                                    onClose={assignmentPageStore.closeAssignmentMenu}
-                                    MenuListProps={{
-                                        'aria-labelledby': 'menu-button',
-                                    }}
-                                    anchorOrigin={{
-                                        vertical: 'bottom',
-                                        horizontal: 'right',
-                                    }}
-                                    transformOrigin={{
-                                        vertical: 'top',
-                                        horizontal: 'right',
-                                    }}
-                                >
-                                    <MenuItem
-                                        onClick={
-                                            assignmentPageStore.handleEditAssignmentOpen
-                                        }
-                                    >
-                                        {t('glossary.editAssignment')}
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={() =>
-                                            assignmentPageStore.deleteAssignment(
-                                                Number.parseInt(courseId!),
-                                                navigate,
-                                            )
-                                        }
-                                    >
-                                        {t('glossary.deleteAssignment')}
-                                    </MenuItem>
-                                    <MenuItem
-                                        onClick={() => {
-                                            assignmentPageStore.closeAssignmentMenu();
-                                            navigate(
-                                                `/course/${courseId}/assignment/${assignmentId}/mark`,
-                                            );
+                                    <Menu
+                                        elevation={4}
+                                        id="assignment-menu"
+                                        anchorEl={assignmentPageStore.assignmentMenuAnchor}
+                                        open={Boolean(
+                                            assignmentPageStore.assignmentMenuAnchor,
+                                        )}
+                                        onClose={assignmentPageStore.closeAssignmentMenu}
+                                        MenuListProps={{
+                                            'aria-labelledby': 'menu-button',
+                                        }}
+                                        anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'right',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
                                         }}
                                     >
-                                        {t('glossary.markWorks')}
-                                    </MenuItem>
-                                </Menu>
+                                        <MenuItem
+                                            onClick={
+                                                assignmentPageStore.handleEditAssignmentOpen
+                                            }
+                                        >
+                                            {t('glossary.editAssignment')}
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() =>
+                                                assignmentPageStore.deleteAssignment(
+                                                    Number.parseInt(courseId!),
+                                                    navigate,
+                                                )
+                                            }
+                                        >
+                                            {t('glossary.deleteAssignment')}
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() => {
+                                                assignmentPageStore.closeAssignmentMenu();
+                                                navigate(
+                                                    `/course/${courseId}/assignment/${assignmentId}/mark`,
+                                                );
+                                            }}
+                                        >
+                                            {t('glossary.markWorks')}
+                                        </MenuItem>
+                                    </Menu></>}
                             </Stack>
                             <Typography variant="caption">
                                 {assignmentPageStore.assignment!.assignmentDatePublication.toLocaleString(
@@ -211,7 +211,7 @@ const AssignmentPage = observer(() => {
                                                     file.assignmentFile!.slice(file.assignmentFile!.indexOf('_') + 1)
                                                 }
                                                 onClick={() =>
-                                                    assignmentPageStore.onFileClick(file.id)
+                                                    assignmentPageStore.onFileClick(file.id, navigate)
                                                 }
                                             />
                                         </Grid>
@@ -511,7 +511,7 @@ const AssignmentPage = observer(() => {
                                                     }}
                                                     flexGrow={1}
                                                 >
-                                                    { file.assignmentFile!.slice(file.assignmentFile!.indexOf('_') + 1)}
+                                                    {file.assignmentFile!.slice(file.assignmentFile!.indexOf('_') + 1)}
                                                 </Typography>
                                                 <IconButton onClick={() => assignmentPageStore.onAssignmentFileDelete(file.id, navigate)}>
                                                     <Delete />
@@ -529,7 +529,7 @@ const AssignmentPage = observer(() => {
                                         startIcon={<AttachFile />}
                                     >
                                         {t('common.addFile')}
-                                        <input type="file" hidden onChange={(e)=>assignmentPageStore.onAssignmentFileAdd(e, navigate)} />
+                                        <input type="file" hidden onChange={(e) => assignmentPageStore.onAssignmentFileAdd(e, navigate)} />
                                     </Button>
                                 </Grid>
                             </Grid>
@@ -556,7 +556,7 @@ const AssignmentPage = observer(() => {
                                                         }}
                                                         variant="square"
                                                     >
-                                                        <Link/>
+                                                        <Link />
                                                     </Avatar>
                                                     <Typography
                                                         textAlign="left"
@@ -595,7 +595,7 @@ const AssignmentPage = observer(() => {
                             </Stack>
                             <Modal
                                 open={assignmentPageStore.isLinkAddOpen}
-                                onClose={assignmentPageStore.handleEditAssignmentClose}
+                                onClose={assignmentPageStore.handleLinkAddClose}
                                 sx={{ height: '100%' }}
                             >
                                 <Stack
@@ -638,43 +638,10 @@ const AssignmentPage = observer(() => {
                                     </Stack>
                                 </Stack>
                             </Modal>
-
-                            {/* <FilesPicker
-                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                    files={
-                                        assignmentPageStore.editAssignmentData!
-                                            .assignmentFiles
-                                    }
-                                    error={
-                                        assignmentPageStore.editAssignmentErrors
-                                            .assignmentFiles
-                                    }
-                                    multiple = {false}
-                                    onFileAdd={assignmentPageStore.onAssignmentFileAdd}
-                                    onFileDelete={assignmentPageStore.onAssignmentFileDelete}
-                                />
-
-                                <LinksPicker
-                                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                    links={
-                                        assignmentPageStore.editAssignmentData!
-                                            .assignmentLinks
-                                    }
-                                    error={
-                                        assignmentPageStore.editAssignmentErrors
-                                            .assignmentLinks
-                                    }
-                                    onLinkAdd={assignmentPageStore.onAssignmentLinkAdd}
-                                    onLinkDelete={assignmentPageStore.onAssignmentLinkDelete}
-                                /> */}
-
-
-
                         </Stack>
-
                     </Modal>
                 </Grid>
-                <Grid xs={12} lg={4}>
+                {!assignmentPageStore.isTeacher && <Grid xs={12} lg={4}>
                     <Paper sx={{ p: 2 }}>
                         <Stack direction="column" spacing={2}>
                             <Typography variant="h6">{t('glossary.myWork')}</Typography>
@@ -696,7 +663,7 @@ const AssignmentPage = observer(() => {
                             </Button>
                         </Stack>
                     </Paper>
-                </Grid>
+                </Grid>}
             </Grid>
             <Grid xs />
         </Grid>

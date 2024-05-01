@@ -28,7 +28,8 @@
         "deadline": "Дедлайн",
         "minMark":"Мінімальний бал",
         "maxMark":"Максимальний бал",
-        "send":"Надіслати"
+        "send":"Надіслати",
+        "role": "Роль"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -127,6 +128,19 @@
         "deleteFileSuccess":"Файл видалено",
         "deleteLinkSuccess":"Посилання видалено",
         "fileNotFound":"Файл не знайдено",
-        "linkNotFound":"Посилання не знайдено"
+        "linkNotFound":"Посилання не знайдено",
+        "joinCourseSuccess": "Успішно приєднано до курсу",
+        "noCourses": "Список курсів порожній. Додайте їх або приєднайтесь до існуючих",
+        "alreadyJoinedCourse": "Ви вже приєднані до курсу",
+        "kickUserSuccess": "Користувача було кікнуто",
+        "admins": "Адміни",
+        "teachers":"Викладачі",
+        "students":"Студенти",
+        "admin": "Адмін",
+        "teacher":"Викладач",
+        "student":"Студент", 
+        "userEmpty":"Користувачів з такою роллю немає",
+        "leaveCourseSuccess": "Ви вийшли з курсу",
+        "leaveCourse":"Покинути курс"
     }
 }

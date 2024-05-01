@@ -10,6 +10,7 @@ import {
     MenuItem,
     Stack,
     Typography,
+    useTheme,
 } from '@mui/material';
 import { observer } from 'mobx-react-lite';
 import AbstractBackground from '../../components/AbstractBackground';
@@ -18,14 +19,16 @@ import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useNavigate } from 'react-router-dom';
 import ColoredAvatar from '../../components/ColoredAvatar';
+import { LibraryAdd } from '@mui/icons-material';
 
 const DashboardPage = observer(() => {
     const { courseStore } = useStore();
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const theme =  useTheme();
 
     useEffect(() => {
-        if(courseStore.needRefresh){
+        if (courseStore.needRefresh) {
             courseStore.init(navigate);
         }
         return () => courseStore.setNeedRefresh();
@@ -47,7 +50,7 @@ const DashboardPage = observer(() => {
 
     return (
         <Grid container alignItems="center" justifyItems="center">
-            {courseStore.coursesInfo.map((info) => (
+            {courseStore.coursesInfo.length > 0 ? courseStore.coursesInfo.map((info) => (
                 <Grid
                     key={info.course.courseId}
                     sx={{ borderRadius: 2 }}
@@ -141,7 +144,13 @@ const DashboardPage = observer(() => {
                         </CardActionArea>
                     </Card>
                 </Grid>
-            ))}
+            )) : <Grid xs={12}  mt={2}>
+                <Stack textAlign="center" alignItems="center" spacing={2}>
+                    <LibraryAdd  sx={{color:theme.palette.text.disabled, fontSize: 80}}/>
+                    <Typography color="InactiveCaptionText">{t('glossary.noCourses')}</Typography>
+                </Stack>
+
+            </Grid>}
         </Grid>
     );
 });
