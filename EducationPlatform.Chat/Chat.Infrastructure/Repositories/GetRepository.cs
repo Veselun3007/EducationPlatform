@@ -17,9 +17,15 @@ namespace EPChat.Infrastructure.Repositories
             _dbSet = _context.Set<T>();
         }
 
+
         public async Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter)
         {
             return await _dbSet.Where(filter).ToListAsync();
+        }
+
+        public IQueryable<T> GetQueryable()
+        {
+            return _dbSet.AsQueryable();
         }
     }
 }

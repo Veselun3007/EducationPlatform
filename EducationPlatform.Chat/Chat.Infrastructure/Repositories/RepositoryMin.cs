@@ -2,6 +2,7 @@
 using EPChat.Infrastructure.Contexts;
 using EPChat.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace EPChat.Infrastructure.Repositories
 {
@@ -16,9 +17,18 @@ namespace EPChat.Infrastructure.Repositories
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public Task<T?> GetById(int id, params Expression<Func<T, object>>[]? includes)
         {
-            return await _dbSet.FirstAsync(e => e.Id == id);
+            var query = _dbSet.AsQueryable();
+            if (includes is not null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return query.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<T> AddAsync(T entity)

@@ -19,7 +19,5 @@ namespace EPChat.Infrastructure.Contexts
         public DbSet<Message> Messages { get; set; }
 
         public DbSet<MessageMedia> MessagesMedia { get; set; }
-
-        //public DbSet<MessageReader> MessageReaders { get; set; }
     }
 }

@@ -7,9 +7,9 @@ namespace EPChat.Infrastructure.Interfaces
         IRepository<Message> MessageRepository { get; }
 
         IGetRepository<ChatMember> MemberRepository { get; }
-     
+
         IMinRepository<MessageMedia> MessageMediaRepository { get; }
 
-        Task<int> ComplectAsync();
+        Task<int> CommitAsync();
     }
 }

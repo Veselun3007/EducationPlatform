@@ -22,7 +22,7 @@ namespace EPChat.Infrastructure
         public IMinRepository<MessageMedia> MessageMediaRepository { get; private set; }
         public IGetRepository<ChatMember> MemberRepository { get; private set; }
 
-        public async Task<int> ComplectAsync()
+        public async Task<int> CommitAsync()
         {
             return await _context.SaveChangesAsync();
         }

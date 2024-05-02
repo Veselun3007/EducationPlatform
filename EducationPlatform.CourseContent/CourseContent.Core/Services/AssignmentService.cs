@@ -62,8 +62,8 @@ namespace CourseContent.Core.Services
                 assignment.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);
                 await _unitOfWork.CompleteAsync();
-
-                return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(assignment));
+                var updatedAssignment = await _unitOfWork.AssignmentRepository.GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
+                return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(updatedAssignment));
             }
             catch (KeyNotFoundException)
             {
@@ -122,7 +122,7 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                await _unitOfWork.AssignmentfileRepository.DeleteAsync(linkId);
+                await _unitOfWork.AssignmentlinkRepository.DeleteAsync(linkId);
                 await _unitOfWork.CompleteAsync();                            
                 return Result.Success<string, Error>("Deleted was successful");
             }
@@ -169,8 +169,7 @@ namespace CourseContent.Core.Services
         public async Task<Result<AssignmentOutDTO, Error>> GetByIdAsync(int id)
         {
 
-            var entity = await _unitOfWork.AssignmentRepository
-                .GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
+            var entity = await _unitOfWork.AssignmentRepository.GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
             if (entity is null)
             {
                 return Result.Failure<AssignmentOutDTO, Error>(Errors.General.NotFound());

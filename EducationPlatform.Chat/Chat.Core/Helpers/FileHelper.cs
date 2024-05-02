@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace CourseContent.Core.Helpers
+namespace EPChat.Core.Helpers
 {
     public class FileHelper(IOptions<AwsOptions> option)
     {

@@ -26,21 +26,6 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
 
         public DateTime AssignmentDeadline { get; set; }
 
-        [ValidateFile([".png",
-            ".jpg",
-            ".jpeg",
-            ".doc",
-            ".pdf",
-            ".docx",
-            ".pptx",
-            ".ppt",
-            ".xls",
-            ".xlsx"],
-            ErrorMessage = "Файл має непідтримуване розширення")]
-        public List<IFormFile>? AssignmentFiles { get; set; }
-
-        public List<string>? AssignmentLinks { get; set; }
-
         public static Assignment FromAssignmentUpdateDto(AssignmentUpdateDTO assignmentDto)
         {
             return new Assignment

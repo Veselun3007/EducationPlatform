@@ -1,18 +1,18 @@
-﻿using EPChat.Domain.Enums;
-using EPChat.Domain.Interfaces;
+﻿using CSharpFunctionalExtensions;
+using EPChat.Domain.Enums;
 
 namespace EPChat.Core.Interfaces
 {
-    public interface IOperation<T, E> where T : class, IEntity
+    public interface IOperation<I, U, O, M, Error> where I : class
     {
-        Task<T> AddAsync(T message);
+        Task<Result<O, Error>> AddAsync(I message);
 
-        Task<T?> EditAsync(int id, T message);
-    
-        Task<bool> DeleteAsync(int messageId, DeleteOptionsEnum deleteOptions);
+        Task<Result<O?, Error>> EditAsync(U message);
 
-        Task<bool> RemoveRangeAsync(List<int> entitiesToDelete, DeleteOptionsEnum deleteOptions);
+        Task<Result<string?, Error>> DeleteAsync(int messageId, DeleteOptionsEnum deleteOptions);
 
-        Task<E?> GetMediaByIdAsync(int id);
+        Task<Result<string?, Error>> RemoveRangeAsync(List<int> entitiesToDelete, DeleteOptionsEnum deleteOptions);
+
+        Task<Result<string?, Error>> GetMediaByIdAsync(int id);
     }
 }

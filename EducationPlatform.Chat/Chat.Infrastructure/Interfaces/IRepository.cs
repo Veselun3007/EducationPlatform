@@ -6,6 +6,6 @@ namespace EPChat.Infrastructure.Interfaces
     {
         Task<T?> UpdateAsync(int id, T entity);
 
-        Task RemoveRangeAsync(List<int> entities);       
+        Task RemoveRangeAsync(List<int> entities);
     }
 }

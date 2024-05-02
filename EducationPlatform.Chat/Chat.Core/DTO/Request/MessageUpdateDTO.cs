@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Http;
 
 namespace EPChat.Core.DTO.Request
 {
-    public class MessageDTO
+    public class MessageUpdateDTO
     {
+        public int Id { get; set; }
+
         public int ChatId { get; set; }
 
         public int? ReplyToMessageId { get; set; }
@@ -17,10 +19,11 @@ namespace EPChat.Core.DTO.Request
 
         public List<IFormFile>? AttachedFiles { get; set; }
 
-        public static Message FromMessageDTO(MessageDTO messageDTO)
+        public static Message FromMessageUpdateDTO(MessageUpdateDTO messageDTO)
         {
             return new Message
             {
+                Id = messageDTO.Id,
                 ChatId = messageDTO.ChatId,
                 ReplyToMessageId = messageDTO.ReplyToMessageId,
                 MessageText = messageDTO.MessageText,

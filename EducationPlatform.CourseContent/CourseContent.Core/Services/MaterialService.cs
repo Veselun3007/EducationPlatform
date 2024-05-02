@@ -65,8 +65,8 @@ namespace CourseContent.Core.Services
                 material.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.MaterialRepository.UpdateAsync(id, material);
                 await _unitOfWork.CompleteAsync();
-
-                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(material));
+                var updatedMaterial = await _unitOfWork.MaterialRepository.GetByIdAsync(id, m => m.Materialfiles, m => m.Materiallinks);
+                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(updatedMaterial));
             }
             catch (KeyNotFoundException)
             {
@@ -92,7 +92,7 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                await _unitOfWork.AssignmentfileRepository.DeleteAsync(linkId);
+                await _unitOfWork.MateriallinkRepository.DeleteAsync(linkId);
                 await _unitOfWork.CompleteAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }
@@ -179,14 +179,14 @@ namespace CourseContent.Core.Services
 
         public async Task<Result<string, Error>> GetFileByIdAsync(int id)
         {
-            var MaterialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(id);
+            var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(id);
 
-            if (MaterialFile is null || MaterialFile.MaterialFile is null)
+            if (materialFile is null || materialFile.MaterialFile is null)
             {
                 return Result.Failure<string, Error>(Errors.General.NotFound());
             }
             return Result.Success<string, Error>(await _fileHelper
-                .GetFileLink(MaterialFile.MaterialFile));
+                .GetFileLink(materialFile.MaterialFile));
         }
 
         public async Task<IEnumerable<MaterialOutDTO>> GetAllByCourseAsync(int id)

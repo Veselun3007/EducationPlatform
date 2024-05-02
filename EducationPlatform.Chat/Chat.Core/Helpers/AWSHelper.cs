@@ -3,7 +3,7 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
-namespace CourseContent.Core.Helpers
+namespace EPChat.Core.Helpers
 {
     internal class AwsHelper
     {

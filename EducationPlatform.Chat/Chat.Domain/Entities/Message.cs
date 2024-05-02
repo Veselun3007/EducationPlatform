@@ -2,7 +2,7 @@
 
 namespace EPChat.Domain.Entities
 {
-    public  class Message : IEntity
+    public class Message : IEntity
     {
         public int Id { get; set; }
 
@@ -16,9 +16,9 @@ namespace EPChat.Domain.Entities
 
         public DateTime CreatedIn { get; set; } = DateTime.Now;
 
-        public bool HasAttachment { get; set; } = false;
-
         public bool IsEdit { get; set; } = false;
+
+        public DateTime? EditedIn { get; set; }
 
         public bool IsDeleted { get; set; } = false;
 

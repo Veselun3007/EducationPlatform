@@ -1,38 +1,38 @@
-﻿using EPChat.Core.Interfaces;
+﻿using EPChat.Core.DTO.Response;
+using EPChat.Core.Interfaces;
 using EPChat.Domain.Entities;
 using EPChat.Infrastructure.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace EPChat.Core.Services
 {
-    public class QueryService(IUnitOfWork unitOfWork) : IQuery<Message, ChatMember>
+    public class QueryService(IUnitOfWork unitOfWork) : IQuery<MessageOutDTO, ChatMember>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public async Task<IEnumerable<Message>> GetFirstPackMessageAsync(int chatId)
+        public async Task<IEnumerable<MessageOutDTO>> GetFirstPackMessageAsync(int chatId)
         {
-            var messages = await _unitOfWork
-                .MessageRepository.GetAsync(m => m.ChatId == chatId);
-            
-            var query = messages
+            var messages = _unitOfWork.MessageRepository
+                .GetQueryable()
+                .Where(m => m.ChatId == chatId)
                 .OrderByDescending(m => m.CreatedIn)
-                .Take(100)
-                .ToList();
+                .Include(m => m.AttachedMedias)
+                .Take(100);
 
-            return query;
+            return await messages.Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> GetNextPackMessageAsync(int oldestMessageId, int chatId)
+        public async Task<IEnumerable<MessageOutDTO>> GetNextPackMessageAsync(int oldestMessageId, int chatId)
         {
-            var message = await _unitOfWork.MessageRepository
-                .GetAsync(m => m.Id < oldestMessageId);
-
-            var query = message.Where(m => m.ChatId == chatId)
+            var messages = _unitOfWork.MessageRepository
+                .GetQueryable()
+                .Where(m => m.Id < oldestMessageId && m.ChatId == chatId)
+                .Include(m => m.AttachedMedias)
                 .OrderByDescending(m => m.Id)
-                .Take(100)
-                .ToList();
+                .Take(100);
 
-            return query;
+            return await messages.Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();
         }
 
         public async Task<IEnumerable<ChatMember>> GetMembersAsync(Expression<Func<ChatMember, bool>> filter)

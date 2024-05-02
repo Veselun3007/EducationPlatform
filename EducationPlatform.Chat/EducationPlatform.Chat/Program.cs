@@ -1,4 +1,7 @@
+using EPChat.Core.DTO.Request;
+using EPChat.Core.DTO.Response;
 using EPChat.Core.Interfaces;
+using EPChat.Core.Models.ErrorModels;
 using EPChat.Core.Services;
 using EPChat.Domain.Entities;
 using EPChat.Infrastructure;
@@ -20,7 +23,7 @@ namespace EducationPlatform.Chat
             var _configuration = builder.Configuration;
 
             string chatConnection = _configuration.GetConnectionString("ChatConnection") ?? "defaultConnectionString";
-            
+
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
@@ -32,8 +35,8 @@ namespace EducationPlatform.Chat
             });
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IOperation<Message, MessageMedia>, OperationServices>();
-            builder.Services.AddScoped<IQuery<Message, ChatMember>, QueryService>();
+            builder.Services.AddScoped<IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error>, OperationServices>();
+            builder.Services.AddScoped<IQuery<MessageOutDTO, ChatMember>, QueryService>();
 
             builder.Services.AddControllers();
 

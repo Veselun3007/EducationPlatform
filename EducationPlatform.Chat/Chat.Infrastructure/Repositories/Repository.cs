@@ -58,9 +58,22 @@ namespace EPChat.Infrastructure.Repositories
             }
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public Task<T?> GetById(int id, params Expression<Func<T, object>>[]? includes)
         {
-            return await _dbSet.FirstAsync(e => e.Id == id);
+            var query = _dbSet.AsQueryable();
+            if (includes is not null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return query.FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public IQueryable<T> GetQueryable()
+        {
+            return _dbSet.AsQueryable();
         }
     }
 }
