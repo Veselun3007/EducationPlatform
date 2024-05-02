@@ -24,6 +24,8 @@ import ServiceError from '../errors/ServiceError';
 import CourseInfoModel from '../models/course/CourseInfoModel';
 import UpdateCourseModel from '../models/course/UpdateCourseModel';
 import UpdateTopicModel from '../models/topic/UpdateTopicModel';
+import CourseUserService from '../services/CourseUserService';
+import DeleteCourseUserModel from '../models/courseUser/DeleteCourseUserModel';
 
 export default class CoursePageStore {
     private readonly _rootStore: RootStore;
@@ -31,6 +33,7 @@ export default class CoursePageStore {
     private readonly _assignmetnService: AssignmentService;
     private readonly _materialService: MaterialService;
     private readonly _topicService: TopicService;
+    private readonly _courseUserService: CourseUserService;
 
     course: CourseInfoModel | null = null;
     topics: TopicModel[] | null = [];
@@ -84,15 +87,22 @@ export default class CoursePageStore {
     };
 
     isLoading = true;
+    isTeacher = false;
+    isAdmin = false;
+    isStudent = false;
 
-    constructor(rootStore: RootStore, courseService: CourseService, assignmentService: AssignmentService, materialService: MaterialService, topicService: TopicService) {
+    constructor(rootStore: RootStore, courseService: CourseService, assignmentService: AssignmentService, materialService: MaterialService, topicService: TopicService, courseUserService: CourseUserService) {
         this._rootStore = rootStore;
         this._assignmetnService = assignmentService;
         this._materialService = materialService;
         this._courseService = courseService;
         this._topicService = topicService;
+        this._courseUserService = courseUserService;
 
         makeObservable(this, {
+            isStudent: observable,
+            isAdmin: observable,
+            isTeacher: observable,
             isLoading: observable,
             editTopicData: observable,
             editTopicErrors: observable,
@@ -172,6 +182,7 @@ export default class CoursePageStore {
             onEditTopicTitleChange: action.bound,
             submitEditTopic: action.bound,
             deleteTopic: action.bound,
+            leaveCourse: action.bound
         });
     }
 
@@ -249,6 +260,10 @@ export default class CoursePageStore {
                 this.editTopicData = new CreateTopicModel(this.course.course.courseId, '');
 
                 this.isLoading = false;
+
+                this.isTeacher = course.userInfo.role === 1;
+                this.isAdmin = course.userInfo.role === 0;
+                this.isStudent = course.userInfo.role === 2;
             });
         } catch (error) {
             if (error instanceof LoginRequiredError) {
@@ -256,6 +271,26 @@ export default class CoursePageStore {
                 enqueueAlert(error.message, 'error');
             } else {
                 navigate('/dashboard');
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+    }
+
+    async leaveCourse(navigate: NavigateFunction) {
+        try {
+            if (this.course?.userInfo.role === 0) return;
+            await this._courseUserService.deleteCourseUser(new DeleteCourseUserModel(this.course!.userInfo.courseuserId));
+
+            runInAction(() => {
+                navigate('/dashboard');
+                enqueueAlert('glossary.leaveCourseSuccess', 'success');
+            });
+
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
                 enqueueAlert((error as ServiceError).message, 'error');
             }
         }
@@ -789,5 +824,8 @@ export default class CoursePageStore {
         this.createMaterialOpen = false;
         this.createAssignmentOpen = false;
         this.editTopicOpen = false;
+        this.isTeacher = false;
+        this.isAdmin = false;
+        this.isStudent = false;
     }
 }

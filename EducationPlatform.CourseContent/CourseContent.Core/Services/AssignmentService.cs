@@ -57,7 +57,7 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                var assignment = AssignmentUpdateDTO.FromAssignmentUpdateDto(entity);               
+                var assignment = AssignmentUpdateDTO.FromAssignmentUpdateDto(entity);
                 assignment.IsEdited = true;
                 assignment.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);

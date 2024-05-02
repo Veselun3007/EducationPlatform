@@ -1,17 +1,21 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable, override, runInAction } from "mobx";
 import RootStore from "./RootStore";
 import MaterialModel from "../models/material/MaterialModel";
 import TopicModel from "../models/topic/TopicModel";
 import ValidationError from "../helpers/validation/ValidationError";
-import CreateUpdateMaterialModel from "../models/material/CreateMaterialModel";
 import { NavigateFunction } from "react-router-dom";
 import { enqueueAlert } from "../components/Notification/NotificationProvider";
 import debounce from "../helpers/debounce";
-import { avatarClasses, SelectChangeEvent } from "@mui/material";
+import { SelectChangeEvent } from "@mui/material";
 import MaterialService from "../services/MaterialService";
 import TopicService from "../services/TopicService";
 import CommonService from "../services/common/CommonService";
+import UpdateMaterialModel from "../models/material/UpdateMaterialModel";
+import LoginRequiredError from "../errors/LoginRequiredError";
+import ServiceError from "../errors/ServiceError";
+import FileValidator from "../helpers/validation/FileValidator";
+import StringValidator from "../helpers/validation/StringValidator";
 
 export default class MaterialPageStore {
     private readonly _rootStore: RootStore;
@@ -24,7 +28,7 @@ export default class MaterialPageStore {
     material: MaterialModel | null = null;
     topics: TopicModel[] | null = null;
 
-    editMaterialData: CreateUpdateMaterialModel | null = null;
+    editMaterialData: UpdateMaterialModel | null = null;
     editMaterialErrors: Record<string, ValidationError | null> = {
         materialName: null,
         materialFiles: null,
@@ -38,12 +42,19 @@ export default class MaterialPageStore {
     isFileViewerOpen = false;
     fileLink = '';
 
+    linkAdd = '';
+    isLinkAddOpen = false;
+    isTeacher=false;
+
     constructor(rootStore: RootStore, materialService: MaterialService, topicService: TopicService, commonService: CommonService) {
         this._rootStore = rootStore;
         this._materialService = materialService;
         this._topicService = topicService;
         this._commonService = commonService;
         makeObservable(this, {
+            isTeacher: observable,
+            linkAdd: observable,
+            isLinkAddOpen: observable,
             isLoading: observable,
             material: observable,
             topics: observable,
@@ -74,68 +85,49 @@ export default class MaterialPageStore {
             closeMaterialMenu: action.bound,
             reset: action.bound,
             resetEditMaterial: action.bound,
-
+            onLinkAddChange: action.bound,
+            handleLinkAddClose: action.bound,
+            handleLinkAddOpen: action.bound
         });
     }
 
     get isEditMaterialValid(): boolean {
         return (
-            this.editMaterialData!.validateMaterialName().length === 0 &&
-            this.editMaterialData!.validateMaterialFiles().length === 0 &&
-            this.editMaterialData!.validateMaterialLinks().length === 0
+            this.editMaterialData!.validateMaterialName().length === 0
         );
     }
 
-    init(courseId: number, materialId: number) {
+    async init(courseId: number, materialId: number, navigate: NavigateFunction) {
+        try {
+            const material = await this._materialService.getMaterialById(materialId);
+            const topics = await this._topicService.getTopics(courseId);
 
-        this.topics = [
-            {
-                courseId: 1,
-                id: 1,
-                title: 'topic1',
-            },
-            {
-                courseId: 1,
-                id: 2,
-                title: 'topic2',
-            },
-            {
-                courseId: 1,
-                id: 3,
-                title: 'topic3',
+            runInAction(() => {
+                this.material = material;
+                this.topics = topics
+
+                this.editMaterialData = new UpdateMaterialModel(
+                    this.material.id,
+                    courseId,
+                    this.material.materialName,
+                    this.material.materialDatePublication,
+                    this.material.topicId,
+                    this.material.materialDescription,
+                );
+                this.isLoading = false;
+                const course = this._rootStore.courseStore.coursesInfo.find(c=>c.course.courseId === courseId);
+                if(!course) navigate('/');
+                this.isTeacher =  course?.userInfo.role === 0 || course?.userInfo.role === 1;
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                navigate(`/course/${courseId}`);
+                enqueueAlert((error as ServiceError).message, 'error');
             }
-        ];
-
-        this.material = {
-            id: 1,
-            topicId: 1,
-            materialName: 'Introduction to Algorithms',
-            materialDescription: 'Overview of basic algorithms and their analysis.',
-            materialDatePublication: new Date('2024-04-20'),
-            isEdited: true,
-            editedTime: new Date('2024-04-23'),
-            materialfiles: [
-                {
-                    id: 1,
-                    materialFile:
-                        'https://educationplatform.s3.amazonaws.com/a274a45d-3d68-4a5e-8a97-41475043552f_trust%20me%20cooper.jpg?AWSAccessKeyId=AKIA6GBMGKKRTD7XQ7W6&Expires=1714034789&Signature=7FVpHNgWlhgXnDfl31o4Jn6w%2FFQ%3D',
-                },
-            ],
-            materiallinks: [
-                {
-                    id: 1,
-                    materialLink:
-                        'https://mitpress.mit.edu/books/introduction-algorithms',
-                },
-            ],
-        };
-
-        this.editMaterialData = new CreateUpdateMaterialModel(courseId, this.material.materialName, [], [],
-            this.material.materialDatePublication, this.material.topicId, this.material.materialDescription);
-
-        //add autofill for files
-
-        this.isLoading = false;
+        }
     }
 
     onMaterialNameChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -156,68 +148,183 @@ export default class MaterialPageStore {
             this.editMaterialData!.topicId = undefined;
         }
     }
-    onMaterialFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
-        if (e.target.files) {
-            this.editMaterialData!.materialFiles.push(...Array.from(e.target.files));
-        }
-        debounce(
-            action(() => {
-                const errors = this.editMaterialData!.validateMaterialFiles();
-                this.editMaterialErrors.materialFiles =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
-    }
-    onMaterialFileDelete(id: number) {
-        this.editMaterialData?.materialFiles.splice(id, 1);
-        debounce(
-            action(() => {
-                const errors = this.editMaterialData!.validateMaterialFiles();
-                this.editMaterialErrors.materialFiles =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
-    }
-
-    onMaterialLinkAdd(link: string) {
-        this.editMaterialData?.materialLinks.push(link);
-        debounce(
-            action(() => {
-                const errors = this.editMaterialData!.validateMaterialLinks();
-                this.editMaterialErrors.materialLinks =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
-    }
-
-    onMaterialLinkDelete(id: number) {
-        this.editMaterialData?.materialLinks.splice(id, 1);
-        debounce(
-            action(() => {
-                const errors = this.editMaterialData!.validateMaterialLinks();
-                this.editMaterialErrors.materialLinks =
-                    errors.length !== 0 ? errors[0] : null;
-            }),
-        )();
-    }
 
     onMaterialDescriptionChange(e: React.ChangeEvent<HTMLInputElement>) {
         this.editMaterialData!.materialDescription = e.target.value;
     }
 
-    submitMaterialEdit() {
-        this.handleEditMaterialClose();
+
+    async onMaterialFileAdd(e: React.ChangeEvent<HTMLInputElement>, navigate: NavigateFunction) {
+        if (!e.target.files) return;
+
+        const validator = new FileValidator(e.target.files[0]);
+        validator.validateFileExtension([
+            'png',
+            'jpg',
+            'jpeg',
+            'doc',
+            'pdf',
+            'docx',
+            'pptx',
+            'ppt',
+            'xls',
+            'xlsx',
+        ]);
+
+        if (validator.errors.length > 0) {
+            enqueueAlert(validator.errors[0].errorKey, 'error', validator.errors[0].options);
+            return;
+        }
+
+        try {
+            const addedFile = await this._materialService.addFile(e.target.files[0], this.material!.id);
+            runInAction(() => {
+                this.material!.materialfiles!.push(addedFile);
+                enqueueAlert('glossary.editSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
-    deleteMaterial(courseId: number, navigate: NavigateFunction) {
-        enqueueAlert('glossary.deleteMaterialSuccess', 'success');
-        navigate(`/course/${courseId}`);
-        this.closeMaterialMenu();
+    async onMaterialFileDelete(fileId: number, navigate: NavigateFunction) {
+        try {
+            await this._materialService.deleteFileById(fileId);
+            runInAction(() => {
+                const index = this.material!.materialfiles!.findIndex(f => f.id == fileId);
+                this.material!.materialfiles!.splice(index, 1);
+                enqueueAlert('glossary.deleteFileSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
-    onFileClick(id: number) {
-        this.isFileViewerOpen = true;
-        this.fileLink = this.material!.materialfiles![id].materialFile!;
+    async onMaterialLinkAdd(navigate: NavigateFunction) {
+        if (!this.linkAdd) return;
+
+        const validator = new StringValidator(this.linkAdd)
+        validator.isLink();
+        if (validator.errors.length > 0) {
+            enqueueAlert(validator.errors[0].errorKey, 'error', validator.errors[0].options);
+            return;
+        }
+
+        try {
+            const addedLink = await this._materialService.addLink(this.material!.id, this.linkAdd);
+            runInAction(() => {
+                this.material!.materiallinks!.push(addedLink);
+                enqueueAlert('glossary.editSuccess', 'success');
+                this.handleLinkAddClose();
+            })
+
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+    }
+
+    async onMaterialLinkDelete(linkId: number, navigate: NavigateFunction) {
+        try {
+            await this._materialService.deleteLinkById(linkId);
+            runInAction(() => {
+                const index = this.material!.materiallinks!.findIndex(l => l.id == linkId);
+                this.material!.materiallinks!.splice(index, 1);
+                enqueueAlert('glossary.deleteLinkSuccess', 'success');
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+    }
+
+    handleLinkAddOpen() {
+        this.isLinkAddOpen = true;
+    }
+
+    handleLinkAddClose() {
+        this.linkAdd = '';
+        this.isLinkAddOpen = false;
+    }
+
+    onLinkAddChange(e: React.ChangeEvent<HTMLInputElement>) {
+        this.linkAdd = e.target.value;
+    }
+
+    async submitMaterialEdit(navigate: NavigateFunction) {
+        try {
+            const updatedAssignment = await this._materialService.updateMaterial(this.editMaterialData!);
+            runInAction(() => {
+                this.material = updatedAssignment;
+                this.handleEditMaterialClose();
+                enqueueAlert('glossary.editSuccess', 'success');
+            });
+        }
+        catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+    }
+
+    async deleteMaterial(courseId: number, navigate: NavigateFunction) {
+        try {
+            await this._materialService.deleteMaterial(this.material!.id);
+            runInAction(() => {
+                enqueueAlert('glossary.deleteMaterialSuccess', 'success');
+                this.closeMaterialMenu();
+                navigate(`/course/${courseId}`);
+
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
+    }
+
+    async onFileClick(id: number, navigate: NavigateFunction) {
+        try {
+            const link = await this._materialService.getMaterialFileById(id);
+            runInAction(() => {
+                this.isFileViewerOpen = true;
+                this.fileLink = link;
+            });
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+
+
     }
 
     onFileViewerClose() {
@@ -246,8 +353,6 @@ export default class MaterialPageStore {
     resetEditMaterial() {
         this.editMaterialData!.materialDatePublication = this.material!.materialDatePublication;
         this.editMaterialData!.materialDescription = this.material!.materialDescription;
-        this.editMaterialData!.materialFiles = [];
-        this.editMaterialData!.materialLinks = [];//change it with real files
         this.editMaterialData!.materialName = this.material!.materialName;
         this.editMaterialData!.topicId = this.material!.topicId;
         Object.keys(this.editMaterialErrors).forEach((key) => (this.editMaterialErrors[key] = null));
@@ -255,14 +360,16 @@ export default class MaterialPageStore {
 
     reset() {
         this.isLoading = true;
-
+        this.isTeacher=false;
         this.editMaterialData = null;
         Object.keys(this.editMaterialErrors).forEach((key) => (this.editMaterialErrors[key] = null));
-
+        this.material = null;
         this.isFileViewerOpen = false;
         this.fileLink = '';
         this.editMaterialOpen = false;
         this.materialMenuAnchor = null;
-        this.material = null;
+
+        this.linkAdd = '';
+        this.isLinkAddOpen = false;
     }
 }

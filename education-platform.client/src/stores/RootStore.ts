@@ -14,6 +14,7 @@ import CourseStore from './CourseStore';
 import SignUpPageStore from './SignUpPageStore';
 import UserStore from './UserStore';
 import CommonService from '../services/common/CommonService';
+import UsersPageStore from './UsersPageStore';
 
 export default class RootStore {
     readonly authService: AuthService;
@@ -33,6 +34,7 @@ export default class RootStore {
     readonly coursePageStore: CoursePageStore;
     readonly assignmentPageStore: AssignmentPageStore;
     readonly materialPageStore: MaterialPageStore;
+    readonly usersPageStore: UsersPageStore;
 
     constructor() {
         //Service creation
@@ -50,8 +52,9 @@ export default class RootStore {
         this.confirmUserPageStore = new ConfirmUserPageStore(this, this.authService);
         this.userStore = new UserStore(this, this.authService, this.userService);
         this.courseStore = new CourseStore(this, this.courseService);
-        this.coursePageStore = new CoursePageStore(this, this.courseService, this.assignmentService,this.materialService, this.topicService);
+        this.coursePageStore = new CoursePageStore(this, this.courseService, this.assignmentService,this.materialService, this.topicService, this.courseUserService);
         this.assignmentPageStore = new AssignmentPageStore(this, this.assignmentService, this.topicService, this.commonService);
         this.materialPageStore = new MaterialPageStore(this, this.materialService, this.topicService, this.commonService);
+        this.usersPageStore =new UsersPageStore(this, this.courseUserService);
     }
 }

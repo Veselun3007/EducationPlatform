@@ -49,6 +49,8 @@ export default class CourseUserService {
                         case 401:
                             this._authService.clearTokens();
                             throw new LoginRequiredError('glossary.loginToContinue');
+                        case 409:
+                            throw new ServiceError('glossary.alreadyJoinedCourse');
                         default:
                             throw new ServiceError('glossary.somethingWentWrong');
                     }

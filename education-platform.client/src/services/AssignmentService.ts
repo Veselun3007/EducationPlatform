@@ -31,12 +31,7 @@ export default class AssignmentService {
     async createAssignment(assignment: CreateAssignmentModel) {
         try {
             const createdAssignment = (
-                await httpClient.postForm(CREATE_ASSIGNMENT, assignment, {
-                    method: 'post',
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
+                await httpClient.postForm(CREATE_ASSIGNMENT, assignment)
             ).data.result as AssignmentModel;
 
             return createdAssignment;
@@ -59,12 +54,7 @@ export default class AssignmentService {
     async updateAssignment(assignment: UpdateAssignmentModel) {
         try {
             const updatedAssignment = (
-                await httpClient.putForm(UPDATE_ASSIGNMENT, assignment, {
-                    method: 'put',
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
-                })
+                await httpClient.putForm(UPDATE_ASSIGNMENT, assignment)
             ).data.result as AssignmentModel;
 
             return updatedAssignment;
@@ -186,7 +176,7 @@ export default class AssignmentService {
                 if (error.response) {
                     switch (error.response.status) {
                         case 404:
-                            throw new ServiceError('glossary.assignmentNotFound');
+                            throw new ServiceError('glossary.fileNotFound');
                         case 401:
                             this._authService.clearTokens();
                             throw new LoginRequiredError('glossary.loginToContinue');
@@ -201,7 +191,9 @@ export default class AssignmentService {
 
     async addFile(file: File, assignmentId: number) {
         try {
-            const createdFile = (await httpClient.postForm(ADD_ASSIGNMENT_FILE + assignmentId, file)).data.result as AssignmentFileModel;
+            const createdFile = (await httpClient.postForm(ADD_ASSIGNMENT_FILE + assignmentId, { file: file }))
+                .data.result as AssignmentFileModel;
+
             return createdFile;
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -229,7 +221,7 @@ export default class AssignmentService {
                 if (error.response) {
                     switch (error.response.status) {
                         case 404:
-                            throw new ServiceError('glossary.assignmentNotFound');
+                            throw new ServiceError('glossary.linkNotFound');
                         case 401:
                             this._authService.clearTokens();
                             throw new LoginRequiredError('glossary.loginToContinue');
@@ -244,7 +236,11 @@ export default class AssignmentService {
 
     async addLink(assignmentId: number, link: string) {
         try {
-            const createdLink = (await httpClient.postForm(ADD_ASSIGNMENT_LINK + assignmentId, link)).data.result as AssignmentLinkModel
+            const createdLink = (await httpClient.post(ADD_ASSIGNMENT_LINK + assignmentId, link, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })).data.result as AssignmentLinkModel
             return createdLink;
         } catch (error) {
             if (error instanceof AxiosError) {

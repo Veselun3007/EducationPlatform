@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import React, { useEffect } from 'react';
 import {
+    Avatar,
     Box,
     Button,
     CircularProgress,
@@ -10,6 +11,7 @@ import {
     Menu,
     MenuItem,
     Modal,
+    Paper,
     Select,
     Stack,
     TextField,
@@ -21,7 +23,7 @@ import { useStore } from '../../context/RootStoreContext';
 import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MoreVert } from '@mui/icons-material';
+import { AttachFile, Delete, Link, MoreVert } from '@mui/icons-material';
 import FilesPicker from '../../components/FilesPicker';
 
 import LinksPicker from '../../components/LinksPicker';
@@ -42,7 +44,7 @@ const MaterialPage = observer(() => {
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        materialPageStore.init(Number.parseInt(courseId!), Number.parseInt(materialId!));
+        materialPageStore.init(Number.parseInt(courseId!), Number.parseInt(materialId!), navigate);
         return () => materialPageStore.reset();
     }, [courseId, materialId]);
 
@@ -61,10 +63,10 @@ const MaterialPage = observer(() => {
     }
     const editString = materialPageStore.material!.isEdited
         ? ` (${t(
-              'glossary.changed',
-          )}: ${materialPageStore.material!.editedTime?.toLocaleString(
-              i18n.language,
-          )})`
+            'glossary.changed',
+        )}: ${materialPageStore.material!.editedTime?.toLocaleString(
+            i18n.language,
+        )})`
         : '';
 
     return (
@@ -83,58 +85,61 @@ const MaterialPage = observer(() => {
                             <Typography variant="h5" color={theme.palette.primary.light}>
                                 {materialPageStore.material!.materialName}
                             </Typography>
-                            <IconButton
-                                id="menu-button"
-                                aria-controls={
-                                    materialPageStore.materialMenuAnchor
-                                        ? 'material-menu'
-                                        : undefined
-                                }
-                                aria-haspopup="true"
-                                aria-expanded={
-                                    materialPageStore.materialMenuAnchor
-                                        ? 'true'
-                                        : undefined
-                                }
-                                onClick={materialPageStore.openMaterialMenu}
-                                sx={{ textAlign: 'end' }}
-                            >
-                                <MoreVert />
-                            </IconButton>
-                            <Menu
-                                elevation={4}
-                                id="material-menu"
-                                anchorEl={materialPageStore.materialMenuAnchor}
-                                open={Boolean(materialPageStore.materialMenuAnchor)}
-                                onClose={materialPageStore.closeMaterialMenu}
-                                MenuListProps={{
-                                    'aria-labelledby': 'menu-button',
-                                }}
-                                anchorOrigin={{
-                                    vertical: 'bottom',
-                                    horizontal: 'right',
-                                }}
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                            >
-                                <MenuItem
-                                    onClick={materialPageStore.handleEditMaterialOpen}
-                                >
-                                    {t('glossary.editMaterial')}
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={() =>
-                                        materialPageStore.deleteMaterial(
-                                            Number.parseInt(courseId!),
-                                            navigate,
-                                        )
-                                    }
-                                >
-                                    {t('glossary.deleteMaterial')}
-                                </MenuItem>
-                            </Menu>
+                            {materialPageStore.isTeacher &&
+                                <>
+                                    <IconButton
+                                        id="menu-button"
+                                        aria-controls={
+                                            materialPageStore.materialMenuAnchor
+                                                ? 'material-menu'
+                                                : undefined
+                                        }
+                                        aria-haspopup="true"
+                                        aria-expanded={
+                                            materialPageStore.materialMenuAnchor
+                                                ? 'true'
+                                                : undefined
+                                        }
+                                        onClick={materialPageStore.openMaterialMenu}
+                                        sx={{ textAlign: 'end' }}
+                                    >
+                                        <MoreVert />
+                                    </IconButton>
+                                    <Menu
+                                        elevation={4}
+                                        id="material-menu"
+                                        anchorEl={materialPageStore.materialMenuAnchor}
+                                        open={Boolean(materialPageStore.materialMenuAnchor)}
+                                        onClose={materialPageStore.closeMaterialMenu}
+                                        MenuListProps={{
+                                            'aria-labelledby': 'menu-button',
+                                        }}
+                                        anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'right',
+                                        }}
+                                        transformOrigin={{
+                                            vertical: 'top',
+                                            horizontal: 'right',
+                                        }}
+                                    >
+                                        <MenuItem
+                                            onClick={materialPageStore.handleEditMaterialOpen}
+                                        >
+                                            {t('glossary.editMaterial')}
+                                        </MenuItem>
+                                        <MenuItem
+                                            onClick={() =>
+                                                materialPageStore.deleteMaterial(
+                                                    Number.parseInt(courseId!),
+                                                    navigate,
+                                                )
+                                            }
+                                        >
+                                            {t('glossary.deleteMaterial')}
+                                        </MenuItem>
+                                    </Menu>
+                                    </>}
                         </Stack>
                         <Typography variant="caption">
                             {materialPageStore.material!.materialDatePublication.toLocaleString(
@@ -145,11 +150,11 @@ const MaterialPage = observer(() => {
                     <Typography>
                         {materialPageStore.material!.materialDescription}
                     </Typography>
-                    <Grid container>
+                    <Grid container spacing={1}>
                         {
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             materialPageStore.material!.materiallinks!.map((link) => (
-                                <Grid key={link.id} xs={12} md={6} height={50}>
+                                <Grid key={link.id} xs={12} md={6} height={55}>
                                     <LinkCard
                                         link={
                                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -161,19 +166,19 @@ const MaterialPage = observer(() => {
                         }
                     </Grid>
 
-                    <Grid container>
+                    <Grid container spacing={1}>
                         {
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                             materialPageStore.material!.materialfiles!.map(
-                                (file, index) => (
-                                    <Grid key={file.id} xs={12} md={6} height={50}>
+                                (file) => (
+                                    <Grid key={file.id} xs={12} md={6} height={55}>
                                         <FileCard
                                             file={
                                                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                                file.materialFile!
+                                                file.materialFile!.slice(file.materialFile!.indexOf('_') + 1)
                                             }
                                             onClick={() =>
-                                                materialPageStore.onFileClick(index)
+                                                materialPageStore.onFileClick(file.id, navigate)
                                             }
                                         />
                                     </Grid>
@@ -249,11 +254,11 @@ const MaterialPage = observer(() => {
                             helperText={
                                 materialPageStore.editMaterialErrors.materialName !== null
                                     ? t(
-                                          materialPageStore.editMaterialErrors
-                                              .materialName.errorKey,
-                                          materialPageStore.editMaterialErrors
-                                              .materialName.options,
-                                      )
+                                        materialPageStore.editMaterialErrors
+                                            .materialName.errorKey,
+                                        materialPageStore.editMaterialErrors
+                                            .materialName.options,
+                                    )
                                     : null
                             }
                         />
@@ -291,21 +296,6 @@ const MaterialPage = observer(() => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <FilesPicker
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            files={materialPageStore.editMaterialData!.materialFiles}
-                            error={materialPageStore.editMaterialErrors.materialFiles}
-                            onFileAdd={materialPageStore.onMaterialFileAdd}
-                            onFileDelete={materialPageStore.onMaterialFileDelete}
-                        />
-
-                        <LinksPicker
-                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            links={materialPageStore.editMaterialData!.materialLinks}
-                            error={materialPageStore.editMaterialErrors.materialLinks}
-                            onLinkAdd={materialPageStore.onMaterialLinkAdd}
-                            onLinkDelete={materialPageStore.onMaterialLinkDelete}
-                        />
                         <Typography
                             color="error"
                             variant="caption"
@@ -318,9 +308,9 @@ const MaterialPage = observer(() => {
                         >
                             {materialPageStore.editMaterialErrors.meta !== null
                                 ? t(
-                                      materialPageStore.editMaterialErrors.meta.errorKey,
-                                      materialPageStore.editMaterialErrors.meta.options,
-                                  )
+                                    materialPageStore.editMaterialErrors.meta.errorKey,
+                                    materialPageStore.editMaterialErrors.meta.options,
+                                )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">
@@ -332,12 +322,175 @@ const MaterialPage = observer(() => {
                             </Button>
                             <Button
                                 color="primary"
-                                onClick={materialPageStore.submitMaterialEdit}
+                                onClick={() => materialPageStore.submitMaterialEdit(navigate)}
                                 disabled={!materialPageStore.isEditMaterialValid}
                             >
                                 {t('common.edit')}
                             </Button>
                         </Stack>
+                        <Typography textAlign="start" width="100%" variant="h6">
+                            {t('glossary.editFiles')}
+                        </Typography>
+                        <Grid container spacing={1}>
+                            {materialPageStore.material!.materialfiles!.map((file) => (
+                                <Grid key={file.id} xs={12}>
+                                    <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
+                                        <Stack
+                                            direction="row"
+                                            height={50}
+                                            alignItems="center"
+                                            spacing={1}
+                                            overflow="hidden"
+                                            pr={1}
+                                        >
+                                            <Avatar
+                                                sx={{
+                                                    height: '100%',
+                                                    bgcolor: theme.palette.primary.main,
+                                                }}
+                                                variant="square"
+                                            >
+                                                <AttachFile />
+                                            </Avatar>
+                                            <Typography
+                                                textAlign="left"
+                                                sx={{
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitBoxOrient: 'vertical',
+                                                    WebkitLineClamp: 1,
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                }}
+                                                flexGrow={1}
+                                            >
+                                                {file.materialFile!.slice(file.materialFile!.indexOf('_') + 1)}
+                                            </Typography>
+                                            <IconButton onClick={() => materialPageStore.onMaterialFileDelete(file.id, navigate)}>
+                                                <Delete />
+                                            </IconButton>
+                                        </Stack>
+                                    </Paper>
+                                </Grid>
+                            ))}
+                            <Grid xs={12}>
+                                <Button
+                                    sx={{ height: 50 }}
+                                    variant="contained"
+                                    component="label"
+                                    color="secondary"
+                                    startIcon={<AttachFile />}
+                                >
+                                    {t('common.addFile')}
+                                    <input type="file" hidden onChange={(e) => materialPageStore.onMaterialFileAdd(e, navigate)} />
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        <Typography textAlign="start" width="100%" variant="h6">
+                            {t('glossary.editLinks')}
+                        </Typography>
+
+                        <Stack direction="column" width="100%">
+                            <Grid container spacing={1}>
+                                {materialPageStore.material!.materiallinks!.map((link) => (
+                                    <Grid key={link.id} xs={12}>
+                                        <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
+                                            <Stack
+                                                direction="row"
+                                                pr={1}
+                                                height={50}
+                                                alignItems="center"
+                                                spacing={1}
+                                            >
+                                                <Avatar
+                                                    sx={{
+                                                        height: '100%',
+                                                        bgcolor: theme.palette.primary.main,
+                                                    }}
+                                                    variant="square"
+                                                >
+                                                    <Link />
+                                                </Avatar>
+                                                <Typography
+                                                    textAlign="left"
+                                                    sx={{
+                                                        display: '-webkit-box',
+                                                        overflow: 'hidden',
+                                                        WebkitBoxOrient: 'vertical',
+                                                        WebkitLineClamp: 1,
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'normal',
+                                                    }}
+                                                    flexGrow={1}
+                                                >
+                                                    {link.materialLink}
+                                                </Typography>
+                                                <IconButton onClick={() => materialPageStore.onMaterialLinkDelete(link.id, navigate)}>
+                                                    <Delete />
+                                                </IconButton>
+                                            </Stack>
+                                        </Paper>
+                                    </Grid>
+                                ))}
+                                <Grid xs={12}>
+                                    <Button
+                                        sx={{ height: 50 }}
+                                        variant="contained"
+                                        component="label"
+                                        color="secondary"
+                                        startIcon={<Link />}
+                                        onClick={materialPageStore.handleLinkAddOpen}
+                                    >
+                                        {t('common.addLink')}
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </Stack>
+                        <Modal
+                            open={materialPageStore.isLinkAddOpen}
+                            onClose={materialPageStore.handleLinkAddClose}
+                            sx={{ height: '100%' }}
+                        >
+                            <Stack
+                                bgcolor={theme.palette.background.paper}
+                                width={{ xs: '90%', md: '40%' }}
+                                height="fit-content"
+                                sx={{
+                                    position: 'absolute',
+                                    top: '50%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, -50%)',
+                                }}
+                                overflow="auto"
+                                justifyContent="center"
+                                spacing={{ xs: 1, md: 2 }}
+                                p={3}
+                                alignItems="center"
+                            >
+                                <Typography textAlign="start" width="100%" variant="h6">
+                                    {t('common.addLink')}
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    type="text"
+                                    label={t('common.link')}
+                                    value={materialPageStore.linkAdd}
+                                    onChange={materialPageStore.onLinkAddChange}
+                                />
+                                <Stack direction="row" width="100%" justifyContent="end">
+                                    <Button color="inherit" onClick={materialPageStore.handleLinkAddClose}>
+                                        {t('common.close')}
+                                    </Button>
+                                    <Button
+                                        color="primary"
+                                        onClick={() => materialPageStore.onMaterialLinkAdd(navigate)}
+                                    >
+                                        {t('common.add')}
+                                    </Button>
+                                </Stack>
+                            </Stack>
+                        </Modal>
                     </Stack>
                 </Modal>
             </Grid>
