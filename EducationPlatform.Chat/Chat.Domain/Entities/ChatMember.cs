@@ -10,9 +10,9 @@ namespace EPChat.Domain.Entities
 
         public int UserId { get; set; }
 
-        public virtual Chat? Chat { get; set; }
+        public virtual Course? Course { get; set; }
 
-        public virtual ChatsUser? ChatsUser { get; set; }
+        public virtual User? ChatsUser { get; set; }
 
         public virtual ICollection<Message> Messages { get; set; } = [];
 

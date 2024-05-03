@@ -24,6 +24,10 @@ namespace EPChat.Domain.Entities
 
         public virtual ICollection<MessageMedia> AttachedMedias { get; set; } = [];
 
+        public virtual ICollection<Message> Messages { get; set; } = [];
+
         public virtual Message? ReplyToMessage { get; set; }
+
+        public virtual Course? Course { get; set; }
     }
 }

@@ -71,6 +71,7 @@ namespace EPChat.Infrastructure.Repositories
 
             return query.FirstOrDefaultAsync(x => x.Id == id);
         }
+
         public IQueryable<T> GetQueryable()
         {
             return _dbSet.AsQueryable();

@@ -13,26 +13,24 @@ namespace EPChat.Core.Services
 
         public async Task<IEnumerable<MessageOutDTO>> GetFirstPackMessageAsync(int chatId)
         {
-            var messages = _unitOfWork.MessageRepository
+            return await _unitOfWork.MessageRepository
                 .GetQueryable()
                 .Where(m => m.ChatId == chatId)
                 .OrderByDescending(m => m.CreatedIn)
                 .Include(m => m.AttachedMedias)
-                .Take(100);
-
-            return await messages.Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();
+                .Take(100)
+                .Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();            
         }
 
         public async Task<IEnumerable<MessageOutDTO>> GetNextPackMessageAsync(int oldestMessageId, int chatId)
         {
-            var messages = _unitOfWork.MessageRepository
+            return await _unitOfWork.MessageRepository
                 .GetQueryable()
                 .Where(m => m.Id < oldestMessageId && m.ChatId == chatId)
                 .Include(m => m.AttachedMedias)
                 .OrderByDescending(m => m.Id)
-                .Take(100);
-
-            return await messages.Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();
+                .Take(100)
+                .Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();
         }
 
         public async Task<IEnumerable<ChatMember>> GetMembersAsync(Expression<Func<ChatMember, bool>> filter)
