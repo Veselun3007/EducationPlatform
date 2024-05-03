@@ -9,5 +9,7 @@ namespace EPChat.Domain.Entities
         public int MessageId { get; set; }
 
         public string? MediaLink { get; set; }
+
+        public virtual Message? Message { get; set; }
     }
 }

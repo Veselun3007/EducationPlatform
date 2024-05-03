@@ -31,12 +31,12 @@ namespace EPChat.Web.Hubs
         }
 
 
-        public async Task SendMessage(MessageDTO message)
+       /* public async Task SendMessage(MessageDTO message)
         {
             await Clients.Group(message.ChatId.ToString())
                 .SendAsync("ReceiveMessage",
                     await _messageOperation.AddAsync(message));
-        }
+        }*/
 
         public async Task GetFirstPackMessage(int courseId)
         {
@@ -52,7 +52,7 @@ namespace EPChat.Web.Hubs
             await Clients.Caller.SendAsync("ReceiveMessages", messages);
         }
 
-        public async Task DeleteMessage(int chatId, int messageId,
+       /* public async Task DeleteMessage(int chatId, int messageId,
             DeleteOptionsEnum deleteOptions)
         {
             var deletedMessage = await _messageOperation
@@ -73,6 +73,6 @@ namespace EPChat.Web.Hubs
             await Clients.Group(chatId.ToString())
                 .SendAsync("BroadCastDeleteMessage",
                     Context.ConnectionId, deletedMessage);
-        }
+        }*/
     }
 }
