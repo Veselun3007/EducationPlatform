@@ -8,10 +8,10 @@ namespace EPChat.Infrastructure.Repositories
 {
     internal class GetRepository<T> : IGetRepository<T> where T : class, IEntity
     {
-        private readonly ChatDBContext _context;
+        private readonly EducationPlatformContext _context;
         private readonly DbSet<T> _dbSet;
 
-        internal GetRepository(ChatDBContext context)
+        internal GetRepository(EducationPlatformContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();

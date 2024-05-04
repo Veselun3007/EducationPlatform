@@ -29,14 +29,14 @@ namespace EducationPlatform.Chat
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve;
             });
 
-            builder.Services.AddDbContextPool<ChatDBContext>(options =>
+            builder.Services.AddDbContextPool<EducationPlatformContext>(options =>
             {
-                options.UseMongoDB(chatConnection, "ChatDB");
+                options.UseNpgsql(chatConnection);
             });
 
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error>, OperationServices>();
-            builder.Services.AddScoped<IQuery<MessageOutDTO, ChatMember>, QueryService>();
+            builder.Services.AddScoped<IQuery<MessageOutDTO, CourseUser>, QueryService>();
 
             builder.Services.AddControllers();
 

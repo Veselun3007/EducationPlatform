@@ -2,9 +2,9 @@
 
 namespace EPChat.Domain.Entities
 {
-    public class User : IEntity
+    public class User
     {
-        public int Id { get; set; }
+        public string Id { get; set; } = null!;
 
         public string UserName { get; set; } = null!;
 
@@ -12,6 +12,6 @@ namespace EPChat.Domain.Entities
 
         public string? UserImage { get; set; }
 
-        public virtual ICollection<ChatMember> Members { get; set; } = [];
+        public virtual ICollection<CourseUser> CourseUsers { get; set; } = [];
     }
 }

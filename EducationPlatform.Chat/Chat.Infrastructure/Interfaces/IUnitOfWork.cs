@@ -6,7 +6,7 @@ namespace EPChat.Infrastructure.Interfaces
     {
         IRepository<Message> MessageRepository { get; }
 
-        IGetRepository<ChatMember> MemberRepository { get; }
+        IGetRepository<CourseUser> MemberRepository { get; }
 
         IMinRepository<MessageMedia> MessageMediaRepository { get; }
 

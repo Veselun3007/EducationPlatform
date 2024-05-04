@@ -9,19 +9,19 @@ using Microsoft.AspNetCore.SignalR;
 namespace EPChat.Web.Hubs
 {
     public class ChatHub(IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> messageOperation,
-        IQuery<Message, ChatMember> messageQuery) : Hub
+        IQuery<Message, CourseUser> messageQuery) : Hub
     {
         private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> _messageOperation = messageOperation;
-        private readonly IQuery<Message, ChatMember> _messageQuery = messageQuery;
+        private readonly IQuery<Message, CourseUser> _messageQuery = messageQuery;
 
         public async Task AddUsersToGroup(int chatId)
         {
             var chatMembers = await _messageQuery
-                .GetMembersAsync(cm => cm.ChatId == chatId);
+                .GetMembersAsync(cm => cm.CourseId == chatId);
 
             foreach (var chatMember in chatMembers)
             {
-                await Groups.AddToGroupAsync(Context.ConnectionId, chatMember.ChatId.ToString());
+                await Groups.AddToGroupAsync(Context.ConnectionId, chatMember.CourseId.ToString());
             }
         }
 
@@ -31,12 +31,12 @@ namespace EPChat.Web.Hubs
         }
 
 
-       /* public async Task SendMessage(MessageDTO message)
+       public async Task SendMessage(MessageDTO message)
         {
-            await Clients.Group(message.ChatId.ToString())
+            await Clients.Group(message.CourseId.ToString())
                 .SendAsync("ReceiveMessage",
                     await _messageOperation.AddAsync(message));
-        }*/
+        }
 
         public async Task GetFirstPackMessage(int courseId)
         {

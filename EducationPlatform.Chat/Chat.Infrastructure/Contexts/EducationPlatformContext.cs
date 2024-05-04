@@ -3,25 +3,50 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EPChat.Infrastructure.Contexts
 {
-    public class ChatDBContext : DbContext
+    public partial class EducationPlatformContext : DbContext
     {
-        public ChatDBContext() { }
+        public EducationPlatformContext() { }
 
-        public ChatDBContext(DbContextOptions<ChatDBContext> options)
+        public EducationPlatformContext(DbContextOptions<EducationPlatformContext> options)
             : base(options) { }
 
         public DbSet<Course> Courses { get; set; }
 
-        public DbSet<User> Users { get; set; }
-
-        public DbSet<ChatMember> ChatMembers { get; set; }
+        public DbSet<CourseUser> ChatMembers { get; set; }
 
         public DbSet<Message> Messages { get; set; }
 
-        public DbSet<MessageMedia> MessagesMedia { get; set; }
+        public DbSet<MessageMedia> MessageMedias { get; set; }
+
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>(entity => {
+                entity.HasKey(e => e.Id).HasName("users_pkey");
+
+                entity.ToTable("users");
+
+                entity.HasIndex(e => e.UserEmail, "users_user_email_key").IsUnique();
+
+                entity.Property(e => e.Id)
+                    .HasMaxLength(36)
+                    .HasColumnName("user_id");
+
+                entity.Property(e => e.UserEmail)
+                    .HasMaxLength(254)
+                    .HasColumnName("user_email");
+
+                entity.Property(e => e.UserImage)
+                    .HasColumnType("character varying")
+                    .HasColumnName("user_image");
+
+                entity.Property(e => e.UserName)
+                    .HasMaxLength(250)
+                    .HasColumnName("user_name");
+            });
+
+
             modelBuilder.Entity<Course>(entity => {
                 entity.HasKey(e => e.Id).HasName("courses_pkey");
 
@@ -40,74 +65,47 @@ namespace EPChat.Infrastructure.Contexts
                     .HasMaxLength(128)
                     .HasColumnName("course_name");
 
-                entity.Property(e => e.ChatId)
-                    .HasColumnName("chat_id");
-
             });
 
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("users_pkey");
 
-                entity.ToTable("users");
+            modelBuilder.Entity<CourseUser>(entity => {
+                entity.HasKey(e => e.Id).HasName("course_users_pkey");
 
-                entity.HasIndex(e => e.Email).IsUnique()
-                .HasDatabaseName("users_user_email_key");
+                entity.ToTable("course_users");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("user_id")
-                    .HasMaxLength(36);
+                entity.Property(e => e.Id).HasColumnName("course_user_id");
 
-                entity.Property(e => e.UserName)
-                    .HasMaxLength(250)
-                    .HasColumnName("user_name");
+                entity.Property(e => e.CourseId)
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("course_id");
 
-                entity.Property(e => e.Email)
-                    .HasMaxLength(254)
-                    .HasColumnName("user_email");
-
-                entity.Property(e => e.UserImage)
-                    .HasColumnType("character varying")
-                    .HasColumnName("user_image");
-            });
-
-            modelBuilder.Entity<ChatMember>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("chat_member_pkey");
-
-                entity.ToTable("chat_members");
-
-                entity.Property(e => e.Id)
-                    .HasColumnName("chat_member_id");
-
-                entity.Property(e => e.ChatId)
-                    .HasColumnName("chat_id");
+                entity.Property(e => e.Role).HasColumnName("role");
 
                 entity.Property(e => e.UserId)
+                    .HasMaxLength(36)
                     .HasColumnName("user_id");
 
-                entity.HasOne(d => d.Course).WithMany(p => p.Members)
-                    .HasForeignKey(d => d.ChatId)
-                    .HasConstraintName("fk_members_course");
+                entity.HasOne(d => d.Course).WithMany(p => p.CourseUsers)
+                    .HasForeignKey(d => d.CourseId)
+                    .HasConstraintName("fk_courseuser_course");
 
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Members)
+                entity.HasOne(d => d.User).WithMany(p => p.CourseUsers)
                     .HasForeignKey(d => d.UserId)
-                    .HasConstraintName("fk_members_user");
-
+                    .HasConstraintName("fk_courseuser_user");
             });
+
 
             modelBuilder.Entity<Message>(entity =>
             {
-                entity.HasKey(e => e.Id).HasName("message_pkey");
+                entity.HasKey(e => e.Id).HasName("messages_pkey");
 
                 entity.ToTable("messages");
 
                 entity.Property(e => e.Id)
                     .HasColumnName("message_id");
 
-                entity.Property(e => e.ChatId)
-                    .HasColumnName("chat_id");
+                entity.Property(e => e.CourseId)
+                    .HasColumnName("course_id");
 
                 entity.Property(e => e.CreatorId)
                     .HasColumnName("creator_id");
@@ -140,7 +138,12 @@ namespace EPChat.Infrastructure.Contexts
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Messages)
-                    .HasForeignKey(d => d.ChatId)
+                    .HasForeignKey(d => d.CourseId)
+                    .HasConstraintName("fk_messages_course");
+
+                entity.HasOne(d => d.CourseUser)
+                    .WithMany(p => p.Messages)
+                    .HasForeignKey(d => d.CreatorId)
                     .HasConstraintName("fk_messages_course");
 
             });
@@ -171,5 +174,6 @@ namespace EPChat.Infrastructure.Contexts
             OnModelCreatingPartial(modelBuilder);
         }
 
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

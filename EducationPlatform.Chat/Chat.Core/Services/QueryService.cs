@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace EPChat.Core.Services
 {
-    public class QueryService(IUnitOfWork unitOfWork) : IQuery<MessageOutDTO, ChatMember>
+    public class QueryService(IUnitOfWork unitOfWork) : IQuery<MessageOutDTO, CourseUser>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
@@ -15,7 +15,7 @@ namespace EPChat.Core.Services
         {
             return await _unitOfWork.MessageRepository
                 .GetQueryable()
-                .Where(m => m.ChatId == chatId)
+                .Where(m => m.CourseId == chatId)
                 .OrderByDescending(m => m.CreatedIn)
                 .Include(m => m.AttachedMedias)
                 .Take(100)
@@ -26,14 +26,14 @@ namespace EPChat.Core.Services
         {
             return await _unitOfWork.MessageRepository
                 .GetQueryable()
-                .Where(m => m.Id < oldestMessageId && m.ChatId == chatId)
+                .Where(m => m.Id < oldestMessageId && m.CourseId == chatId)
                 .Include(m => m.AttachedMedias)
                 .OrderByDescending(m => m.Id)
                 .Take(100)
                 .Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();
         }
 
-        public async Task<IEnumerable<ChatMember>> GetMembersAsync(Expression<Func<ChatMember, bool>> filter)
+        public async Task<IEnumerable<CourseUser>> GetMembersAsync(Expression<Func<CourseUser, bool>> filter)
         {
             return await _unitOfWork.MemberRepository.GetAsync(filter);
         }

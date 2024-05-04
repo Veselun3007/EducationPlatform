@@ -6,7 +6,7 @@ namespace EPChat.Domain.Entities
     {
         public int Id { get; set; }
 
-        public int ChatId { get; set; }
+        public int CourseId { get; set; }
 
         public int? ReplyToMessageId { get; set; }
 
@@ -29,5 +29,7 @@ namespace EPChat.Domain.Entities
         public virtual Message? ReplyToMessage { get; set; }
 
         public virtual Course? Course { get; set; }
+
+        public virtual CourseUser? CourseUser { get; set; }
     }
 }

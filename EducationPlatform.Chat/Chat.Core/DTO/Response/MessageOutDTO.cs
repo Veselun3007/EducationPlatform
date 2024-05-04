@@ -4,7 +4,9 @@ namespace EPChat.Core.DTO.Response
 {
     public class MessageOutDTO
     {
-        public int ChatId { get; set; }
+        public int Id { get; set; }
+
+        public int CourseId { get; set; }
 
         public int? ReplyToMessageId { get; set; }
 
@@ -24,7 +26,8 @@ namespace EPChat.Core.DTO.Response
         {
             return new MessageOutDTO
             {
-                ChatId = message.ChatId,
+                Id = message.Id,
+                CourseId = message.CourseId,
                 ReplyToMessageId = message.ReplyToMessageId,
                 MessageText = message.MessageText,
                 CreatorId = message.CreatorId,
