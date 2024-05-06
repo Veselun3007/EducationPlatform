@@ -51,7 +51,7 @@ namespace CourseService.Web {
                 .AddCustomRepository<Course, CourseRepository>()
                 .AddCustomRepository<Courseuser, CourseuserRepository>();
 
-            builder.Services.AddScoped<AmazonS3>();
+            //builder.Services.AddScoped<AmazonS3>(); //delete
 
             builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder => {
                 builder.AllowAnyOrigin()
