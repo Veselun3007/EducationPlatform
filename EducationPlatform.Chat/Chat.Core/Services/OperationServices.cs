@@ -49,13 +49,16 @@ namespace EPChat.Core.Services
             try
             {
                 var message = MessageUpdateDTO.FromMessageUpdateDTO(entity);
-
                 message.IsEdit = true;
                 message.EditedIn = DateTime.UtcNow;
+
                 await _unitOfWork.MessageRepository.UpdateAsync(message.Id, message);
                 await _unitOfWork.CommitAsync();
-
                 var updated = await _unitOfWork.MessageRepository.GetById(message.Id, a => a.AttachedMedias);
+
+                if (updated is null)
+                    return Result.Failure<MessageOutDTO?, Error>(Errors.General.NotFound());
+
                 return Result.Success<MessageOutDTO?, Error>(MessageOutDTO.FromMessage(updated));
             }
             catch (KeyNotFoundException)
@@ -63,6 +66,44 @@ namespace EPChat.Core.Services
                 return Result.Failure<MessageOutDTO?, Error>(Errors.General.NotFound());
             }
         }
+
+
+        public async Task<Result<string, Error>> DeleteFileAsync(int id)
+        {
+            try
+            {
+                var mediaFile = await _unitOfWork.MessageMediaRepository.GetById(id);
+                if (mediaFile is not null && mediaFile.MediaLink is not null)
+                {
+                    await _fileHelper.DeleteFileAsync(mediaFile.MediaLink);
+                }
+
+                await _unitOfWork.MessageMediaRepository.DeleteAsync(id);
+                await _unitOfWork.CommitAsync();
+
+                return Result.Success<string, Error>("Deleted was successful");
+            }
+            catch (KeyNotFoundException)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+        }
+
+
+        public async Task<Result<MessageMediaOutDTO, Error>> AddFileAsync(IFormFile file, int id)
+        {
+            var fileLink = await _fileHelper.AddFileAsync(file);
+            MessageMedia mediaFile = new()
+            {
+                MessageId = id,
+                MediaLink = fileLink
+            };
+            var addedFile = await _unitOfWork.MessageMediaRepository.AddAsync(mediaFile);
+            await _unitOfWork.CommitAsync();
+
+            return Result.Success<MessageMediaOutDTO, Error>(MessageMediaOutDTO.FromMessageMedia(addedFile));
+        }
+
 
         public async Task<Result<string?, Error>> GetMediaByIdAsync(int id)
         {

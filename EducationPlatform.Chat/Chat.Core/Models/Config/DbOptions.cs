@@ -2,6 +2,6 @@
 {
     public class DbOptions
     {
-        public string ConnectionStringMongo { get; set; } = String.Empty;
+        public string ConnectionString { get; set; } = String.Empty;
     }
 }

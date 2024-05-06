@@ -110,9 +110,6 @@ namespace EPChat.Infrastructure.Contexts
                 entity.Property(e => e.CreatorId)
                     .HasColumnName("creator_id");
 
-                entity.Property(e => e.ReplyToMessageId)
-                    .HasColumnName("reply_to_message_id");
-
                 entity.Property(e => e.MessageText)
                     .HasMaxLength(500)
                     .HasColumnName("message_text");
@@ -130,11 +127,6 @@ namespace EPChat.Infrastructure.Contexts
                 entity.Property(e => e.EditedIn)
                     .HasColumnType("timestamp with time zone")
                     .HasColumnName("edited_in");
-
-                entity.HasOne(d => d.ReplyToMessage)
-                    .WithMany(p => p.Messages)
-                    .HasForeignKey(d => d.ReplyToMessageId)
-                    .HasConstraintName("fk_answer");
 
                 entity.HasOne(d => d.Course)
                     .WithMany(p => p.Messages)

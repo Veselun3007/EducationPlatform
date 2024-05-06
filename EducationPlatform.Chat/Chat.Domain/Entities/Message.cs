@@ -8,8 +8,6 @@ namespace EPChat.Domain.Entities
 
         public int CourseId { get; set; }
 
-        public int? ReplyToMessageId { get; set; }
-
         public string? MessageText { get; set; }
 
         public int CreatorId { get; set; }
@@ -23,10 +21,6 @@ namespace EPChat.Domain.Entities
         public bool IsDeleted { get; set; } = false;
 
         public virtual ICollection<MessageMedia> AttachedMedias { get; set; } = [];
-
-        public virtual ICollection<Message> Messages { get; set; } = [];
-
-        public virtual Message? ReplyToMessage { get; set; }
 
         public virtual Course? Course { get; set; }
 

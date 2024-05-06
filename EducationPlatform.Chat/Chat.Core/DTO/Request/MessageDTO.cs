@@ -7,8 +7,6 @@ namespace EPChat.Core.DTO.Request
     {
         public int CourseId { get; set; }
 
-        public int? ReplyToMessageId { get; set; }
-
         public string? MessageText { get; set; }
 
         public int CreatorId { get; set; }
@@ -22,7 +20,6 @@ namespace EPChat.Core.DTO.Request
             return new Message
             {
                 CourseId = messageDTO.CourseId,
-                ReplyToMessageId = messageDTO.ReplyToMessageId,
                 MessageText = messageDTO.MessageText,
                 CreatorId = messageDTO.CreatorId,
                 CreatedIn = messageDTO.CreatedIn,
