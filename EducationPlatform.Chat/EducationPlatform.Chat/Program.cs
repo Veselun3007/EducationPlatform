@@ -48,8 +48,6 @@ namespace EducationPlatform.Chat
             builder.Services.AddScoped<IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error>, OperationServices>();
             builder.Services.AddScoped<IQuery<MessageOutDTO, CourseUser>, QueryService>();
 
-            builder.Services.AddControllers();
-
             builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
                 builder.AllowAnyOrigin()

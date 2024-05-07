@@ -7,10 +7,13 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace EPChat.Web.Hubs
 {
-    public class ChatHub(IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> messageOperation,
+    public class ChatHub
+        (IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, 
+            MessageMediaOutDTO, Error> messageOperation,
         IQuery<Message, CourseUser> messageQuery) : Hub
     {
-        private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> _messageOperation = messageOperation;
+        private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, 
+            MessageMediaOutDTO, Error> _messageOperation = messageOperation;
         private readonly IQuery<Message, CourseUser> _messageQuery = messageQuery;
 
         /*public async Task AddUsersToGroup(int courseId)
