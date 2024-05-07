@@ -63,7 +63,7 @@ namespace CourseContent.Core.Services
                 await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);
                 await _unitOfWork.CompleteAsync();
                 var updatedAssignment = await _unitOfWork.AssignmentRepository.GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
-                return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(updatedAssignment));
+                return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(updatedAssignment!));
             }
             catch (KeyNotFoundException)
             {

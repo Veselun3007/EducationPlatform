@@ -66,7 +66,7 @@ namespace CourseContent.Core.Services
                 await _unitOfWork.MaterialRepository.UpdateAsync(id, material);
                 await _unitOfWork.CompleteAsync();
                 var updatedMaterial = await _unitOfWork.MaterialRepository.GetByIdAsync(id, m => m.Materialfiles, m => m.Materiallinks);
-                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(updatedMaterial));
+                return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(updatedMaterial!));
             }
             catch (KeyNotFoundException)
             {

@@ -26,7 +26,7 @@ namespace CourseContent.Web
             var builder = WebApplication.CreateBuilder(args);
             var _configuration = builder.Configuration;
 
-            builder.Configuration.AddSystemsManager("/education-platform/Development", new AWSOptions
+            _configuration.AddSystemsManager("/education-platform/Development", new AWSOptions
             {
                 Credentials = new EnvironmentVariablesAWSCredentials(),
                 Region = new EnvironmentVariableAWSRegion().Region,

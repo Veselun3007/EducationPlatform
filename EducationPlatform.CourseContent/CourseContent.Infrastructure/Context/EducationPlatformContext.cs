@@ -237,7 +237,7 @@ public partial class EducationPlatformContext : DbContext
 
         modelBuilder.Entity<Materiallink>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("materialfiles_pkey");
+            entity.HasKey(e => e.Id).HasName("material_links_pkey");
 
             entity.ToTable("material_links");
 
