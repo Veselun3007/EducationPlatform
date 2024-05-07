@@ -22,7 +22,8 @@ namespace EPChat.Infrastructure.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>(entity => {
+            modelBuilder.Entity<User>(entity =>
+            {
                 entity.HasKey(e => e.Id).HasName("users_pkey");
 
                 entity.ToTable("users");
@@ -46,8 +47,8 @@ namespace EPChat.Infrastructure.Contexts
                     .HasColumnName("user_name");
             });
 
-
-            modelBuilder.Entity<Course>(entity => {
+            modelBuilder.Entity<Course>(entity =>
+            {
                 entity.HasKey(e => e.Id).HasName("courses_pkey");
 
                 entity.ToTable("courses");
@@ -67,8 +68,8 @@ namespace EPChat.Infrastructure.Contexts
 
             });
 
-
-            modelBuilder.Entity<CourseUser>(entity => {
+            modelBuilder.Entity<CourseUser>(entity =>
+            {
                 entity.HasKey(e => e.Id).HasName("course_users_pkey");
 
                 entity.ToTable("course_users");
@@ -93,7 +94,6 @@ namespace EPChat.Infrastructure.Contexts
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("fk_courseuser_user");
             });
-
 
             modelBuilder.Entity<Message>(entity =>
             {
@@ -136,7 +136,7 @@ namespace EPChat.Infrastructure.Contexts
                 entity.HasOne(d => d.CourseUser)
                     .WithMany(p => p.Messages)
                     .HasForeignKey(d => d.CreatorId)
-                    .HasConstraintName("fk_messages_course");
+                    .HasConstraintName("fk_messages_user");
 
             });
 
@@ -161,7 +161,6 @@ namespace EPChat.Infrastructure.Contexts
                     .HasForeignKey(d => d.MessageId)
                     .HasConstraintName("fk_message_medias");
             });
-
 
             OnModelCreatingPartial(modelBuilder);
         }

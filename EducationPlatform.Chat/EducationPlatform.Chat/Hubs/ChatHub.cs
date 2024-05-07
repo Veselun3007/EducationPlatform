@@ -2,45 +2,80 @@
 using EPChat.Core.DTO.Response;
 using EPChat.Core.Interfaces;
 using EPChat.Core.Models.ErrorModels;
-using EPChat.Domain.Entities;
+using EPChat.Domain.Enums;
+using EPChat.Web.Models;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EPChat.Web.Hubs
 {
     public class ChatHub
-        (IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, 
-            MessageMediaOutDTO, Error> messageOperation,
-        IQuery<Message, CourseUser> messageQuery) : Hub
+        (IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> messageOperation,
+        IQuery<MessageOutDTO> messageQuery) : Hub
     {
-        private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, 
-            MessageMediaOutDTO, Error> _messageOperation = messageOperation;
-        private readonly IQuery<Message, CourseUser> _messageQuery = messageQuery;
-
-        /*public async Task AddUsersToGroup(int courseId)
-        {
-            var chatMembers = await _messageQuery
-                .GetMembersAsync(cm => cm.CourseId == courseId);
-
-            foreach (var chatMember in chatMembers)
-            {
-                await Groups.AddToGroupAsync(Context.ConnectionId, chatMember.CourseId.ToString());
-            }
-        }*/
+        private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> _messageOperation = messageOperation;
+        private readonly IQuery<MessageOutDTO> _messageQuery = messageQuery;
 
         public async Task JoinRoom(int courseId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, courseId.ToString());
         }
 
-
-       public async Task SendMessage(MessageDTO message)
+        public async Task SendMessage(MessageDTO message)
         {
             var result = await _messageOperation.AddAsync(message);
-            if(result.Value is null)
+
+            if (result.IsSuccess)
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", result.Error);
+                await Clients.Group(message.CourseId.ToString()).SendAsync("ReceiveMessage", result.Value);
             }
-            await Clients.Group(message.CourseId.ToString()).SendAsync("ReceiveMessage", result.Value);
+            else
+            {
+                await Clients.Caller.SendAsync("ReceiveMessage", MessageWrapper.Error(result.Error));
+            }
+        }
+
+        public async Task DeleteMessage(int courseId, int messageId, DeleteOptionsEnum deleteOptions)
+        {
+            var result = await _messageOperation.DeleteAsync(messageId, deleteOptions);
+            if (result.IsSuccess)
+            {
+                await Clients.Group(courseId.ToString()).SendAsync("BroadCastDeleteMessage", result.Value);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("BroadCastDeleteMessage", MessageWrapper.Error(result.Error));
+            }
+        }
+        public async Task DeleteMessageMedia(int courseId, int messageMediaId)
+        {
+            var result = await _messageOperation.DeleteFileAsync(messageMediaId);
+            if (result.IsSuccess)
+            {
+                await Clients.Group(courseId.ToString()).SendAsync("DeleteMedia", result.Value);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("DeleteMedia", MessageWrapper.Error(result.Error));
+            }
+        }
+
+        public async Task AddMessageMedia(int courseId, IFormFile file, int messageId)
+        {
+            var result = await _messageOperation.AddFileAsync(file, messageId);
+            if (result.IsSuccess)
+            {
+                await Clients.Group(courseId.ToString()).SendAsync("AddMedia", result.Value);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("AddMedia", MessageWrapper.Error(result.Error));
+            }
+        }
+
+        public async Task GetFileById(int messageMediaId)
+        {
+            await Clients.Caller.SendAsync("ReceiveMessages",
+                await _messageOperation.GetMediaByIdAsync(messageMediaId));
         }
 
         public async Task GetFirstPackMessage(int courseId)
@@ -51,33 +86,8 @@ namespace EPChat.Web.Hubs
 
         public async Task GetNextPackMessage(int courseId, int oldestMessageId)
         {
-            var messages = await _messageQuery
-                .GetNextPackMessageAsync(courseId, oldestMessageId);
-
-            await Clients.Caller.SendAsync("ReceiveMessages", messages);
+            await Clients.Caller.SendAsync("ReceiveMessages",
+                await _messageQuery.GetNextPackMessageAsync(courseId, oldestMessageId));
         }
-
-       /* public async Task DeleteMessage(int courseId, int messageId,
-            DeleteOptionsEnum deleteOptions)
-        {
-            var deletedMessage = await _messageOperation
-                .DeleteAsync(messageId, deleteOptions);
-
-            await Clients.Group(courseId.ToString())
-                .SendAsync("BroadCastDeleteMessage",
-                    Context.ConnectionId, deletedMessage);
-        }
-
-        public async Task DeleteMessageRange(int courseId,
-            List<int> entitiesToDelete,
-            DeleteOptionsEnum deleteOptions)
-        {
-            var deletedMessage = _messageOperation
-                .RemoveRangeAsync(entitiesToDelete, deleteOptions);
-
-            await Clients.Group(courseId.ToString())
-                .SendAsync("BroadCastDeleteMessage",
-                    Context.ConnectionId, deletedMessage);
-        }*/
     }
 }

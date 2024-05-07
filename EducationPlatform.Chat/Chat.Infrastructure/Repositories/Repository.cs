@@ -50,14 +50,6 @@ namespace EPChat.Infrastructure.Repositories
             }
         }
 
-        public async Task RemoveRangeAsync(List<int> entities)
-        {
-            foreach (var entity in entities)
-            {
-                await DeleteAsync(entity);
-            }
-        }
-
         public Task<T?> GetById(int id, params Expression<Func<T, object>>[]? includes)
         {
             var query = _dbSet.AsQueryable();

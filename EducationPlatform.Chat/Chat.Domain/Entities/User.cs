@@ -1,6 +1,4 @@
-﻿using EPChat.Domain.Interfaces;
-
-namespace EPChat.Domain.Entities
+﻿namespace EPChat.Domain.Entities
 {
     public class User
     {

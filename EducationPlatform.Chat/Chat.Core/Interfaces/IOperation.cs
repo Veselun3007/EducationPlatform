@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using EPChat.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace EPChat.Core.Interfaces
 {
@@ -11,8 +12,10 @@ namespace EPChat.Core.Interfaces
 
         Task<Result<string?, Error>> DeleteAsync(int messageId, DeleteOptionsEnum deleteOptions);
 
-        Task<Result<string?, Error>> RemoveRangeAsync(List<int> entitiesToDelete, DeleteOptionsEnum deleteOptions);
-
         Task<Result<string?, Error>> GetMediaByIdAsync(int id);
+
+        Task<Result<string?, Error>> DeleteFileAsync(int messageMediaId);
+
+        Task<Result<M?, Error>> AddFileAsync(IFormFile file, int messageId);
     }
 }

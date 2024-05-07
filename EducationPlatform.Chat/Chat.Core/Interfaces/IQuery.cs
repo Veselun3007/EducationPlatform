@@ -1,13 +1,9 @@
-﻿using System.Linq.Expressions;
-
-namespace EPChat.Core.Interfaces
+﻿namespace EPChat.Core.Interfaces
 {
-    public interface IQuery<T, E>
+    public interface IQuery<O>
     {
-        Task<IEnumerable<T>> GetFirstPackMessageAsync(int chatId);
+        Task<IEnumerable<O>> GetFirstPackMessageAsync(int chatId);
 
-        Task<IEnumerable<T>> GetNextPackMessageAsync(int chatId, int oldestMessageId);
-
-        Task<IEnumerable<E>> GetMembersAsync(Expression<Func<E, bool>> filter);
+        Task<IEnumerable<O>> GetNextPackMessageAsync(int chatId, int oldestMessageId);
     }
 }

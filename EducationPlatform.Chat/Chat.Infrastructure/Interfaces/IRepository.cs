@@ -1,11 +1,14 @@
 ﻿using EPChat.Domain.Interfaces;
+using System.Linq.Expressions;
 
 namespace EPChat.Infrastructure.Interfaces
 {
-    public interface IRepository<T> : IGetRepository<T>, IMinRepository<T> where T : class, IEntity
+    public interface IRepository<T> : IMinRepository<T> where T : class, IEntity
     {
-        Task<T?> UpdateAsync(int id, T entity);
+        Task<IEnumerable<T>> GetAsync(Expression<Func<T, bool>> filter);
 
-        Task RemoveRangeAsync(List<int> entities);
+        IQueryable<T> GetQueryable();
+
+        Task<T?> UpdateAsync(int id, T entity);
     }
 }

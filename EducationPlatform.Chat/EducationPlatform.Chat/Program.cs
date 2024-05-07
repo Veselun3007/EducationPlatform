@@ -8,7 +8,6 @@ using EPChat.Core.Interfaces;
 using EPChat.Core.Models.Config;
 using EPChat.Core.Models.ErrorModels;
 using EPChat.Core.Services;
-using EPChat.Domain.Entities;
 using EPChat.Infrastructure;
 using EPChat.Infrastructure.Contexts;
 using EPChat.Infrastructure.Interfaces;
@@ -42,11 +41,11 @@ namespace EducationPlatform.Chat
             {
                 options.UseNpgsql(dbOptions.ConnectionString);
             });
-  
+
             builder.Services.AddScoped<FileHelper>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error>, OperationServices>();
-            builder.Services.AddScoped<IQuery<MessageOutDTO, CourseUser>, QueryService>();
+            builder.Services.AddScoped<IQuery<MessageOutDTO>, QueryService>();
 
             builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {

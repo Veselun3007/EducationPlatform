@@ -68,7 +68,7 @@ namespace EPChat.Core.Services
         }
 
 
-        public async Task<Result<string, Error>> DeleteFileAsync(int id)
+        public async Task<Result<string?, Error>> DeleteFileAsync(int id)
         {
             try
             {
@@ -81,16 +81,15 @@ namespace EPChat.Core.Services
                 await _unitOfWork.MessageMediaRepository.DeleteAsync(id);
                 await _unitOfWork.CommitAsync();
 
-                return Result.Success<string, Error>("Deleted was successful");
+                return Result.Success<string?, Error>("Deleted was successful");
             }
             catch (KeyNotFoundException)
             {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
+                return Result.Failure<string?, Error>(Errors.General.NotFound());
             }
         }
 
-
-        public async Task<Result<MessageMediaOutDTO, Error>> AddFileAsync(IFormFile file, int id)
+        public async Task<Result<MessageMediaOutDTO?, Error>> AddFileAsync(IFormFile file, int id)
         {
             var fileLink = await _fileHelper.AddFileAsync(file);
             MessageMedia mediaFile = new()
@@ -101,9 +100,8 @@ namespace EPChat.Core.Services
             var addedFile = await _unitOfWork.MessageMediaRepository.AddAsync(mediaFile);
             await _unitOfWork.CommitAsync();
 
-            return Result.Success<MessageMediaOutDTO, Error>(MessageMediaOutDTO.FromMessageMedia(addedFile));
+            return Result.Success<MessageMediaOutDTO?, Error>(MessageMediaOutDTO.FromMessageMedia(addedFile));
         }
-
 
         public async Task<Result<string?, Error>> GetMediaByIdAsync(int id)
         {
@@ -138,130 +136,8 @@ namespace EPChat.Core.Services
             }
 
             await _unitOfWork.CommitAsync();
-            return Result.Success<string?, Error>("Deleted was successful");
+            return Result.Success<string?, Error>(messageId.ToString());
         }
-
-        public async Task<Result<string?, Error>> RemoveRangeAsync(List<int> entitiesToDelete, DeleteOptionsEnum deleteOptions)
-        {
-            if (entitiesToDelete is null)
-            {
-                return Result.Failure<string?, Error>(Errors.General.NotRecords());
-            }
-            switch (deleteOptions)
-            {
-                case DeleteOptionsEnum.DeleteForEveryone:
-                    await DeleteForEveryoneRange(entitiesToDelete);
-                    break;
-                case DeleteOptionsEnum.DeleteForMe:
-                    await DeleteForMeRange(entitiesToDelete);
-                    break;
-                default:
-                    return Result.Failure<string?, Error>(Errors.General.Unpredictable());
-            }
-
-            await _unitOfWork.CommitAsync();
-            return Result.Success<string?, Error>("Deleted successfully");
-        }
-
-        private async Task DeleteForEveryoneRange(List<int> entitiesToDelete)
-        {
-            await _unitOfWork.MessageRepository.RemoveRangeAsync(entitiesToDelete);
-        }
-
-        private async Task DeleteForMeRange(List<int> entitiesToDelete)
-        {
-            foreach (var id in entitiesToDelete)
-            {
-                var message = await _unitOfWork.MessageRepository.GetById(id);
-
-                if (message is not null)
-                {
-                    message.IsDeleted = true;
-                    await _unitOfWork.MessageRepository.UpdateAsync(message.Id, message);
-                }
-            }
-        }
-
-        /*public async Task<bool> RemoveRangeAsync(List<int> entitiesToDelete, DeleteOptionsEnum deleteOptions)
-        {
-            return deleteOptions switch
-            {
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForEveryone => await DeleteForEveryoneRange(entitiesToDelete),
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForMe => await DeleteForMeRange(entitiesToDelete),
-                _ => false
-            };
-        }
-
-        private async Task<bool> DeleteForEveryoneRange(List<int> entitiesToDelete)
-        {
-            try
-            {
-                await _unitOfWork.MessageRepository.RemoveRangeAsync(entitiesToDelete);
-                await _unitOfWork.CommitAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        private async Task<bool> DeleteForMeRange(List<int> entitiesToDelete)
-        {
-            try
-            {
-                foreach (var id in entitiesToDelete)
-                {
-                    var message = await _unitOfWork.MessageRepository.GetById(id);
-
-                    if (message is not null)
-                    {
-                        message.IsDeleted = true;
-                        await _unitOfWork.MessageRepository.UpdateAsync(message.Id, message);
-                    }
-                }
-                await _unitOfWork.CommitAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }*/
-
-        /*public async Task<Result<string?, Error>> DeleteAsync(int messageId, DeleteOptionsEnum deleteOptions)
-        {
-            var message = await _unitOfWork.MessageRepository.GetById(messageId);
-
-            return message switch
-            {
-                null => Result.Failure<string?, Error>(Errors.General.NotFound()),
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForEveryone => await DeleteForEveryone(message),
-                _ when deleteOptions is DeleteOptionsEnum.DeleteForMe => await DeleteForMe(message),
-                _ => ""
-            };
-        }
-
-        private async Task DeleteForEveryone(Message message)
-        {
-
-                await _unitOfWork.MessageRepository.DeleteAsync(message.Id);
-                await _unitOfWork.CommitAsync();
-        }
-
-        private async Task<bool> DeleteForMe(Message message)
-        {
-            try
-            {
-                message.IsDeleted = true;
-                await _unitOfWork.MessageRepository.UpdateAsync(message.Id, message);
-                await _unitOfWork.CommitAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }*/
     }
 }
 

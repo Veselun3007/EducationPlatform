@@ -1,5 +1,4 @@
 ﻿using EPChat.Domain.Interfaces;
-using System.Text.Json.Serialization;
 
 namespace EPChat.Domain.Entities
 {
