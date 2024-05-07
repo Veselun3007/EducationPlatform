@@ -82,7 +82,7 @@ namespace EducationPlatform.Chat
 
             app.UseCors("AllowAll");
 
-            app.MapHub<ChatHub>("/Chat");
+            app.MapHub<ChatHub>("/chat");
 
             app.Run();
         }
