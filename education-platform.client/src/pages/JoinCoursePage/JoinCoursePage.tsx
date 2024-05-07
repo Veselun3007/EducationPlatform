@@ -9,23 +9,22 @@ import { useNavigate, useParams } from 'react-router-dom';
 import LoginRequiredError from '../../errors/LoginRequiredError';
 import { enqueueAlert } from '../../components/Notification/NotificationProvider';
 import ServiceError from '../../errors/ServiceError';
+import { runInAction } from 'mobx';
 
 const JoinCoursePage = observer(() => {
-    const { courseUserService } = useStore();
+    const { courseUserService, courseStore } = useStore();
     const { courseId, courseLink } = useParams();
     const navigate = useNavigate();
-    const isRequestFullfilledRef = useRef(false);
+
 
     if (isNaN(Number(courseId)) || !courseLink) {
         navigate('/404');
     }
 
     useEffect(() => {
-        //reacе strict mode crutch, delete when strict mode will be removed
-        if (isRequestFullfilledRef.current) return;
-        isRequestFullfilledRef.current = true;
         courseUserService.createUser(courseLink!).then(() => {
             navigate(`/dashboard`);
+            courseStore.setNeedRefresh();
             enqueueAlert('glossary.joinCourseSuccess', 'success');
             
         }).catch((error) => {

@@ -140,7 +140,7 @@ function App() {
                                 element={<AssignmentPage />}
                             />
                             <Route
-                                path="/course/:courseId/chat/:chatId"
+                                path="/course/:courseId/chat"
                                 element={<ChatPage />}
                             />
 

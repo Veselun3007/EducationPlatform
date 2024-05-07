@@ -136,7 +136,7 @@ namespace EPChat.Infrastructure.Contexts
                 entity.HasOne(d => d.CourseUser)
                     .WithMany(p => p.Messages)
                     .HasForeignKey(d => d.CreatorId)
-                    .HasConstraintName("fk_messages_course");
+                    .HasConstraintName("fk_messages_user");
 
             });
 

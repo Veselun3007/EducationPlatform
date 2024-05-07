@@ -138,7 +138,7 @@ namespace EPChat.Core.Services
             }
 
             await _unitOfWork.CommitAsync();
-            return Result.Success<string?, Error>("Deleted was successful");
+            return Result.Success<string?, Error>(messageId.ToString());
         }
 
         public async Task<Result<string?, Error>> RemoveRangeAsync(List<int> entitiesToDelete, DeleteOptionsEnum deleteOptions)

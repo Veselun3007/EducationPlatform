@@ -3,6 +3,8 @@ using EPChat.Core.DTO.Response;
 using EPChat.Core.Interfaces;
 using EPChat.Core.Models.ErrorModels;
 using EPChat.Domain.Entities;
+using EPChat.Domain.Enums;
+using EPChat.Web.Models;
 using Microsoft.AspNetCore.SignalR;
 
 namespace EPChat.Web.Hubs
@@ -10,11 +12,11 @@ namespace EPChat.Web.Hubs
     public class ChatHub
         (IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, 
             MessageMediaOutDTO, Error> messageOperation,
-        IQuery<Message, CourseUser> messageQuery) : Hub
+        IQuery<MessageOutDTO, CourseUser> messageQuery) : Hub
     {
         private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, 
             MessageMediaOutDTO, Error> _messageOperation = messageOperation;
-        private readonly IQuery<Message, CourseUser> _messageQuery = messageQuery;
+        private readonly IQuery<MessageOutDTO, CourseUser> _messageQuery = messageQuery;
 
         /*public async Task AddUsersToGroup(int courseId)
         {
@@ -27,20 +29,26 @@ namespace EPChat.Web.Hubs
             }
         }*/
 
+
+
         public async Task JoinRoom(int courseId)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, courseId.ToString());
         }
 
 
-       public async Task SendMessage(MessageDTO message)
+        public async Task SendMessage(MessageDTO message)
         {
             var result = await _messageOperation.AddAsync(message);
-            if(result.Value is null)
+
+            if (result.IsSuccess)
             {
-                await Clients.Caller.SendAsync("ReceiveMessage", result.Error);
+                await Clients.Group(message.CourseId.ToString()).SendAsync("ReceiveMessage", result.Value);
             }
-            await Clients.Group(message.CourseId.ToString()).SendAsync("ReceiveMessage", result.Value);
+            else
+            {
+                await Clients.Caller.SendAsync("ReceiveMessage", MessageWrapper.Error(result.Error));
+            }
         }
 
         public async Task GetFirstPackMessage(int courseId)
@@ -57,27 +65,41 @@ namespace EPChat.Web.Hubs
             await Clients.Caller.SendAsync("ReceiveMessages", messages);
         }
 
-       /* public async Task DeleteMessage(int courseId, int messageId,
-            DeleteOptionsEnum deleteOptions)
+        public async Task DeleteMessage(int courseId, int messageId,
+    DeleteOptionsEnum deleteOptions)
         {
-            var deletedMessage = await _messageOperation
-                .DeleteAsync(messageId, deleteOptions);
-
-            await Clients.Group(courseId.ToString())
-                .SendAsync("BroadCastDeleteMessage",
-                    Context.ConnectionId, deletedMessage);
+            var result = await _messageOperation.DeleteAsync(messageId, deleteOptions);
+            if (result.IsSuccess)
+            {
+                await Clients.Group(courseId.ToString()).SendAsync("BroadCastDeleteMessage", result.Value);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("BroadCastDeleteMessage", MessageWrapper.Error(result.Error));
+            }
         }
 
-        public async Task DeleteMessageRange(int courseId,
-            List<int> entitiesToDelete,
-            DeleteOptionsEnum deleteOptions)
-        {
-            var deletedMessage = _messageOperation
-                .RemoveRangeAsync(entitiesToDelete, deleteOptions);
+        /* public async Task DeleteMessage(int courseId, int messageId,
+             DeleteOptionsEnum deleteOptions)
+         {
+             var deletedMessage = await _messageOperation
+                 .DeleteAsync(messageId, deleteOptions);
 
-            await Clients.Group(courseId.ToString())
-                .SendAsync("BroadCastDeleteMessage",
-                    Context.ConnectionId, deletedMessage);
-        }*/
+             await Clients.Group(courseId.ToString())
+                 .SendAsync("BroadCastDeleteMessage",
+                     Context.ConnectionId, deletedMessage);
+         }
+
+         public async Task DeleteMessageRange(int courseId,
+             List<int> entitiesToDelete,
+             DeleteOptionsEnum deleteOptions)
+         {
+             var deletedMessage = _messageOperation
+                 .RemoveRangeAsync(entitiesToDelete, deleteOptions);
+
+             await Clients.Group(courseId.ToString())
+                 .SendAsync("BroadCastDeleteMessage",
+                     Context.ConnectionId, deletedMessage);
+         }*/
     }
 }
