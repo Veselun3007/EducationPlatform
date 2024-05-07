@@ -15,6 +15,7 @@ import SignUpPageStore from './SignUpPageStore';
 import UserStore from './UserStore';
 import CommonService from '../services/common/CommonService';
 import UsersPageStore from './UsersPageStore';
+import ChatPageStore from './ChatPageStore';
 
 export default class RootStore {
     readonly authService: AuthService;
@@ -35,6 +36,7 @@ export default class RootStore {
     readonly assignmentPageStore: AssignmentPageStore;
     readonly materialPageStore: MaterialPageStore;
     readonly usersPageStore: UsersPageStore;
+    readonly chatPageStore: ChatPageStore
 
     constructor() {
         //Service creation
@@ -56,5 +58,6 @@ export default class RootStore {
         this.assignmentPageStore = new AssignmentPageStore(this, this.assignmentService, this.topicService, this.commonService);
         this.materialPageStore = new MaterialPageStore(this, this.materialService, this.topicService, this.commonService);
         this.usersPageStore =new UsersPageStore(this, this.courseUserService);
+        this.chatPageStore = new ChatPageStore(this);
     }
 }

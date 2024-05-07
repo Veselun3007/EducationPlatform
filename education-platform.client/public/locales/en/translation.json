@@ -141,6 +141,13 @@
         "student":"Student",
         "userEmpty":"There is no users with that role",
         "leaveCourseSuccess": "You left the course",
-        "leaveCourse":"Leave course"
+        "leaveCourse":"Leave course",
+        "writeMessage":"Write a message",
+        "edit":"Edit",
+        "delete":"Delete",
+        "copy" :"Copy",
+        "deleteMessageSuccess":"Message have been deleted",
+        "edited": "Edited",
+        "editMessage": "Edit message"
     }
 }

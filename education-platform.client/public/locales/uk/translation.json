@@ -141,6 +141,13 @@
         "student":"Студент", 
         "userEmpty":"Користувачів з такою роллю немає",
         "leaveCourseSuccess": "Ви вийшли з курсу",
-        "leaveCourse":"Покинути курс"
+        "leaveCourse":"Покинути курс",
+        "writeMessage":"Написати повідомлення",
+        "edit":"Редагувати",
+        "delete":"Видалити",
+        "copy" :"Копіювати",
+        "deleteMessageSuccess":"Повідомлення видалено",
+        "edited": "Редаговано",
+        "editMessage": "Редагування повідомлення"
     }
 }

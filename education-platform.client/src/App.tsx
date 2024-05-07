@@ -21,6 +21,7 @@ import AssignmentPage from './pages/AssignmentPage/AssignmentPage';
 import MaterialPage from './pages/MaterialPage/MaterialPage';
 import JoinCoursePage from './pages/JoinCoursePage/JoinCoursePage';
 import UsersPage from './pages/UsersPage/UsersPage';
+import ChatPage from './pages/ChatPage/ChatPage';
 
 const darkTheme = createTheme({
     palette: {
@@ -123,6 +124,7 @@ function App() {
                                 path="/confirmEmail/:email"
                                 element={<ConfirmEmailPage />}
                             />
+
                         </Route>
 
                         <Route element={<AuthRoutes />}>
@@ -138,13 +140,13 @@ function App() {
                                 element={<AssignmentPage />}
                             />
                             <Route
-                                path="/course/:id/chat"
-                                element={<Typography>Chat</Typography>}
+                                path="/course/:courseId/chat/:chatId"
+                                element={<ChatPage />}
                             />
 
                             <Route
                                 path="/course/:courseId/users"
-                                element={<UsersPage/>}
+                                element={<UsersPage />}
                             />
                             <Route
                                 path="/course/:courseId/assignment/:assignmentId/mark"
