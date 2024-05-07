@@ -162,6 +162,14 @@ const CoursePage = observer(() => {
                                     >
                                         {t('glossary.courseUsers')}
                                     </MenuItem>
+                                    <MenuItem
+                                        onClick={() => {
+                                            coursePageStore.closeCourseMenu();
+                                            navigate(`/course/${id}/chat`);
+                                        }}
+                                    >
+                                        {t('glossary.courseChat')}
+                                    </MenuItem>
                                 </Menu>
                             </Grid>
                             <Grid xs={12} flexGrow={0}>

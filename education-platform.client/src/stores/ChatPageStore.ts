@@ -9,11 +9,20 @@ import debounce from "../helpers/debounce";
 import UpdateMessageModel from "../models/message/UpdateMessageModel";
 import FileValidator from "../helpers/validation/FileValidator";
 import { enqueueAlert } from "../components/Notification/NotificationProvider";
+import CourseUserInfoModel from "../models/courseUser/CourseUserInfoModel";
+import CourseUserService from "../services/CourseUserService";
+import * as signalR from "@microsoft/signalr";
+import { HUB_URL } from "../services/common/routesAPI";
+import LoginRequiredError from "../errors/LoginRequiredError";
 
 export default class ChatPageStore {
     private readonly _rootStore: RootStore;
+    private readonly _courseUserService: CourseUserService;
+    private _hubConnection: signalR.HubConnection | null = null;
 
+    courseId: number | null = null;
     messages: MessageModel[] = [];
+    users: CourseUserInfoModel[] = [];
     hasMore = true;
 
     currentUser: number | null = null;
@@ -37,13 +46,17 @@ export default class ChatPageStore {
     }
 
     isFileViewerOpen = false;
-    fileLink=''
+    fileLink = '';
 
-    constructor(rootStore: RootStore) {
+
+    constructor(rootStore: RootStore, courseUserService: CourseUserService) {
 
         this._rootStore = rootStore;
+        this._courseUserService = courseUserService;
 
         makeObservable(this, {
+            courseId: observable,
+            users: observable,
             fileLink: observable,
             isFileViewerOpen: observable,
             editMessage: observable,
@@ -90,370 +103,84 @@ export default class ChatPageStore {
         return this.messages.length;
     }
 
-    async init(courseId: number, chatId: number, navigate: NavigateFunction) {
-        runInAction(() => {
-            this.messages = [
-                {
-                    id: 1,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Good morning!',
-                    creatorId: 21,
-                    createdIn: new Date('2022-01-01T06:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    chatId: 1,
-                    replyToMessageId: 1,
-                    messageText: 'What are your plans for today?',
-                    creatorId: 3,
-                    createdIn: new Date('2022-01-01T08:30:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: []
-                },
-                {
-                    id: 3,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'I\'m going to the gym and then to work.',
-                    creatorId: 21,
-                    createdIn: new Date('2022-01-01T08:45:00.000Z'),
-                    isEdit: true,
-                    editedIn: new Date('2022-01-01T08:50:00.000Z'),
-                    attachedFiles: []
-                },
-                {
-                    id: 4,
-                    chatId: 1,
-                    replyToMessageId: 3,
-                    messageText: null,
-                    creatorId: 21,
-                    createdIn: new Date('2022-01-01T09:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        },
-                        {
-                            id: 3,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image3.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 5,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Have a great day!',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T17:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: null
-                },
-                {
-                    id: 6,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Good morning!',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T06:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 7,
-                    chatId: 1,
-                    replyToMessageId: 1,
-                    messageText: 'What are your plans for today?',
-                    creatorId: 3,
-                    createdIn: new Date('2022-01-01T08:30:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: []
-                },
-                {
-                    id: 8,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'I\'m going to the gym and then to work.',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T08:45:00.000Z'),
-                    isEdit: true,
-                    editedIn: new Date('2022-01-01T08:50:00.000Z'),
-                    attachedFiles: []
-                },
-                {
-                    id: 9,
-                    chatId: 1,
-                    replyToMessageId: 3,
-                    messageText: null,
-                    creatorId: 3,
-                    createdIn: new Date('2022-01-01T09:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        },
-                        {
-                            id: 3,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image3.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 10,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Have a great day!',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T17:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: null
-                },
-                {
-                    id: 11,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Good morning!',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T06:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 12,
-                    chatId: 1,
-                    replyToMessageId: 1,
-                    messageText: 'What are your plans for today?',
-                    creatorId: 3,
-                    createdIn: new Date('2022-01-01T08:30:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: []
-                },
-                {
-                    id: 13,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'I\'m going to the gym and then to work.',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T08:45:00.000Z'),
-                    isEdit: true,
-                    editedIn: new Date('2022-01-01T08:50:00.000Z'),
-                    attachedFiles: []
-                },
-                {
-                    id: 14,
-                    chatId: 1,
-                    replyToMessageId: 3,
-                    messageText: null,
-                    creatorId: 3,
-                    createdIn: new Date('2022-01-01T09:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        },
-                        {
-                            id: 3,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image3.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 15,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Have a great day!',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T17:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: null
-                },
-                {
-                    id: 16,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Good morning!',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T06:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 1,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 17,
-                    chatId: 1,
-                    replyToMessageId: 1,
-                    messageText: 'What are your plans for today?',
-                    creatorId: 3,
-                    createdIn: new Date('2022-01-01T08:30:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: []
-                },
-                {
-                    id: 18,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'I\'m going to the gym and then to work.',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T08:45:00.000Z'),
-                    isEdit: true,
-                    editedIn: new Date('2022-01-01T08:50:00.000Z'),
-                    attachedFiles: []
-                },
-                {
-                    id: 19,
-                    chatId: 1,
-                    replyToMessageId: 3,
-                    messageText: null,
-                    creatorId: 3,
-                    createdIn: new Date('2022-01-01T09:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: [
-                        {
-                            id: 1,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image1.jpg'
-                        },
-                        {
-                            id: 2,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image2.jpg'
-                        },
-                        {
-                            id: 3,
-                            messageId: 4,
-                            mediaLink: 'https://example.com/image3.jpg'
-                        }
-                    ]
-                },
-                {
-                    id: 20,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: 'Have a great day!',
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T17:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: null
+    async init(courseId: number, navigate: NavigateFunction) {
+        try {
+            this._hubConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:5003/chat', { withCredentials: false }).build();
+            await this._hubConnection.start();
+
+            await this._hubConnection.send('JoinRoom', courseId);
+
+            const users = await this._courseUserService.getUsers(courseId);
+
+            await this._hubConnection.send("GetFirstPackMessage", courseId);
+
+            this._hubConnection.on("ReceiveMessages", (response) => {
+                if (Object.hasOwn(response, 'statusCode')) {
+                    enqueueAlert('glossary.somethingWentWrong');
+                } else {
+                    runInAction(() => {
+                        this.messages = (response as MessageModel[]).sort((a, b) => b.id - a.id);
+                    });
+                }
+            });
+
+            this._hubConnection?.on('ReceiveMessage', (response) => {
+                if (Object.hasOwn(response, 'statusCode')) {
+                    enqueueAlert('glossary.somethingWentWrong');
+                } else {
+                    runInAction(() => {
+                        this.messages = this.messages.concat(response as MessageModel).sort((a, b) => b.id - a.id);
+                    });
                 }
 
-            ]
-            const course = this._rootStore.courseStore.coursesInfo
-                .find(c => c.course.courseId === courseId);
-            if (!course) {
-                navigate('/');
+            });
+            
+            this._hubConnection.on("BroadCastDeleteMessage", (response) => {
+                if (Object.hasOwn(response, 'statusCode')) {
+                    switch (response.statusCode as number) {
+                        case 404:
+                            enqueueAlert('glossary.messageNotFound');
+                            break;
+                        default:
+                            enqueueAlert('glossary.somethingWentWrong');
+                    }
+                } else {
+                    runInAction(() => {
+                        const id = Number.parseInt(response as string);
+                        if (this.messages.some(m => m.id === id)) {
+                            const index = this.messages.findIndex(m => m.id === id);
+                            this.messages.splice(index, 1);
+                        }
+                    });
+                }
+            });
+
+            runInAction(() => {
+                this.users = users;
+                this.courseId = courseId;
+
+                const course = this._rootStore.courseStore.coursesInfo
+                    .find(c => c.course.courseId === courseId);
+                if (!course) {
+                    navigate('/');
+                }
+                this.currentUser = course!.userInfo.courseuserId;
+
+                this.isLoading = false;
+
+                this.createMessage = new CreateMessageModel(courseId, this.currentUser);
+
+            });
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
             }
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            this.currentUser = course!.userInfo.courseuserId;
-
-            this.isLoading = false;
-            const newMessages: MessageModel[] = []
-            for (let i = 0; i < 80; i++) {
-                newMessages.push({
-                    id: this.messages[this.messages.length - 1]!.id + i + 1,
-                    chatId: 1,
-                    replyToMessageId: null,
-                    messageText: (this.messages[this.messages.length - 1]!.id + i + 1).toString(),
-                    creatorId: 2,
-                    createdIn: new Date('2022-01-01T17:00:00.000Z'),
-                    isEdit: false,
-                    editedIn: null,
-                    attachedFiles: null
-                });
+            else {
+                enqueueAlert('glossary.somethingWentWrong');
+                navigate(`/course/${courseId}`)
             }
-
-            this.messages = [...this.messages, ...newMessages]
-            if (this.messages.length > 100) this.hasMore = false;
-
-            this.createMessage = new CreateMessageModel(courseId, this.currentUser);
-
-        });
-
+        }
     }
 
     async loadNextPack() {
@@ -502,15 +229,15 @@ export default class ChatPageStore {
         return message !== undefined && ((message.messageText !== null && message.messageText.length > 0) || (message.attachedFiles !== null && message.attachedFiles.length > 1))
     }
 
-    async onFileClick(id: number, navigate: NavigateFunction){
+    async onFileClick(id: number, navigate: NavigateFunction) {
         ///add behaviour
-        runInAction(()=>{
+        runInAction(() => {
             this.isFileViewerOpen = true;
-            this.fileLink ='';////
+            this.fileLink = '';////
         })
     }
 
-    onFileViewerClose(){
+    onFileViewerClose() {
         this.isFileViewerOpen = false;
         this.fileLink = '';
     }
@@ -535,10 +262,10 @@ export default class ChatPageStore {
         )();
     }
 
-    handeEditMessageOpen(courseId: number) {
+    handeEditMessageOpen() {
         const message = this.messages.find(m => m.id === this.selectedMessage);
         const messagetext = message!.messageText === null ? '' : message!.messageText;
-        this.editMessage = new UpdateMessageModel(this.selectedMessage!, courseId, this.currentUser!, messagetext)
+        this.editMessage = new UpdateMessageModel(this.selectedMessage!, this.courseId!, this.currentUser!, messagetext)
         this.editMessageOpen = true;
         this.closeMessageMenu();
     }
@@ -639,12 +366,29 @@ export default class ChatPageStore {
         // }
     }
 
-    sendMessage() {
-        this.resetCreateMessage();
+    async sendMessage() {
+        try {
+            await this._hubConnection?.send('SendMessage', this.createMessage);
+
+            runInAction(() => {
+                this.resetCreateMessage();
+            });
+        } catch (error) {
+            enqueueAlert('glossary.somethingWentWrong')
+        }
     }
 
-    deleteMessage() {
-        //
+    async deleteMessage() {
+        try {
+            await this._hubConnection?.send('DeleteMessage', this.courseId, this.selectedMessage, 1)
+            runInAction(() => {
+                this.selectedMessage = null;
+                this.closeMessageMenu();
+            })
+        }
+        catch (error) {
+            enqueueAlert('glossary.somethingWentWrong')
+        }
     }
 
     submitEdit() {
@@ -673,6 +417,8 @@ export default class ChatPageStore {
     }
 
     reset() {
+        this._hubConnection?.stop();
+        this.courseId = null;
         this.messages = [];
         this.isLoading = true;
         this.currentUser = null;

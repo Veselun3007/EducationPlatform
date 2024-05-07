@@ -148,6 +148,8 @@
         "copy" :"Копіювати",
         "deleteMessageSuccess":"Повідомлення видалено",
         "edited": "Редаговано",
-        "editMessage": "Редагування повідомлення"
+        "editMessage": "Редагування повідомлення",
+        "courseChat":"Чат курсу",
+        "messageNotFound": "Повідомлення не знайдено"
     }
 }

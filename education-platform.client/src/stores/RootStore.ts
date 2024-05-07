@@ -58,6 +58,6 @@ export default class RootStore {
         this.assignmentPageStore = new AssignmentPageStore(this, this.assignmentService, this.topicService, this.commonService);
         this.materialPageStore = new MaterialPageStore(this, this.materialService, this.topicService, this.commonService);
         this.usersPageStore =new UsersPageStore(this, this.courseUserService);
-        this.chatPageStore = new ChatPageStore(this);
+        this.chatPageStore = new ChatPageStore(this, this.courseUserService);
     }
 }

@@ -148,6 +148,8 @@
         "copy" :"Copy",
         "deleteMessageSuccess":"Message have been deleted",
         "edited": "Edited",
-        "editMessage": "Edit message"
+        "editMessage": "Edit message",
+        "courseChat":"Course chat",
+        "messageNotFound": "Message not found"
     }
 }

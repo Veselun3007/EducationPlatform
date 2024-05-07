@@ -47,9 +47,9 @@ const ChatPage = observer(() => {
     const theme = useTheme();
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
-    const { courseId, chatId } = useParams();
+    const { courseId } = useParams();
 
-    if (isNaN(Number(courseId)) || isNaN(Number(chatId))) {
+    if (isNaN(Number(courseId)) ) {
         navigate('/404');
     }
 
@@ -57,11 +57,11 @@ const ChatPage = observer(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         chatPageStore.init(
             Number.parseInt(courseId!),
-            Number.parseInt(chatId!),
+            
             navigate
         );
         return () => chatPageStore.reset();
-    }, [courseId, chatId]);
+    }, [courseId]);
 
     const StyledCardActionArea = styled(CardActionArea)(({ theme }) => `
     .MuiCardActionArea-focusHighlight {
@@ -188,7 +188,7 @@ const ChatPage = observer(() => {
                             chatPageStore.closeMessageMenu()
                         }}
                     >
-                        <MenuItem onClick={() => chatPageStore.handeEditMessageOpen(Number.parseInt(courseId!))}>
+                        <MenuItem onClick={chatPageStore.handeEditMessageOpen}>
                             <ListItemIcon>
                                 <Edit fontSize="small" />
                             </ListItemIcon>
