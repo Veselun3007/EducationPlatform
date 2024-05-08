@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 namespace EPChat.Core.Services
 {
     public class OperationServices(IUnitOfWork unitOfWork, FileHelper fileHelper) :
-        IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error>
+        IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, MediaMessage, Error>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly FileHelper _fileHelper = fileHelper;
@@ -92,9 +92,10 @@ namespace EPChat.Core.Services
             }
         }
 
-        public async Task<Result<MessageMediaOutDTO?, Error>> AddFileAsync(IFormFile file, int id)
+        public async Task<Result<MessageMediaOutDTO?, Error>> AddFileAsync(MediaMessage file, int id)
         {
-            var fileLink = await _fileHelper.AddFileAsync(file);
+            var media = FileConvertHelper.ConvertByteArrayToIFormFile(file.FileBinary!, file.FileName!);
+            var fileLink = await _fileHelper.AddFileAsync(media);
             MessageMedia mediaFile = new()
             {
                 MessageId = id,

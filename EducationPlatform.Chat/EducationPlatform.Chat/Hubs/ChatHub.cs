@@ -2,6 +2,7 @@
 using EPChat.Core.DTO.Response;
 using EPChat.Core.Interfaces;
 using EPChat.Core.Models.ErrorModels;
+using EPChat.Core.Models.HelperModel;
 using EPChat.Domain.Enums;
 using EPChat.Web.Models;
 using Microsoft.AspNetCore.SignalR;
@@ -9,10 +10,10 @@ using Microsoft.AspNetCore.SignalR;
 namespace EPChat.Web.Hubs
 {
     public class ChatHub
-        (IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> messageOperation,
+        (IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, MediaMessage, Error> messageOperation,
         IQuery<MessageOutDTO> messageQuery) : Hub
     {
-        private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error> _messageOperation = messageOperation;
+        private readonly IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, MediaMessage, Error> _messageOperation = messageOperation;
         private readonly IQuery<MessageOutDTO> _messageQuery = messageQuery;
 
         public async Task JoinRoom(int courseId)
@@ -59,7 +60,7 @@ namespace EPChat.Web.Hubs
             }
         }
 
-        public async Task AddMessageMedia(int courseId, IFormFile file, int messageId)
+        public async Task AddMessageMedia(int courseId, MediaMessage file, int messageId)
         {
             var result = await _messageOperation.AddFileAsync(file, messageId);
             if (result.IsSuccess)

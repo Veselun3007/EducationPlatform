@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace EPChat.Core.Interfaces
 {
-    public interface IOperation<I, U, O, M, Error> where I : class
+    public interface IOperation<I, U, O, M, F, Error> where I : class
     {
         Task<Result<O, Error>> AddAsync(I message);
 
@@ -16,6 +16,6 @@ namespace EPChat.Core.Interfaces
 
         Task<Result<string?, Error>> DeleteFileAsync(int messageMediaId);
 
-        Task<Result<M?, Error>> AddFileAsync(IFormFile file, int messageId);
+        Task<Result<M?, Error>> AddFileAsync(F file, int messageId);
     }
 }

@@ -7,6 +7,7 @@ using EPChat.Core.Helpers;
 using EPChat.Core.Interfaces;
 using EPChat.Core.Models.Config;
 using EPChat.Core.Models.ErrorModels;
+using EPChat.Core.Models.HelperModel;
 using EPChat.Core.Services;
 using EPChat.Infrastructure;
 using EPChat.Infrastructure.Contexts;
@@ -44,7 +45,7 @@ namespace EducationPlatform.Chat
 
             builder.Services.AddScoped<FileHelper>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, Error>, OperationServices>();
+            builder.Services.AddScoped<IOperation<MessageDTO, MessageUpdateDTO, MessageOutDTO, MessageMediaOutDTO, MediaMessage, Error>, OperationServices>();
             builder.Services.AddScoped<IQuery<MessageOutDTO>, QueryService>();
 
             builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
