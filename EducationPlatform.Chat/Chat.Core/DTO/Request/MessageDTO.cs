@@ -1,4 +1,5 @@
-﻿using EPChat.Domain.Entities;
+﻿using EPChat.Core.Models.HelperModel;
+using EPChat.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace EPChat.Core.DTO.Request
@@ -13,7 +14,7 @@ namespace EPChat.Core.DTO.Request
 
         public DateTime CreatedIn { get; set; } = DateTime.UtcNow;
 
-        public List<IFormFile>? AttachedFiles { get; set; }
+        public List<MediaMessage>? AttachedFiles { get; set; }
 
         public static Message FromMessageDTO(MessageDTO messageDTO)
         {
