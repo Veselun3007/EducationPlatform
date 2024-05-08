@@ -8,7 +8,6 @@ using EPChat.Core.Models.HelperModel;
 using EPChat.Domain.Entities;
 using EPChat.Domain.Enums;
 using EPChat.Infrastructure.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace EPChat.Core.Services
 {
@@ -94,7 +93,7 @@ namespace EPChat.Core.Services
 
         public async Task<Result<MessageMediaOutDTO?, Error>> AddFileAsync(MediaMessage file, int id)
         {
-            var media = FileConvertHelper.ConvertByteArrayToIFormFile(file.FileBinary!, file.FileName!);
+            var media = FileConvertHelper.ConvertBase64ToIFormFile(file.FileBase64!, file.FileName!);
             var fileLink = await _fileHelper.AddFileAsync(media);
             MessageMedia mediaFile = new()
             {
