@@ -144,9 +144,11 @@ public partial class EducationPlatformContext : DbContext
             entity.Property(e => e.CourseDescription)
                 .HasMaxLength(255)
                 .HasColumnName("course_description");
+
             entity.Property(e => e.CourseLink)
-                .HasMaxLength(20)
+                .HasMaxLength(64)
                 .HasColumnName("course_link");
+
             entity.Property(e => e.CourseName)
                 .HasMaxLength(128)
                 .HasColumnName("course_name");

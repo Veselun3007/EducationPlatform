@@ -12,9 +12,9 @@ public class Course : IAggregateRoot
 
     public string? CourseLink { get; set; }
 
-    public virtual ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
+    public virtual ICollection<Assignment> Assignments { get; set; } = [];
 
-    public virtual ICollection<Material> Materials { get; set; } = new List<Material>();
+    public virtual ICollection<Material> Materials { get; set; } = [];
 
-    public virtual ICollection<Topic> Topics { get; set; } = new List<Topic>();
+    public virtual ICollection<Topic> Topics { get; set; } = [];
 }
