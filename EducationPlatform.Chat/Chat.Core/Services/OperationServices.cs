@@ -4,6 +4,7 @@ using EPChat.Core.DTO.Response;
 using EPChat.Core.Helpers;
 using EPChat.Core.Interfaces;
 using EPChat.Core.Models.ErrorModels;
+using EPChat.Core.Models.HelperModel;
 using EPChat.Domain.Entities;
 using EPChat.Domain.Enums;
 using EPChat.Infrastructure.Interfaces;
@@ -22,6 +23,7 @@ namespace EPChat.Core.Services
             var message = MessageDTO.FromMessageDTO(messageDto);
             await _unitOfWork.MessageRepository.AddAsync(message);
             await _unitOfWork.CommitAsync();
+
             if (messageDto.AttachedFiles is not null)
             {
                 await AddFilesAsync(message, messageDto.AttachedFiles);
@@ -29,11 +31,12 @@ namespace EPChat.Core.Services
             return Result.Success<MessageOutDTO, Error>(MessageOutDTO.FromMessage(message));
         }
 
-        private async Task AddFilesAsync(Message message, List<IFormFile> attachedFiles)
+        private async Task AddFilesAsync(Message message, List<MediaMessage> attachedFiles)
         {
             foreach (var file in attachedFiles)
             {
-                var fileLink = await _fileHelper.AddFileAsync(file);
+                var mediaFile = FileConvertHelper.ConvertByteArrayToIFormFile(file.FileBinary!, file.FileName!);
+                var fileLink = await _fileHelper.AddFileAsync(mediaFile);
                 var media = new MessageMedia
                 {
                     MediaLink = fileLink,
