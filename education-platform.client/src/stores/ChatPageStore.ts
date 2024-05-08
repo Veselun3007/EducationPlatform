@@ -14,6 +14,11 @@ import CourseUserService from "../services/CourseUserService";
 import * as signalR from "@microsoft/signalr";
 import { HUB_URL } from "../services/common/routesAPI";
 import LoginRequiredError from "../errors/LoginRequiredError";
+import MediaMessage from "../models/message/MediaMessage";
+import CreateMessageModelTransport from "../models/message/CreateMessageModelTransport";
+import { fileToBase64 } from "../helpers/fileToBase64";
+
+
 
 export default class ChatPageStore {
     private readonly _rootStore: RootStore;
@@ -105,7 +110,10 @@ export default class ChatPageStore {
 
     async init(courseId: number, navigate: NavigateFunction) {
         try {
-            this._hubConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:5003/chat', { withCredentials: false }).build();
+            this._hubConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:5003/chat', { withCredentials: false })
+            .withAutomaticReconnect()
+            .build();
+            
             await this._hubConnection.start();
 
             await this._hubConnection.send('JoinRoom', courseId);
@@ -116,7 +124,7 @@ export default class ChatPageStore {
 
             this._hubConnection.on("ReceiveMessages", (response) => {
                 if (Object.hasOwn(response, 'statusCode')) {
-                    enqueueAlert('glossary.somethingWentWrong');
+                    enqueueAlert('glossary.somethingWentWrong', 'error');
                 } else {
                     runInAction(() => {
                         const messages = (response as MessageModel[])
@@ -128,7 +136,7 @@ export default class ChatPageStore {
 
             this._hubConnection?.on('ReceiveMessage', (response) => {
                 if (Object.hasOwn(response, 'statusCode')) {
-                    enqueueAlert('glossary.somethingWentWrong');
+                    enqueueAlert('glossary.somethingWentWrong', 'error');
                 } else {
                     runInAction(() => {
                         this.messages = this.messages.concat(response as MessageModel).sort((a, b) => b.id - a.id);
@@ -141,10 +149,10 @@ export default class ChatPageStore {
                 if (Object.hasOwn(response, 'statusCode')) {
                     switch (response.statusCode as number) {
                         case 404:
-                            enqueueAlert('glossary.messageNotFound');
+                            enqueueAlert('glossary.messageNotFound', 'error');
                             break;
                         default:
-                            enqueueAlert('glossary.somethingWentWrong');
+                            enqueueAlert('glossary.somethingWentWrong', 'error');
                     }
                 } else {
                     runInAction(() => {
@@ -179,7 +187,7 @@ export default class ChatPageStore {
                 enqueueAlert(error.message, 'error');
             }
             else {
-                enqueueAlert('glossary.somethingWentWrong');
+                enqueueAlert('glossary.somethingWentWrong', 'error');
                 navigate(`/course/${courseId}`)
             }
         }
@@ -190,7 +198,7 @@ export default class ChatPageStore {
             const lastId = this.messages.at(-1)!.id;
             await this._hubConnection!.send('GetNextPackMessage', this.courseId, lastId);
         } catch (error) {
-            enqueueAlert('glossary.somethingWentWrong')
+            enqueueAlert('glossary.somethingWentWrong', 'error')
         }
     }
 
@@ -354,13 +362,21 @@ export default class ChatPageStore {
 
     async sendMessage() {
         try {
-            await this._hubConnection?.send('SendMessage', this.createMessage);
+            const mediaMessages: MediaMessage[] = [];
+
+            for(const file of this.createMessage!.attachedFiles){
+                const byteFile = await fileToBase64(file);
+                mediaMessages.push(new MediaMessage(byteFile, file.name))
+            }
+
+            const message = new CreateMessageModelTransport(this.createMessage!.courseId, this.createMessage!.creatorId, mediaMessages, this.createMessage!.messageText)
+            await this._hubConnection?.send('SendMessage', message);
 
             runInAction(() => {
                 this.resetCreateMessage();
             });
         } catch (error) {
-            enqueueAlert('glossary.somethingWentWrong')
+            enqueueAlert('glossary.somethingWentWrong', 'error')
         }
     }
 
@@ -373,7 +389,7 @@ export default class ChatPageStore {
             })
         }
         catch (error) {
-            enqueueAlert('glossary.somethingWentWrong')
+            enqueueAlert('glossary.somethingWentWrong', 'error')
         }
     }
 

@@ -35,7 +35,7 @@ namespace EPChat.Core.Services
         {
             foreach (var file in attachedFiles)
             {
-                var mediaFile = FileConvertHelper.ConvertByteArrayToIFormFile(file.FileBinary!, file.FileName!);
+                var mediaFile = FileConvertHelper.ConvertBase64ToIFormFile(file.FileBase64!, file.FileName!);
                 var fileLink = await _fileHelper.AddFileAsync(mediaFile);
                 var media = new MessageMedia
                 {

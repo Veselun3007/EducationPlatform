@@ -2,7 +2,7 @@
 {
     public class MediaMessage
     {
-        public byte[]? FileBinary { get; set; }
+        public string? FileBase64 { get; set; }
         public string? FileName { get; set; }
     }
 }
