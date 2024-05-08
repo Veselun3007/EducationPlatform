@@ -105,9 +105,9 @@ const ChatPage = observer(() => {
                             </Box>}
                         dataLength={chatPageStore.messages.length}
                         endMessage={
-                            <p style={{ textAlign: 'center' }}>
-                                <b>Yay! You have seen it all</b>
-                            </p>
+                            <Typography mb={2} color="InactiveCaptionText" textAlign="center">
+                                {t('glossary.endMessage')}
+                            </Typography>
                         }
                         inverse={true}
                     >

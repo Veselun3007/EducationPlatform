@@ -20,7 +20,7 @@ namespace EPChat.Core.Services
                 .Select(m => MessageOutDTO.FromMessage(m)).ToListAsync();
         }
 
-        public async Task<IEnumerable<MessageOutDTO>> GetNextPackMessageAsync(int oldestMessageId, int chatId)
+        public async Task<IEnumerable<MessageOutDTO>> GetNextPackMessageAsync(int chatId, int oldestMessageId)
         {
             return await _unitOfWork.MessageRepository
                 .GetQueryable()

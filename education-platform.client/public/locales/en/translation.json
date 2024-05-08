@@ -150,6 +150,7 @@
         "edited": "Edited",
         "editMessage": "Edit message",
         "courseChat":"Course chat",
-        "messageNotFound": "Message not found"
+        "messageNotFound": "Message not found",
+        "endMessage": "You've read all messages"
     }
 }
