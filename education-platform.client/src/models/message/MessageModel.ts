@@ -2,8 +2,7 @@ import MessageMediaModel from "./MessageMediaModel";
 
 export default interface MessageModel {
     id: number;
-    chatId: number;
-    replyToMessageId: number | null;
+    courseId: number;
     messageText: string | null;
     creatorId: number;
     createdIn: Date;

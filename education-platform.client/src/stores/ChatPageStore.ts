@@ -119,7 +119,9 @@ export default class ChatPageStore {
                     enqueueAlert('glossary.somethingWentWrong');
                 } else {
                     runInAction(() => {
-                        this.messages = (response as MessageModel[]).sort((a, b) => b.id - a.id);
+                        const messages = (response as MessageModel[])
+                        this.messages = this.messages.concat(messages).sort((a, b) => b.id - a.id);
+                        if (messages.length < 100) this.hasMore = false;
                     });
                 }
             });
@@ -134,7 +136,7 @@ export default class ChatPageStore {
                 }
 
             });
-            
+
             this._hubConnection.on("BroadCastDeleteMessage", (response) => {
                 if (Object.hasOwn(response, 'statusCode')) {
                     switch (response.statusCode as number) {
@@ -184,28 +186,12 @@ export default class ChatPageStore {
     }
 
     async loadNextPack() {
-        setTimeout(() => {
-            runInAction(() => {
-                const newMessages: MessageModel[] = []
-                for (let i = 0; i < 100; i++) {
-                    newMessages.push({
-                        id: this.messages[this.messages.length - 1]!.id + i + 1,
-                        chatId: 1,
-                        replyToMessageId: null,
-                        messageText: (this.messages[this.messages.length - 1]!.id + i + 1).toString(),
-                        creatorId: 2,
-                        createdIn: new Date('2022-01-01T17:00:00.000Z'),
-                        isEdit: false,
-                        editedIn: null,
-                        attachedFiles: null
-                    });
-                }
-
-                this.messages = [...this.messages, ...newMessages]
-                if (this.messages.length > 1000) this.hasMore = false;
-            })
-        }, 500)
-
+        try {
+            const lastId = this.messages.at(-1)!.id;
+            await this._hubConnection!.send('GetNextPackMessage', this.courseId, lastId);
+        } catch (error) {
+            enqueueAlert('glossary.somethingWentWrong')
+        }
     }
 
     get isCreateMessageValid(): boolean {

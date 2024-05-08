@@ -150,6 +150,7 @@
         "edited": "Редаговано",
         "editMessage": "Редагування повідомлення",
         "courseChat":"Чат курсу",
-        "messageNotFound": "Повідомлення не знайдено"
+        "messageNotFound": "Повідомлення не знайдено",
+        "endMessage": "Ви все прочитали"
     }
 }
