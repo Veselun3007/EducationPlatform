@@ -74,7 +74,12 @@ namespace EducationPlatform.Chat
                 };
             });
 
-            builder.Services.AddSignalR();
+            builder.Services.AddSignalR(options =>
+            {
+                options.MaximumReceiveMessageSize = 102400000; // 100MB
+                options.EnableDetailedErrors = true;
+                options.KeepAliveInterval = TimeSpan.FromMinutes(1);
+            });
 
             var app = builder.Build();
 
