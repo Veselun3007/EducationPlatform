@@ -47,6 +47,20 @@ namespace EPChat.Web.Hubs
                 await Clients.Caller.SendAsync("BroadCastDeleteMessage", MessageWrapper.Error(result.Error));
             }
         }
+
+        public async Task EditMessage(int courseId, MessageUpdateDTO message)
+        {
+            var result = await _messageOperation.EditAsync(message);
+            if (result.IsSuccess)
+            {
+                await Clients.Group(courseId.ToString()).SendAsync("EditMessage", result.Value);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("EditMessage", MessageWrapper.Error(result.Error));
+            }
+        }
+
         public async Task DeleteMessageMedia(int courseId, int messageMediaId)
         {
             var result = await _messageOperation.DeleteFileAsync(messageMediaId);
@@ -75,8 +89,15 @@ namespace EPChat.Web.Hubs
 
         public async Task GetFileById(int messageMediaId)
         {
-            await Clients.Caller.SendAsync("ReceiveMessages",
-                await _messageOperation.GetMediaByIdAsync(messageMediaId));
+            var result = await _messageOperation.GetMediaByIdAsync(messageMediaId);
+            if (result.IsSuccess)
+            {
+                await Clients.Caller.SendAsync("GetFile", result.Value);
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("GetFile", MessageWrapper.Error(result.Error));
+            }
         }
 
         public async Task GetFirstPackMessage(int courseId)

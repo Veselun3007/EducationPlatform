@@ -22,7 +22,7 @@ namespace CourseContent.Core.Services
         {
             var material = MaterialDTO.FromMaterialDto(entity);
             await _unitOfWork.MaterialRepository.AddAsync(material);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
 
             if (entity.MaterialFiles is not null)
             {
@@ -42,7 +42,7 @@ namespace CourseContent.Core.Services
                 var fileLink = await _fileHelper.AddFileAsync(file);
                 _unitOfWork.MaterialRepository.AddFile(entity, fileLink);
             }
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
         }
 
 
@@ -52,7 +52,7 @@ namespace CourseContent.Core.Services
             {
                 _unitOfWork.MaterialRepository.AddLink(entity, link);
             }
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
         }
 
 
@@ -64,7 +64,7 @@ namespace CourseContent.Core.Services
                 material.IsEdited = true;
                 material.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.MaterialRepository.UpdateAsync(id, material);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
                 var updatedMaterial = await _unitOfWork.MaterialRepository.GetByIdAsync(id, m => m.Materialfiles, m => m.Materiallinks);
                 return Result.Success<MaterialOutDTO, Error>(MaterialOutDTO.FromMaterial(updatedMaterial!));
             }
@@ -79,7 +79,7 @@ namespace CourseContent.Core.Services
             try
             {
                 await _unitOfWork.MaterialRepository.DeleteAsync(id);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }
             catch (KeyNotFoundException)
@@ -93,7 +93,7 @@ namespace CourseContent.Core.Services
             try
             {
                 await _unitOfWork.MateriallinkRepository.DeleteAsync(linkId);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }
             catch (KeyNotFoundException)
@@ -109,7 +109,7 @@ namespace CourseContent.Core.Services
                 return Result.Failure<string, Error>(Errors.General.NotRecords());
             }
             await _unitOfWork.MaterialRepository.RemoveRange(entities);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
             return Result.Success<string, Error>("Deleted was successful");
         }
 
@@ -124,7 +124,7 @@ namespace CourseContent.Core.Services
                 }
 
                 await _unitOfWork.MaterialfileRepository.DeleteAsync(fileId);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
 
                 return Result.Success<string, Error>("Deleted was successful");
             }
@@ -142,7 +142,7 @@ namespace CourseContent.Core.Services
                 MaterialFile = fileLink
             };
             var addedFile = await _unitOfWork.MaterialfileRepository.AddAsync(materialfile);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
 
             return Result.Success<MaterialfileOutDTO, Error>(MaterialfileOutDTO.FromMaterialFile(addedFile));
         }
@@ -155,7 +155,7 @@ namespace CourseContent.Core.Services
                 MaterialLink = link
             };
             var addedLink = await _unitOfWork.MateriallinkRepository.AddAsync(materialLink);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
 
             if (addedLink.MaterialLink is not null)
             {

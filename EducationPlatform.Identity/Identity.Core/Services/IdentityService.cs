@@ -107,6 +107,26 @@ namespace Identity.Core.Services
             }
         }
 
+        public async Task<Result<string, Error>> SendPasswordResetEmail(string email)
+        {
+            var forgotRequest = new ForgotPasswordRequest()
+            {
+                Username = email,
+                ClientId = _options.ClientId,
+            };
+            try
+            {
+                await _cognitoService.ForgotPasswordAsync(forgotRequest);
+                return Result.Success<string, Error>("Email confirmed");
+            }
+            catch (NotAuthorizedException)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+        }
+
+
+
         public async Task<Result<string, Error>> SignOutAsync(string accessToken)
         {
             try

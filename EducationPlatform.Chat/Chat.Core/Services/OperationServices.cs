@@ -83,7 +83,7 @@ namespace EPChat.Core.Services
                 await _unitOfWork.MessageMediaRepository.DeleteAsync(id);
                 await _unitOfWork.CommitAsync();
 
-                return Result.Success<string?, Error>("Deleted was successful");
+                return Result.Success<string?, Error>(id.ToString());
             }
             catch (KeyNotFoundException)
             {

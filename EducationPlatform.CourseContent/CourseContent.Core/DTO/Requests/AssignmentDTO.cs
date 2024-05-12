@@ -6,7 +6,6 @@ namespace CourseContent.Core.DTO.Requests.AssignmentDTO
 {
     public class AssignmentDTO
     {
-
         public int CourseId { get; set; }
 
         public int? TopicId { get; set; }

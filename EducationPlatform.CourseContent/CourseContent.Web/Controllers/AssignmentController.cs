@@ -12,9 +12,11 @@ namespace CourseContent.Web.Controllers
 {
     [Route("api/assignment")]
     [ApiController]
-    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> operation) : BaseController
+    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, 
+        AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> operation) : BaseController
     {
-        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> _operation = operation;
+        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, 
+            AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> _operation = operation;
 
         [Authorize]
         [HttpPost("create")]

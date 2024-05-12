@@ -18,7 +18,7 @@ namespace CourseContent.Core.Services
             var topic = TopicDTO.FromTopicDto(entity);
 
             await _unitOfWork.TopicRepository.AddAsync(topic);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
 
             return Result.Success<TopicOutDTO, Error>(TopicOutDTO.FromTopic(topic));
         }
@@ -28,7 +28,7 @@ namespace CourseContent.Core.Services
             try
             {
                 await _unitOfWork.TopicRepository.DeleteAsync(id);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }
             catch (KeyNotFoundException)
@@ -43,7 +43,7 @@ namespace CourseContent.Core.Services
             {
                 var topic = TopicUpdateDTO.FromTopicUpdateDto(entity);          
                 await _unitOfWork.TopicRepository.UpdateAsync(id, topic);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
 
                 return Result.Success<TopicOutDTO, Error>(TopicOutDTO.FromTopic(topic));
             }

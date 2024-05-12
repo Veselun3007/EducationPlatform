@@ -41,6 +41,20 @@ namespace Identity.Web.Controllers
             return FromResult(result);
         }
 
+        [HttpPost("reset-password-request")]
+        public async Task<IActionResult> SendPasswordResetEmail([FromBody] string email)
+        {
+            var result = await _identityOperation.SendPasswordResetEmail(email);
+            return FromResult(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromForm] ConfirmEmailRequest model)
+        {
+            var result = await _identityOperation.ResetPassword(model.Email, model.ConfirmCode);
+            return FromResult(result);
+        }
+
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenRequestModel model)
         {

@@ -16,6 +16,9 @@ using CourseContent.Infrastructure.Interfaces;
 using EducationPlatform.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using System.Net;
 
 namespace CourseContent.Web
 {
@@ -75,6 +78,13 @@ namespace CourseContent.Web
                 options.Authority = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}";
                 options.TokenValidationParameters = new()
                 {
+                    IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
+                    {
+                        var json = new WebClient().DownloadString(parameters.ValidIssuer + "/.well-known/jwks.json");
+                        var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json).Keys;
+                        return (IEnumerable<SecurityKey>)keys;
+                    },
+                    ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",
                     ValidateLifetime = true,

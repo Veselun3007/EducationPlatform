@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using EPChat.Domain.Enums;
-using Microsoft.AspNetCore.Http;
 
 namespace EPChat.Core.Interfaces
 {
