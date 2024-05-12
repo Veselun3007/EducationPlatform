@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
-    public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
+    public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) :
         IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -123,7 +123,7 @@ namespace CourseContent.Core.Services
             try
             {
                 await _unitOfWork.AssignmentlinkRepository.DeleteAsync(linkId);
-                await _unitOfWork.CommitAsync();                            
+                await _unitOfWork.CommitAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }
             catch (KeyNotFoundException)
@@ -135,7 +135,7 @@ namespace CourseContent.Core.Services
         public async Task<Result<AssignmentfileOutDTO, Error>> AddFileAsync(IFormFile file, int id)
         {
             var fileLink = await _fileHelper.AddFileAsync(file);
-            Assignmentfile assignmentFile = new ()
+            Assignmentfile assignmentFile = new()
             {
                 AssignmentId = id,
                 AssignmentFile = fileLink

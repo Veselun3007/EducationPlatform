@@ -41,7 +41,7 @@ namespace CourseContent.Core.Services
         {
             try
             {
-                var topic = TopicUpdateDTO.FromTopicUpdateDto(entity);          
+                var topic = TopicUpdateDTO.FromTopicUpdateDto(entity);
                 await _unitOfWork.TopicRepository.UpdateAsync(id, topic);
                 await _unitOfWork.CommitAsync();
 

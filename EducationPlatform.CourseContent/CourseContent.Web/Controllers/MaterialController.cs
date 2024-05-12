@@ -12,11 +12,11 @@ namespace EducationPlatform.CourseContent.Controllers
 {
     [Route("api/material")]
     [ApiController]
+    [Authorize]
     public class MaterialController(IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink> operation) : BaseController
     {
         private readonly IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink> _operation = operation;
-        
-        [Authorize]
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateMaterial([FromForm] MaterialDTO material)
         {
@@ -24,7 +24,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateMaterial([FromForm] MaterialUpdateDTO material)
         {
@@ -32,7 +31,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteMaterial(int id)
         {
@@ -40,7 +38,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdMaterial(int id)
         {
@@ -48,14 +45,12 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<MaterialOutDTO>> GetAllMaterial(int id)
         {
             return await _operation.GetAllByCourseAsync(id);
         }
 
-        [Authorize]
         [HttpDelete("removeList")]
         public async Task<IActionResult> RemoveMaterials([FromBody] List<int> entities)
         {
@@ -63,7 +58,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getFileById/{fileId}")]
         public async Task<IActionResult> GetMaterialFileById(int fileId)
         {
@@ -71,7 +65,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpDelete("deleteFileById/{fileId}")]
         public async Task<IActionResult> DeleteMaterialFileById(int fileId)
         {
@@ -79,7 +72,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpPost("addFile/{id}")]
         public async Task<IActionResult> AddMaterialFile([FromForm] IFormFile file, int id)
         {
@@ -87,7 +79,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpPost("addLink/{id}")]
         public async Task<IActionResult> AddMaterialLink([FromBody] string link, int id)
         {
@@ -95,7 +86,6 @@ namespace EducationPlatform.CourseContent.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpDelete("deleteLinkById/{fileId}")]
         public async Task<IActionResult> DeleteMaterialLinkById(int fileId)
         {

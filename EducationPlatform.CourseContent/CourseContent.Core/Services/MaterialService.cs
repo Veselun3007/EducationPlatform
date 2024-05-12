@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
-    public class MaterialService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
+    public class MaterialService(IUnitOfWork unitOfWork, FileHelper fileHelper) :
         IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink>
     {
 
@@ -169,7 +169,7 @@ namespace CourseContent.Core.Services
 
         public async Task<Result<MaterialOutDTO, Error>> GetByIdAsync(int id)
         {
-            var entity = await _unitOfWork.MaterialRepository.GetByIdAsync(id, m => m.Materialfiles, m => m.Materiallinks); 
+            var entity = await _unitOfWork.MaterialRepository.GetByIdAsync(id, m => m.Materialfiles, m => m.Materiallinks);
             if (entity is null)
             {
                 return Result.Failure<MaterialOutDTO, Error>(Errors.General.NotFound());

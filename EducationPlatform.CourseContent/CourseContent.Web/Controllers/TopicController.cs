@@ -9,13 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CourseContent.Web.Controllers
 {
-    [ApiController]
     [Route("api/topic")]
+    [ApiController]
+    [Authorize]
     public class TopicController(IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO> operation) : BaseController
     {
         private readonly IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO> _operation = operation;
 
-        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateTopic([FromForm] TopicDTO topic)
         {
@@ -23,7 +23,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateTopic([FromBody] TopicUpdateDTO topic)
         {
@@ -31,7 +30,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTopic(int id)
         {
@@ -39,7 +37,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdTopic(int id)
         {
@@ -47,7 +44,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<TopicOutDTO>> GetAllTopic(int id)
         {

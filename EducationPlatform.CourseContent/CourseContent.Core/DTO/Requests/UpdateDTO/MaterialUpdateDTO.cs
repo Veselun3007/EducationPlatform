@@ -1,6 +1,4 @@
-﻿using CourseContent.Core.DTO.CommonValidation;
-using CourseContent.Domain.Entities;
-using Microsoft.AspNetCore.Http;
+﻿using CourseContent.Domain.Entities;
 
 namespace CourseContent.Core.DTO.Requests.UpdateDTO
 {
@@ -22,7 +20,7 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
         {
             return new Material
             {
-                Id = materialDto.Id,    
+                Id = materialDto.Id,
                 CourseId = materialDto.CourseId,
                 TopicId = materialDto.TopicId,
                 MaterialName = materialDto.MaterialName,

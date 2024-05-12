@@ -117,7 +117,26 @@ namespace Identity.Core.Services
             try
             {
                 await _cognitoService.ForgotPasswordAsync(forgotRequest);
-                return Result.Success<string, Error>("Email confirmed");
+                return Result.Success<string, Error>("A request for a password reset code has been sent");
+            }
+            catch (NotAuthorizedException)
+            {
+                return Result.Failure<string, Error>(Errors.General.NotFound());
+            }
+        }
+
+        public async Task<Result<string, Error>> ResetPassword(string email, string code)
+        {
+            var forgotRequest = new ConfirmForgotPasswordRequest()
+            {
+                Username = email,
+                ConfirmationCode = code,
+                ClientId = _options.ClientId,
+            };
+            try
+            {
+                await _cognitoService.ConfirmForgotPasswordAsync(forgotRequest);
+                return Result.Success<string, Error>("Password change successful");
             }
             catch (NotAuthorizedException)
             {

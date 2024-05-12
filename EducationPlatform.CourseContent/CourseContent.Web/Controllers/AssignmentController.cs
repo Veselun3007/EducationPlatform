@@ -12,13 +12,13 @@ namespace CourseContent.Web.Controllers
 {
     [Route("api/assignment")]
     [ApiController]
-    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO, 
+    [Authorize]
+    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO,
         AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> operation) : BaseController
     {
-        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO, 
+        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO,
             AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> _operation = operation;
 
-        [Authorize]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
@@ -26,7 +26,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateAssignment([FromForm] AssignmentUpdateDTO assignment)
         {
@@ -34,7 +33,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteAssignment(int id)
         {
@@ -42,7 +40,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdAssignment(int id)
         {
@@ -50,14 +47,12 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<AssignmentOutDTO>> GetAllAssignment(int id)
         {
             return await _operation.GetAllByCourseAsync(id);
         }
 
-        [Authorize]
         [HttpDelete("removeList")]
         public async Task<IActionResult> RemoveAssignments([FromBody] List<int> entities)
         {
@@ -65,7 +60,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpGet("getFileById/{fileId}")]
         public async Task<IActionResult> GetAssignmentFileById(int fileId)
         {
@@ -73,7 +67,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpDelete("deleteFileById/{fileId}")]
         public async Task<IActionResult> DeleteAssignmentFileById(int fileId)
         {
@@ -81,7 +74,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpPost("addFile/{id}")]
         public async Task<IActionResult> AddAssignmentFile([FromForm] IFormFile file, int id)
         {
@@ -89,7 +81,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpPost("addLink/{id}")]
         public async Task<IActionResult> AddAssignmentLink([FromBody] string link, int id)
         {
@@ -97,7 +88,6 @@ namespace CourseContent.Web.Controllers
             return FromResult(result);
         }
 
-        [Authorize]
         [HttpDelete("deleteLinkById/{linkId}")]
         public async Task<IActionResult> DeleteAssignmentLinkById(int linkId)
         {

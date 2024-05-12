@@ -63,9 +63,7 @@ namespace EducationPlatform.Identity
                 {
                     IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
                     {
-                        var json = new WebClient().DownloadString(parameters.ValidIssuer + "/.well-known/jwks.json");
-                        var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json).Keys;
-                        return (IEnumerable<SecurityKey>)keys;
+                        return ServiceExtensions.GetKeys(parameters).GetAwaiter().GetResult();
                     },
                     ValidateIssuer = true,
                     ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",

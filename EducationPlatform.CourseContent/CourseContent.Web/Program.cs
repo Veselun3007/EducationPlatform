@@ -16,9 +16,6 @@ using CourseContent.Infrastructure.Interfaces;
 using EducationPlatform.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using System.Net;
 
 namespace CourseContent.Web
 {
@@ -80,9 +77,7 @@ namespace CourseContent.Web
                 {
                     IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
                     {
-                        var json = new WebClient().DownloadString(parameters.ValidIssuer + "/.well-known/jwks.json");
-                        var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json).Keys;
-                        return (IEnumerable<SecurityKey>)keys;
+                        return ServiceExtensions.GetKeys(parameters).GetAwaiter().GetResult();
                     },
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
