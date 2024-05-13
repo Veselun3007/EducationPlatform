@@ -9,7 +9,10 @@ using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 
 namespace EducationPlatform.Identity
 {
@@ -58,6 +61,10 @@ namespace EducationPlatform.Identity
                 options.Authority = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}";
                 options.TokenValidationParameters = new()
                 {
+                    IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
+                    {
+                        return ServiceExtensions.GetKeys(parameters).GetAwaiter().GetResult();
+                    },
                     ValidateIssuer = true,
                     ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",
                     ValidateLifetime = true,

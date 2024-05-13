@@ -12,7 +12,7 @@ namespace EPChat.Domain.Entities
 
         public int CreatorId { get; set; }
 
-        public DateTime CreatedIn { get; set; } = DateTime.Now;
+        public DateTime CreatedIn { get; set; }
 
         public bool IsEdit { get; set; } = false;
 

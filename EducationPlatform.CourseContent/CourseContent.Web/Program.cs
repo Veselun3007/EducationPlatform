@@ -75,6 +75,11 @@ namespace CourseContent.Web
                 options.Authority = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}";
                 options.TokenValidationParameters = new()
                 {
+                    IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
+                    {
+                        return ServiceExtensions.GetKeys(parameters).GetAwaiter().GetResult();
+                    },
+                    ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",
                     ValidateLifetime = true,

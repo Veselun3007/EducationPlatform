@@ -47,20 +47,6 @@ namespace EPChat.Web.Hubs
                 await Clients.Caller.SendAsync("BroadCastDeleteMessage", MessageWrapper.Error(result.Error));
             }
         }
-
-        public async Task EditMessage(int courseId, MessageUpdateDTO message)
-        {
-            var result = await _messageOperation.EditAsync(message);
-            if (result.IsSuccess)
-            {
-                await Clients.Group(courseId.ToString()).SendAsync("EditMedia", result.Value);
-            }
-            else
-            {
-                await Clients.Caller.SendAsync("EditMedia", MessageWrapper.Error(result.Error));
-            }
-        }
-
         public async Task DeleteMessageMedia(int courseId, int messageMediaId)
         {
             var result = await _messageOperation.DeleteFileAsync(messageMediaId);

@@ -1,6 +1,4 @@
-﻿using CourseContent.Core.DTO.CommonValidation;
-using CourseContent.Domain.Entities;
-using Microsoft.AspNetCore.Http;
+﻿using CourseContent.Domain.Entities;
 
 namespace CourseContent.Core.DTO.Requests.UpdateDTO
 {

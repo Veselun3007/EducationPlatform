@@ -18,6 +18,7 @@ namespace CourseContent.Infrastructure.Interfaces
         IMinRepository<Materiallink> MateriallinkRepository { get; }
         
         IRepository<Topic> TopicRepository { get; }
-        Task<int> CompleteAsync();
+
+        Task<int> CommitAsync();
     }
 }

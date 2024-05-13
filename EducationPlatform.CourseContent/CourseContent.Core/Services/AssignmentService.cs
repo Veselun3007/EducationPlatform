@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services
 {
-    public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) : 
+    public class AssignmentService(IUnitOfWork unitOfWork, FileHelper fileHelper) :
         IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink>
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -21,7 +21,7 @@ namespace CourseContent.Core.Services
         {
             var assignment = AssignmentDTO.FromAssignmentDto(entity);
             await _unitOfWork.AssignmentRepository.AddAsync(assignment);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
 
             if (entity.AssignmentFiles is not null)
             {
@@ -41,7 +41,7 @@ namespace CourseContent.Core.Services
                 var fileLink = await _fileHelper.AddFileAsync(file);
                 _unitOfWork.AssignmentRepository.AddFile(entity, fileLink);
             }
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         private async Task AddLinksAsync(Assignment entity, List<string> links)
@@ -50,7 +50,7 @@ namespace CourseContent.Core.Services
             {
                 _unitOfWork.AssignmentRepository.AddLink(entity, link);
             }
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
         }
 
         public async Task<Result<AssignmentOutDTO, Error>> UpdateAsync(AssignmentUpdateDTO entity, int id)
@@ -61,7 +61,7 @@ namespace CourseContent.Core.Services
                 assignment.IsEdited = true;
                 assignment.EditedTime = DateTime.UtcNow;
                 await _unitOfWork.AssignmentRepository.UpdateAsync(id, assignment);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
                 var updatedAssignment = await _unitOfWork.AssignmentRepository.GetByIdAsync(id, a => a.Assignmentfiles, a => a.Assignmentlinks);
                 return Result.Success<AssignmentOutDTO, Error>(AssignmentOutDTO.FromAssignment(updatedAssignment!));
             }
@@ -76,7 +76,7 @@ namespace CourseContent.Core.Services
             try
             {
                 await _unitOfWork.AssignmentRepository.DeleteAsync(id);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }
             catch (KeyNotFoundException)
@@ -93,7 +93,7 @@ namespace CourseContent.Core.Services
             }
 
             await _unitOfWork.AssignmentRepository.RemoveRange(entities);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
             return Result.Success<string, Error>("Deleted was successful");
         }
 
@@ -108,7 +108,7 @@ namespace CourseContent.Core.Services
                 }
 
                 await _unitOfWork.AssignmentfileRepository.DeleteAsync(id);
-                await _unitOfWork.CompleteAsync();
+                await _unitOfWork.CommitAsync();
 
                 return Result.Success<string, Error>("Deleted was successful");
             }
@@ -123,7 +123,7 @@ namespace CourseContent.Core.Services
             try
             {
                 await _unitOfWork.AssignmentlinkRepository.DeleteAsync(linkId);
-                await _unitOfWork.CompleteAsync();                            
+                await _unitOfWork.CommitAsync();
                 return Result.Success<string, Error>("Deleted was successful");
             }
             catch (KeyNotFoundException)
@@ -135,13 +135,13 @@ namespace CourseContent.Core.Services
         public async Task<Result<AssignmentfileOutDTO, Error>> AddFileAsync(IFormFile file, int id)
         {
             var fileLink = await _fileHelper.AddFileAsync(file);
-            Assignmentfile assignmentFile = new ()
+            Assignmentfile assignmentFile = new()
             {
                 AssignmentId = id,
                 AssignmentFile = fileLink
             };
             var addedFile = await _unitOfWork.AssignmentfileRepository.AddAsync(assignmentFile);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
 
             return Result.Success<AssignmentfileOutDTO, Error>(AssignmentfileOutDTO.FromAssignmentFile(addedFile));
         }
@@ -154,7 +154,7 @@ namespace CourseContent.Core.Services
                 AssignmentLink = link
             };
             var addedLink = await _unitOfWork.AssignmentlinkRepository.AddAsync(assignmentLink);
-            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
 
             if (addedLink.AssignmentLink is not null)
             {

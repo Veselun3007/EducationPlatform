@@ -33,7 +33,7 @@ namespace CourseContent.Infrastructure
         public IMinRepository<Materiallink> MateriallinkRepository { get; private set; }
         public IRepository<Topic> TopicRepository { get; private set; }
 
-        public async Task<int> CompleteAsync()
+        public async Task<int> CommitAsync()
         {
             return await _dbContext.SaveChangesAsync();
         }

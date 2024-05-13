@@ -2,21 +2,6 @@
 <ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="FullSignature">
   <Class Name="CourseContent.Web.Controllers.AssignmentController">
     <Position X="12.5" Y="5" Width="4.25" />
-    <InheritanceLine Type="CourseContent.Web.Controllers.Base.BaseController" ManuallyRouted="true" FixedToPoint="true">
-      <Path>
-        <Point X="19.75" Y="9.75" />
-        <Point X="19.75" Y="9.509" />
-        <Point X="12.812" Y="9.509" />
-        <Point X="12.812" Y="8.156" />
-      </Path>
-    </InheritanceLine>
-    <AssociationLine Name="_operation" Type="CourseContent.Core.Interfaces.IOperation&lt;T, Error, E, F&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12.812" Y="5" />
-        <Point X="12.812" Y="2.062" />
-        <Point X="15" Y="2.062" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAACAAEBBAAABCACAAgAAAAFAAAIAAA=</HashCode>
       <FileName>Controllers\AssignmentController.cs</FileName>
@@ -27,12 +12,13 @@
   </Class>
   <Class Name="EducationPlatform.CourseContent.Controllers.MaterialController">
     <Position X="17.75" Y="5" Width="4.25" />
-    <InheritanceLine Type="CourseContent.Web.Controllers.Base.BaseController" FixedToPoint="true">
+    <AssociationLine Name="_operation" Type="CourseContent.Core.Interfaces.IOperation&lt;O, Error, I, F, U, L&gt;" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="19.75" Y="9.75" />
-        <Point X="19.75" Y="8.156" />
+        <Point X="19.875" Y="5" />
+        <Point X="19.875" Y="3.312" />
+        <Point X="16.75" Y="3.312" />
       </Path>
-    </InheritanceLine>
+    </AssociationLine>
     <TypeIdentifier>
       <HashCode>BAAAAAAAEAAAAgBAAAAABAAAgAAQAEABAAAEBAAAAAA=</HashCode>
       <FileName>Controllers\MaterialController.cs</FileName>
@@ -42,7 +28,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="CourseContent.Web.Controllers.Base.BaseController">
-    <Position X="17.75" Y="9.75" Width="4" />
+    <Position X="17.75" Y="9.75" Width="4.25" />
     <TypeIdentifier>
       <HashCode>gAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
       <FileName>Controllers\Base\BaseController.cs</FileName>
@@ -50,21 +36,6 @@
   </Class>
   <Class Name="CourseContent.Web.Controllers.TopicController">
     <Position X="23" Y="5" Width="4" />
-    <InheritanceLine Type="CourseContent.Web.Controllers.Base.BaseController" ManuallyRouted="true" FixedToPoint="true">
-      <Path>
-        <Point X="19.75" Y="9.75" />
-        <Point X="19.75" Y="9.508" />
-        <Point X="26.75" Y="9.508" />
-        <Point X="26.75" Y="7.002" />
-      </Path>
-    </InheritanceLine>
-    <AssociationLine Name="_operation" Type="CourseContent.Core.Interfaces.IBaseOperation&lt;T, Error, E&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="26.688" Y="5" />
-        <Point X="26.688" Y="2.062" />
-        <Point X="24" Y="2.062" />
-      </Path>
-    </AssociationLine>
     <TypeIdentifier>
       <HashCode>AAAAAAQAAAAgAAAAAAAABAAAAAAAAAAAAAEAAACgAAA=</HashCode>
       <FileName>Controllers\TopicController.cs</FileName>
@@ -73,12 +44,18 @@
       <Field Name="_operation" />
     </ShowAsAssociation>
   </Class>
-  <Interface Name="CourseContent.Core.Interfaces.IOperation&lt;T, Error, E, F&gt;">
-    <Position X="15" Y="1.25" Width="4.5" />
+  <Interface Name="CourseContent.Core.Interfaces.IOperation&lt;O, Error, I, F, U, L&gt;">
+    <Position X="12.5" Y="1.75" Width="4.25" />
+    <InheritanceLine Type="CourseContent.Core.Interfaces.IBaseOperation&lt;O, Error, I, U&gt;" FixedToPoint="true">
+      <Path>
+        <Point X="23" Y="2.562" />
+        <Point X="16.75" Y="2.562" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier />
   </Interface>
-  <Interface Name="CourseContent.Core.Interfaces.IBaseOperation&lt;T, Error, E&gt;">
-    <Position X="20.75" Y="1.25" Width="3.25" />
+  <Interface Name="CourseContent.Core.Interfaces.IBaseOperation&lt;O, Error, I, U&gt;">
+    <Position X="23" Y="2" Width="4" />
     <TypeIdentifier />
   </Interface>
   <Font Name="Segoe UI" Size="9" />
