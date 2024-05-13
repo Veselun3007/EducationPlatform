@@ -6,6 +6,7 @@ using StudentResult.Infrastructure.AWS;
 using StudentResult.Application;
 using StudentResult.Domain.Entities;
 using StudentResult.Web.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace StudentResult.Web {
     public class Program {
@@ -19,6 +20,9 @@ namespace StudentResult.Web {
 
             builder.Services.AddApplication();
             builder.Services.AddS3();
+
+            builder.Services.AddScoped<ExceptionHandlingMiddleware>();
+
             string ep_connection = _configuration.GetConnectionString("EducationPlatformConnection") ?? "defaultConnectionString";
             builder.Services
                 .AddDbContext<EducationPlatformContext>(opt => opt.UseNpgsql(ep_connection))
@@ -30,21 +34,24 @@ namespace StudentResult.Web {
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-            //builder.Services.AddAuthentication(options => {
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //.AddJwtBearer(options => {
-            //    options.Authority = $"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PlemC1CS5";
-            //    options.TokenValidationParameters = new() {
-            //        ValidateIssuer = true,
-            //        ValidIssuer = $"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PlemC1CS5",
-            //        ValidateLifetime = true,
-            //        LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
-            //        ClockSkew = TimeSpan.Zero,
-            //        ValidateAudience = false
-            //    };
-            //});
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.Authority = $"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PlemC1CS5";
+                options.TokenValidationParameters = new()
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = $"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PlemC1CS5",
+                    ValidateLifetime = true,
+                    LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
+                    ClockSkew = TimeSpan.Zero,
+                    ValidateAudience = false
+                };
+            });
 
             var app = builder.Build();
             app.UseCors("AllowAll");

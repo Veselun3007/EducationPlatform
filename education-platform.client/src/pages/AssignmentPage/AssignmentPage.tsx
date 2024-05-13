@@ -35,6 +35,7 @@ import LinkCard from '../../components/LinkCard';
 import FileCard from '../../components/FileCard';
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import ValidationError from '../../helpers/validation/ValidationError';
+import CommentBlock from '../../components/CommentBlock';
 
 const AssignmentPage = observer(() => {
     const { assignmentPageStore } = useStore();
@@ -82,7 +83,7 @@ const AssignmentPage = observer(() => {
         <Grid container mt={2}>
             <Grid xs />
             <Grid container xs={12} md={10} xl={8} spacing={2}>
-                <Grid xs={12} lg={!assignmentPageStore.isTeacher? 8: 12}>
+                <Grid xs={12} lg={!assignmentPageStore.isTeacher ? 8 : 12}>
                     <Stack spacing={2}>
                         <Stack
                             borderBottom={2}
@@ -642,31 +643,158 @@ const AssignmentPage = observer(() => {
                     </Modal>
                 </Grid>
                 {!assignmentPageStore.isTeacher && <Grid xs={12} lg={4}>
-                    <Paper sx={{ p: 2 }}>
-                        <Stack direction="column" spacing={2}>
-                            <Typography variant="h6">{t('glossary.myWork')}</Typography>
+                    <Stack spacing={2}>
+                        <Paper sx={{ p: 2 }}>
+                            <Stack direction="column" spacing={2}>
+                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                    <Typography variant="h6">{t('glossary.myWork')}</Typography>
+                                    {assignmentPageStore.saInfo?.studentAssignment.isDone
+                                        && assignmentPageStore.saInfo?.studentAssignment.currentMark &&
+                                        <Stack direction="column">
+                                            <Typography color={theme.palette.success.main}>
+                                                {t('glossary.graded')}
+                                            </Typography>
+                                            <Typography color={theme.palette.success.main}>
+                                                {`${assignmentPageStore.saInfo.studentAssignment.currentMark}/${assignmentPageStore.assignment!.maxMark}`}
+                                            </Typography>
+                                        </Stack>
+                                    }
 
-                            <FilesPicker
-                                onFileAdd={assignmentPageStore.onWorkFileAdd}
-                                fullWidth={true}
-                                onFileDelete={assignmentPageStore.onWorkFileDelete}
-                                files={assignmentPageStore.work.workFiles}
-                                error={assignmentPageStore.workErrors.workFiles}
+                                    {assignmentPageStore.saInfo?.studentAssignment.isDone
+                                        && !assignmentPageStore.saInfo?.studentAssignment.currentMark
+                                        && assignmentPageStore.saInfo.studentAssignment.submissionDate
+                                        && assignmentPageStore.saInfo.studentAssignment.submissionDate < assignmentPageStore.assignment!.assignmentDeadline
+                                        && assignmentPageStore.saInfo.files.length > 0
+                                        &&
+
+                                        <Typography>
+                                            {t('glossary.submitted')}
+                                        </Typography>
+
+                                    }
+
+                                    {assignmentPageStore.saInfo?.studentAssignment.isDone
+                                        && !assignmentPageStore.saInfo?.studentAssignment.currentMark
+                                        && assignmentPageStore.saInfo.studentAssignment.submissionDate
+                                        && assignmentPageStore.saInfo.studentAssignment.submissionDate > assignmentPageStore.assignment!.assignmentDeadline
+                                        &&
+
+                                        <Typography color={theme.palette.error.light}>
+                                            {t('glossary.submittedExpired')}
+                                        </Typography>
+
+                                    }
+
+                                    {!assignmentPageStore.saInfo?.studentAssignment.isDone
+                                        && new Date(Date.now()) > assignmentPageStore.assignment!.assignmentDeadline
+                                        &&
+
+                                        <Typography color={theme.palette.error.main}>
+                                            {t('glossary.expired')}
+                                        </Typography>
+
+                                    }
+
+                                    {!assignmentPageStore.saInfo?.studentAssignment.isDone
+                                        && new Date(Date.now()) < assignmentPageStore.assignment!.assignmentDeadline
+                                        &&
+
+                                        <Typography color={theme.palette.success.main}>
+                                            {t('glossary.assigned')}
+                                        </Typography>
+
+                                    }
+
+                                    {assignmentPageStore.saInfo?.studentAssignment.isDone
+                                        && !assignmentPageStore.saInfo?.studentAssignment.currentMark
+                                        && assignmentPageStore.saInfo.studentAssignment.submissionDate
+                                        && assignmentPageStore.saInfo.studentAssignment.submissionDate < assignmentPageStore.assignment!.assignmentDeadline
+                                        && assignmentPageStore.saInfo.files.length === 0
+                                        &&
+
+                                        <Typography >
+                                            {t('glossary.markedAsDone')}
+                                        </Typography>
+
+                                    }
+                                </Stack>
+
+                                {assignmentPageStore.isEditWork &&
+                                    <>
+                                        <FilesPicker
+                                            onFileAdd={assignmentPageStore.onWorkFileAdd}
+                                            fullWidth={true}
+                                            onFileDelete={assignmentPageStore.onWorkFileDelete}
+                                            files={assignmentPageStore.work!.assignmentFiles}
+                                            error={assignmentPageStore.workErrors.workFiles}
+                                        />
+                                        <Button
+                                            variant="outlined"
+                                            disabled={!assignmentPageStore.isWorkValid}
+                                            fullWidth
+                                            sx={{ height: 50 }}
+                                            onClick={() => assignmentPageStore.submitWorkUpdate(navigate)}
+                                        >
+                                            {t('common.send')}
+                                        </Button>
+
+                                        {assignmentPageStore.saInfo?.studentAssignment.isDone &&
+                                            <Button
+                                                color='error'
+                                                fullWidth
+                                                sx={{ height: 50 }}
+                                                variant='contained'
+                                                onClick={assignmentPageStore.disableEditMode}
+                                            >
+                                                {t('glossary.cancelEdit')}
+                                            </Button>
+                                        }
+                                    </>
+                                }
+
+                                {!assignmentPageStore.isEditWork &&
+                                    <>
+                                        {assignmentPageStore.saInfo!.files!.map(
+                                            (file) => (
+                                                <Box key={file.attachedFileId} width="100%" height={55}>
+                                                    <FileCard
+                                                        file={
+                                                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                                            file.attachedFileName!.slice(file.attachedFileName!.indexOf('_') + 1)
+                                                        }
+                                                        onClick={() =>
+                                                            assignmentPageStore.onWorkFileClick(file.attachedFileId, navigate)
+                                                        }
+                                                    />
+                                                </Box>
+                                            )
+                                        )}
+
+                                        {!assignmentPageStore.saInfo?.studentAssignment.currentMark && <Button
+                                            fullWidth
+                                            sx={{ height: 50 }}
+                                            variant='contained'
+                                            onClick={assignmentPageStore.enableEditMode}
+                                        >
+                                            {t('glossary.editWork')}
+                                        </Button>}
+                                    </>
+                                }
+                            </Stack>
+
+                        </Paper>
+                        <Paper sx={{ p: 2, minHeight: 100 }}>
+                            <CommentBlock comments={assignmentPageStore.saInfo!.comments}
+                                currentUser={assignmentPageStore.currentUser!}
+                                assignmentId={assignmentPageStore.saInfo!.studentAssignment.studentassignmentId}
+                                sendComment={assignmentPageStore.sendComment}
                             />
-                            <Button
-                                variant="outlined"
-                                disabled={!assignmentPageStore.isWorkValid}
-                                fullWidth
-                                sx={{ height: 50 }}
-                            >
-                                {t('common.send')}
-                            </Button>
-                        </Stack>
-                    </Paper>
+                        </Paper>
+                    </Stack>
                 </Grid>}
             </Grid>
             <Grid xs />
-        </Grid>
+        </Grid >
     );
 });
 

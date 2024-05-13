@@ -8,14 +8,17 @@ export default class UpdateMessageModel {
     public courseId: number;
     public messageText?: string;
     public creatorId: number;
+    public createdIn: Date;
 
-    constructor(id: number,courseId: number, creatorId: number, messageText = '') {
+    constructor(id: number,courseId: number, creatorId: number, createdIn: Date, messageText = '') {
         this.id = id;
         this.courseId = courseId;
         this.messageText = messageText;
         this.creatorId = creatorId;
+        this.createdIn = createdIn;
 
         makeObservable(this, {
+            createdIn: observable,
             id:observable,
             courseId: observable,
             messageText: observable,

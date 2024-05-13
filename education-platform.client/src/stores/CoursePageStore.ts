@@ -688,9 +688,9 @@ export default class CoursePageStore {
         this.closeContentMenu();
     }
 
-    deleteCourse(navigate: NavigateFunction) {
+    async deleteCourse(navigate: NavigateFunction) {
         try {
-            this._courseService.deleteCourse(this.course!.course.courseId);
+            await this._courseService.deleteCourse(this.course!.course.courseId);
             runInAction(() => {
                 const index = this._rootStore.courseStore.coursesInfo.findIndex(c => c.course.courseId === this.course!.course.courseId);
                 this._rootStore.courseStore.coursesInfo.splice(index, 1);

@@ -41,6 +41,7 @@ import FileCard from '../../components/FileCard';
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import ValidationError from '../../helpers/validation/ValidationError';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import ColoredAvatar from '../../components/ColoredAvatar';
 
 const ChatPage = observer(() => {
     const { chatPageStore } = useStore();
@@ -49,7 +50,7 @@ const ChatPage = observer(() => {
     const navigate = useNavigate();
     const { courseId } = useParams();
 
-    if (isNaN(Number(courseId)) ) {
+    if (isNaN(Number(courseId))) {
         navigate('/404');
     }
 
@@ -57,17 +58,11 @@ const ChatPage = observer(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         chatPageStore.init(
             Number.parseInt(courseId!),
-            
+
             navigate
         );
         return () => chatPageStore.reset();
     }, [courseId]);
-
-    const StyledCardActionArea = styled(CardActionArea)(({ theme }) => `
-    .MuiCardActionArea-focusHighlight {
-        background: transparent;
-    }
-`);
 
     if (chatPageStore.isLoading) {
         return (
@@ -122,7 +117,7 @@ const ChatPage = observer(() => {
                                                 <Stack spacing={1}>
                                                     {message.attachedFiles?.map(file => (
                                                         <Box key={file.id} height={40}>
-                                                            <FileCard file={file.mediaLink} onClick={() => chatPageStore.onFileClick(file.id, navigate)} />
+                                                            <FileCard file={file.mediaLink!.slice(file.mediaLink!.indexOf('_') + 1)} onClick={() => chatPageStore.onFileClick(file.id)} />
                                                         </Box>
                                                     ))}
                                                 </Stack>
@@ -131,7 +126,7 @@ const ChatPage = observer(() => {
                                                         {message.isEdit ? t('glossary.edited') : ''}
                                                     </Typography>
                                                     <Typography variant="caption" color="InactiveCaptionText">
-                                                        {message.createdIn.toLocaleString(i18n.language)}
+                                                        {new Date(message.createdIn).toLocaleString(i18n.language)}
                                                     </Typography>
                                                 </Stack>
                                             </Stack>
@@ -139,29 +134,37 @@ const ChatPage = observer(() => {
                                     );
                                 }
 
+                                const user = chatPageStore.users.find(u => u.courseuserId === message.creatorId);
+
+
                                 return (
-                                    <Paper key={message.id} sx={{ width: 'fit-content', maxWidth: '50%', alignSelf: 'start', p: 1 }}>
-                                        <Stack height="100%">
-
-                                            <Typography>{message.messageText}</Typography>
-                                            <Stack spacing={1}>
-                                                {message.attachedFiles?.map(file => (
-                                                    <Box key={file.id} height={40}>
-                                                        <FileCard file={file.mediaLink} onClick={() => chatPageStore.onFileClick(file.id, navigate)} />
-                                                    </Box>
-                                                ))}
-
+                                    <Stack key={message.id} direction="row" spacing={2} alignItems="center">
+                                        {user && <ColoredAvatar
+                                            src={user.userImage}
+                                            alt={user.userName}
+                                        />}
+                                        <Paper sx={{ width: 'fit-content', maxWidth: '50%', alignSelf: 'start', p: 1 }}>
+                                            <Stack height="100%">
+                                                {user && <Typography color={theme.palette.secondary.light}>{user.userName}</Typography>}
+                                                <Typography>{message.messageText}</Typography>
+                                                <Stack spacing={1}>
+                                                    {message.attachedFiles?.map(file => (
+                                                        <Box key={file.id} height={40}>
+                                                            <FileCard file={file.mediaLink!.slice(file.mediaLink!.indexOf('_') + 1)} onClick={() => chatPageStore.onFileClick(file.id)} />
+                                                        </Box>
+                                                    ))}
+                                                </Stack>
+                                                <Stack direction="row" justifyContent="end" spacing={1}>
+                                                    <Typography variant="caption" color="InactiveCaptionText">
+                                                        {message.isEdit ? t('glossary.edited') : ''}
+                                                    </Typography>
+                                                    <Typography variant="caption" color="InactiveCaptionText">
+                                                        {new Date(message.createdIn).toLocaleString(i18n.language)}
+                                                    </Typography>
+                                                </Stack>
                                             </Stack>
-                                            <Stack direction="row" justifyContent="end" spacing={1}>
-                                                <Typography variant="caption" color="InactiveCaptionText">
-                                                    {message.isEdit ? t('glossary.edited') : ''}
-                                                </Typography>
-                                                <Typography variant="caption" color="InactiveCaptionText">
-                                                    {message.createdIn.toLocaleString(i18n.language)}
-                                                </Typography>
-                                            </Stack>
-                                        </Stack>
-                                    </Paper>
+                                        </Paper>
+                                    </Stack>
                                 )
                             })}
 
@@ -386,7 +389,7 @@ const ChatPage = observer(() => {
                                             >
                                                 {file.mediaLink!.slice(file.mediaLink!.indexOf('_') + 1)}
                                             </Typography>
-                                            {chatPageStore.canDeleteFile && <IconButton onClick={() => chatPageStore.onEditMessageFileDelete(file.id, navigate)}>
+                                            {chatPageStore.canDeleteFile && <IconButton onClick={() => chatPageStore.onEditMessageFileDelete(file.id)}>
                                                 <Delete />
                                             </IconButton>}
                                         </Stack>
@@ -402,7 +405,7 @@ const ChatPage = observer(() => {
                                     startIcon={<AttachFile />}
                                 >
                                     {t('common.addFile')}
-                                    <input type="file" hidden onChange={(e) => chatPageStore.onEditMessageFileAdd(e, navigate)} />
+                                    <input type="file" hidden onChange={(e) => chatPageStore.onEditMessageFileAdd(e)} />
                                 </Button>
                             </Grid>
                         </Grid>
@@ -410,38 +413,38 @@ const ChatPage = observer(() => {
                 </Modal>}
 
                 <Modal
-                        open={chatPageStore.isFileViewerOpen}
-                        onClose={chatPageStore.onFileViewerClose}
+                    open={chatPageStore.isFileViewerOpen}
+                    onClose={chatPageStore.onFileViewerClose}
+                >
+                    <Box
+                        width="80%"
+                        height="90%"
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                        }}
+                        overflow="auto"
                     >
-                        <Box
-                            width="80%"
-                            height="90%"
-                            sx={{
-                                position: 'absolute',
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -50%)',
+                        <DocViewer
+                            prefetchMethod="GET"
+                            style={{
+                                visibility: chatPageStore.isFileViewerOpen
+                                    ? 'visible'
+                                    : 'collapse',
                             }}
-                            overflow="auto"
-                        >
-                            <DocViewer
-                                prefetchMethod="GET"
-                                style={{
-                                    visibility: chatPageStore.isFileViewerOpen
-                                        ? 'visible'
-                                        : 'collapse',
-                                }}
-                                documents={[{ uri: chatPageStore.fileLink }]}
-                                pluginRenderers={DocViewerRenderers}
-                                theme={{
-                                    primary: theme.palette.background.default,
-                                    secondary: theme.palette.secondary.main,
-                                    textPrimary: theme.palette.text.primary,
-                                    textSecondary: theme.palette.text.secondary,
-                                }}
-                            />
-                        </Box>
-                    </Modal>
+                            documents={[{ uri: chatPageStore.fileLink }]}
+                            pluginRenderers={DocViewerRenderers}
+                            theme={{
+                                primary: theme.palette.background.default,
+                                secondary: theme.palette.secondary.main,
+                                textPrimary: theme.palette.text.primary,
+                                textSecondary: theme.palette.text.secondary,
+                            }}
+                        />
+                    </Box>
+                </Modal>
             </Grid>
             <Grid xs />
         </Grid>

@@ -64,3 +64,12 @@ export const DELETE_COURSE = COURSE_BASE_ROUTE + '/Course/delete_course';
 
 
 export const HUB_URL = 'https://localhost:5003/chat';
+
+const SA_BASE_ROUTE = 'https://localhost:7038/api';
+
+export const GET_SA = SA_BASE_ROUTE + '/StudentAssignment/get_sa/';
+export const GET_ALL_SA = SA_BASE_ROUTE + '/StudentAssignment/get_all_sa/';
+export const GET_FILELINK = SA_BASE_ROUTE + '/StudentAssignment/get_file_link/';
+export const CREATE_COMMENT = SA_BASE_ROUTE + '/StudentAssignment/create_comment';
+export const EVALUATE = SA_BASE_ROUTE + '/StudentAssignment/evaluation';
+export const UPDATE_WORK = SA_BASE_ROUTE + '/StudentAssignment/update_work';

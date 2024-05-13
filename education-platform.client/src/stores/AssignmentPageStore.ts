@@ -19,12 +19,17 @@ import TopicService from '../services/TopicService';
 import CommonService from '../services/common/CommonService';
 import FileValidator from '../helpers/validation/FileValidator';
 import StringValidator from '../helpers/validation/StringValidator';
+import UpdateWorkModel from '../models/studentAssignment/UpdateWorkModel';
+import StudentAssignmentService from '../services/StudentAssignmentService';
+import SAInfoModel from '../models/studentAssignment/SAInfoModel';
+import CreateCourseModel from '../models/course/CreateCourseModel';
+import CreateCommentModel from '../models/studentAssignment/CreateComentModel';
 
 export default class AssignmentPageStore {
     private readonly _rootStore: RootStore;
     private readonly _assignmentService: AssignmentService;
     private readonly _topicService: TopicService;
-    private readonly _commonService: CommonService
+    private readonly _saService: StudentAssignmentService
 
     editAssignmentData: UpdateAssignmentModel | null = null;
     editAssignmentErrors: Record<string, ValidationError | null> = {
@@ -38,7 +43,9 @@ export default class AssignmentPageStore {
         meta: null,
     };
 
-    work: CreateUpdateWorkModel = new CreateUpdateWorkModel([]);
+    saInfo: SAInfoModel | null = null
+
+    work: UpdateWorkModel | null = null;
     workErrors: Record<string, ValidationError | null> = {
         workFiles: null,
         meta: null,
@@ -62,12 +69,20 @@ export default class AssignmentPageStore {
 
     isTeacher = false;
 
-    constructor(rootStore: RootStore, assignmentService: AssignmentService, topicService: TopicService, commonService: CommonService) {
+    isEditWork = true;
+    currentUser: number | null = null;
+
+
+
+    constructor(rootStore: RootStore, assignmentService: AssignmentService, topicService: TopicService, saService: StudentAssignmentService) {
         this._rootStore = rootStore;
         this._assignmentService = assignmentService;
         this._topicService = topicService;
-        this._commonService = commonService
+        this._saService = saService;
         makeObservable(this, {
+
+            currentUser: observable,
+            isEditWork: observable,
             isTeacher: observable,
             linkAdd: observable,
             isLinkAddOpen: observable,
@@ -82,6 +97,7 @@ export default class AssignmentPageStore {
             work: observable,
             isFileViewerOpen: observable,
             fileLink: observable,
+            saInfo: observable,
 
             isEditAssignmentValid: computed,
             isWorkValid: computed,
@@ -93,7 +109,6 @@ export default class AssignmentPageStore {
             reset: action.bound,
             onFileClick: action.bound,
             resetEditAssignment: action.bound,
-            resetWork: action.bound,
             onFileViewerClose: action.bound,
             openAssignmentMenu: action.bound,
             closeAssignmentMenu: action.bound,
@@ -113,7 +128,13 @@ export default class AssignmentPageStore {
             onAssignmentTopicChange: action.bound,
             onLinkAddChange: action.bound,
             handleLinkAddClose: action.bound,
-            handleLinkAddOpen: action.bound
+            handleLinkAddOpen: action.bound,
+            onWorkFileClick: action.bound,
+            enableEditMode: action.bound,
+            disableEditMode: action.bound,
+            submitWorkUpdate: action.bound,
+            resetEditWork: action.bound,
+            sendComment: action.bound
         });
     }
 
@@ -128,17 +149,36 @@ export default class AssignmentPageStore {
     }
 
     get isWorkValid(): boolean {
-        return this.work!.validateWorkFiles().length === 0;
+        return this.work!.validateAssignmentFiles().length === 0;
     }
 
     async init(courseId: number, assignmentId: number, navigate: NavigateFunction) {
         try {
+            runInAction(() => {
+                const course = this._rootStore.courseStore.coursesInfo.find(c => c.course.courseId === courseId);
+                if (!course) navigate('/');
+                this.currentUser = course!.userInfo.courseuserId;
+                this.isTeacher = course?.userInfo.role === 0 || course?.userInfo.role === 1;
+
+            });
+
             const assignment = await this._assignmentService.getAssignmentById(assignmentId);
             const topics = await this._topicService.getTopics(courseId);
+            if (!this.isTeacher) {
+                const saInfo = await this._saService.getStudentAssignment(assignmentId)
+                runInAction(() => {
+                    this.saInfo = saInfo;
+                    this.isEditWork = !saInfo.studentAssignment.isDone;
+                    if (saInfo.studentAssignment.currentMark === null) {
+                        this.work = new UpdateWorkModel([], saInfo.studentAssignment.studentassignmentId);
+                    }
+                })
+            }
 
             runInAction(() => {
                 this.assignment = assignment;
                 this.topics = topics;
+
 
                 this.editAssignmentData = new UpdateAssignmentModel(
                     this.assignment!.id,
@@ -152,10 +192,9 @@ export default class AssignmentPageStore {
                     this.assignment!.topicId,
                     this.assignment!.assignmentDescription ? this.assignment!.assignmentDescription : '',
                 );
+
+
                 this.isLoading = false;
-                const course = this._rootStore.courseStore.coursesInfo.find(c=>c.course.courseId === courseId);
-                if(!course) navigate('/');
-                this.isTeacher =  course?.userInfo.role === 0 || course?.userInfo.role === 1;
             });
 
         } catch (error) {
@@ -208,21 +247,21 @@ export default class AssignmentPageStore {
 
     onWorkFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
         if (e.target.files) {
-            this.work.workFiles.push(...Array.from(e.target.files));
+            this.work!.assignmentFiles.push(...Array.from(e.target.files));
         }
         debounce(
             action(() => {
-                const errors = this.work!.validateWorkFiles();
+                const errors = this.work!.validateAssignmentFiles();
                 this.workErrors.workFiles = errors.length !== 0 ? errors[0] : null;
             }),
         )();
     }
 
     onWorkFileDelete(id: number) {
-        this.work.workFiles.splice(id, 1);
+        this.work!.assignmentFiles.splice(id, 1);
         debounce(
             action(() => {
-                const errors = this.work!.validateWorkFiles();
+                const errors = this.work!.validateAssignmentFiles();
                 this.workErrors.workFiles = errors.length !== 0 ? errors[0] : null;
             }),
         )();
@@ -458,9 +497,70 @@ export default class AssignmentPageStore {
         }
     }
 
-    resetWork() {
-        this.work.workFiles = [];
-        Object.keys(this.workErrors).forEach((key) => (this.workErrors[key] = null));
+    async onWorkFileClick(id: number, navigate: NavigateFunction) {
+        try {
+            const link = await this._saService.getFileLink(id)
+            runInAction(() => {
+                this.isFileViewerOpen = true;
+                this.fileLink = link;
+            })
+        } catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+    }
+
+    enableEditMode() {
+        if (!this.saInfo?.studentAssignment.currentMark) {
+            this.isEditWork = true;
+        }
+    }
+
+    disableEditMode() {
+        if (this.saInfo?.studentAssignment.isDone) {
+            this.resetEditWork()
+        }
+    }
+
+    async submitWorkUpdate(navigate: NavigateFunction) {
+
+        try {
+            const saInfo = await this._saService.updateWork(this.work!);
+            runInAction(() => {
+                this.saInfo = saInfo;
+                this.disableEditMode()
+                enqueueAlert('glossary.editSuccess', 'success');
+            })
+        }
+        catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
+    }
+
+    async sendComment(comment: CreateCommentModel, navigate: NavigateFunction){
+        try {
+            const commentInfo = await this._saService.createComment(comment);
+            runInAction(() => {
+                this.saInfo!.comments = commentInfo;
+            })
+        }
+        catch (error) {
+            if (error instanceof LoginRequiredError) {
+                navigate('/login');
+                enqueueAlert(error.message, 'error');
+            } else {
+                enqueueAlert((error as ServiceError).message, 'error');
+            }
+        }
     }
 
     resetEditAssignment() {
@@ -479,16 +579,21 @@ export default class AssignmentPageStore {
         );
     }
 
+    resetEditWork() {
+        this.work!.assignmentFiles = [];
+        this.isEditWork = false;
+    }
+
     reset(): void {
         this.isLoading = true;
+        this.saInfo = null;
         this.editAssignmentData = null;
         Object.keys(this.editAssignmentErrors).forEach(
             (key) => (this.editAssignmentErrors[key] = null),
         );
 
-        this.work.workFiles = [];
+        this.work = null;
         Object.keys(this.workErrors).forEach((key) => (this.workErrors[key] = null));
-        this.resetWork();
 
         this.isFileViewerOpen = false;
 
@@ -500,7 +605,8 @@ export default class AssignmentPageStore {
         this.linkAdd = '';
         this.isLinkAddOpen = false;
 
-
         this.isTeacher = false;
+        this.isEditWork = true;
+        this.currentUser = null;
     }
 }

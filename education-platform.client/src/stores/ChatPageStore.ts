@@ -17,6 +17,7 @@ import LoginRequiredError from "../errors/LoginRequiredError";
 import MediaMessage from "../models/message/MediaMessage";
 import CreateMessageModelTransport from "../models/message/CreateMessageModelTransport";
 import { fileToBase64 } from "../helpers/fileToBase64";
+import MessageMediaModel from "../models/message/MessageMediaModel";
 
 
 
@@ -110,10 +111,11 @@ export default class ChatPageStore {
 
     async init(courseId: number, navigate: NavigateFunction) {
         try {
-            this._hubConnection = new signalR.HubConnectionBuilder().withUrl('https://localhost:5003/chat', { withCredentials: false })
-            .withAutomaticReconnect()
-            .build();
-            
+            this._hubConnection = new signalR.HubConnectionBuilder().withUrl(HUB_URL, { withCredentials: false })
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Critical)
+                .build();
+
             await this._hubConnection.start();
 
             await this._hubConnection.send('JoinRoom', courseId);
@@ -121,6 +123,10 @@ export default class ChatPageStore {
             const users = await this._courseUserService.getUsers(courseId);
 
             await this._hubConnection.send("GetFirstPackMessage", courseId);
+
+            this._hubConnection.onreconnected(async ()=>{
+                await this._hubConnection!.send('JoinRoom', courseId);
+            });
 
             this._hubConnection.on("ReceiveMessages", (response) => {
                 if (Object.hasOwn(response, 'statusCode')) {
@@ -134,7 +140,7 @@ export default class ChatPageStore {
                 }
             });
 
-            this._hubConnection?.on('ReceiveMessage', (response) => {
+            this._hubConnection.on('ReceiveMessage', (response) => {
                 if (Object.hasOwn(response, 'statusCode')) {
                     enqueueAlert('glossary.somethingWentWrong', 'error');
                 } else {
@@ -161,6 +167,87 @@ export default class ChatPageStore {
                             const index = this.messages.findIndex(m => m.id === id);
                             this.messages.splice(index, 1);
                         }
+                    });
+                }
+            });
+
+            this._hubConnection.on('EditMedia', (response) => {
+                if (Object.hasOwn(response, 'statusCode')) {
+                    switch (response.statusCode as number) {
+                        case 404:
+                            enqueueAlert('glossary.messageNotFound', 'error');
+                            break;
+                        default:
+                            enqueueAlert('glossary.somethingWentWrong', 'error');
+                    }
+                } else {
+                    runInAction(() => {
+                        const message = response as MessageModel;
+                        if (this.messages.some(m => m.id === message.id)) {
+                            const index = this.messages.findIndex(m => m.id === message.id);
+                            this.messages[index] = message;
+                        }
+                    });
+                }
+            });
+
+            this._hubConnection.on('DeleteMedia', (response) => {
+                if (Object.hasOwn(response, 'statusCode')) {
+                    switch (response.statusCode as number) {
+                        case 404:
+                            enqueueAlert('glossary.fileNotFound', 'error');
+                            break;
+                        default:
+                            enqueueAlert('glossary.somethingWentWrong', 'error');
+                    }
+                } else {
+                    runInAction(() => {
+                        const fileId = Number.parseInt(response);
+                        const message = this.messages.find(message => message.attachedFiles?.some(file => file.id === fileId));
+                        if (message) {
+                            const attachments = message.attachedFiles;
+                            const index = attachments?.findIndex(file => file.id === fileId);
+                            if (index !== -1) {
+                                attachments!.splice(index!, 1);
+                            }
+                        }
+                    });
+                }
+            });
+
+            this._hubConnection.on('AddMedia', (response) => {
+                if (Object.hasOwn(response, 'statusCode')) {
+                    switch (response.statusCode as number) {
+                        case 404:
+                            enqueueAlert('glossary.messageNotFound', 'error');
+                            break;
+                        default:
+                            enqueueAlert('glossary.somethingWentWrong', 'error');
+                    }
+                } else {
+                    runInAction(() => {
+                        const messageMedia = response as MessageMediaModel;
+                        const message = this.messages.find(m => m.id === messageMedia.messageId);
+                        if (message) {
+                            message.attachedFiles?.push(messageMedia);
+                        }
+                    });
+                }
+            });
+
+            this._hubConnection.on('GetFile', (response) => {
+                if (Object.hasOwn(response, 'statusCode')) {
+                    switch (response.statusCode as number) {
+                        case 404:
+                            enqueueAlert('glossary."fileNotFound', 'error');
+                            break;
+                        default:
+                            enqueueAlert('glossary.somethingWentWrong', 'error');
+                    }
+                } else {
+                    runInAction(() => {
+                        this.fileLink = response as string;
+                        this.isFileViewerOpen = true;
                     });
                 }
             });
@@ -223,12 +310,13 @@ export default class ChatPageStore {
         return message !== undefined && ((message.messageText !== null && message.messageText.length > 0) || (message.attachedFiles !== null && message.attachedFiles.length > 1))
     }
 
-    async onFileClick(id: number, navigate: NavigateFunction) {
-        ///add behaviour
-        runInAction(() => {
-            this.isFileViewerOpen = true;
-            this.fileLink = '';////
-        })
+    async onFileClick(id: number) {
+        try {
+            await this._hubConnection!.send('GetFileById', id);
+        } catch (error) {
+            enqueueAlert('glossary.somethingWentWrong', 'error');
+        }
+        
     }
 
     onFileViewerClose() {
@@ -247,9 +335,11 @@ export default class ChatPageStore {
     }
 
     onEditMessageTextChange(e: React.ChangeEvent<HTMLInputElement>): void {
+       
         this.editMessage!.messageText = e.target.value;
         debounce(
             action(() => {
+                if(!this.editMessage) return;
                 const errors = this.editMessage!.validateMessageText();
                 this.editMessageErrors.messageText = errors.length !== 0 ? errors[0] : null;
             }),
@@ -259,7 +349,7 @@ export default class ChatPageStore {
     handeEditMessageOpen() {
         const message = this.messages.find(m => m.id === this.selectedMessage);
         const messagetext = message!.messageText === null ? '' : message!.messageText;
-        this.editMessage = new UpdateMessageModel(this.selectedMessage!, this.courseId!, this.currentUser!, messagetext)
+        this.editMessage = new UpdateMessageModel(this.selectedMessage!, this.courseId!, this.currentUser!, message!.createdIn, messagetext);
         this.editMessageOpen = true;
         this.closeMessageMenu();
     }
@@ -305,7 +395,7 @@ export default class ChatPageStore {
         )();
     }
 
-    async onEditMessageFileAdd(e: React.ChangeEvent<HTMLInputElement>, navigate: NavigateFunction) {
+    async onEditMessageFileAdd(e: React.ChangeEvent<HTMLInputElement>) {
         if (!e.target.files) return;
 
         const validator = new FileValidator(e.target.files[0]);
@@ -327,44 +417,29 @@ export default class ChatPageStore {
             return;
         }
 
-        // try {
-        //     const addedFile = await this._assignmentService.addFile(e.target.files[0], this.assignment!.id);
-        //     runInAction(() => {
-        //         this.assignment!.assignmentfiles!.push(addedFile);
-        //         enqueueAlert('glossary.editSuccess', 'success');
-        //     })
-        // } catch (error) {
-        //     if (error instanceof LoginRequiredError) {
-        //         navigate('/login');
-        //         enqueueAlert(error.message, 'error');
-        //     } else {
-        //         enqueueAlert((error as ServiceError).message, 'error');
-        //     }
-        // }
+        try {
+            const base64File = await fileToBase64(e.target.files[0]);
+            const media = new MediaMessage(base64File, e.target.files[0].name)
+            await this._hubConnection!.send('AddMessageMedia', this.courseId, media, this.selectedMessage);
+        } catch (error) {
+            enqueueAlert('glossary.somethingWentWrong', 'error');
+        }
     }
-    async onEditMessageFileDelete(fileId: number, navigate: NavigateFunction) {
-        // try {
-        //     await this._assignmentService.deleteFileById(fileId);
-        //     runInAction(() => {
-        //         const index = this.assignment!.assignmentfiles!.findIndex(f => f.id == fileId);
-        //         this.assignment!.assignmentfiles!.splice(index, 1);
-        //         enqueueAlert('glossary.deleteFileSuccess', 'success');
-        //     })
-        // } catch (error) {
-        //     if (error instanceof LoginRequiredError) {
-        //         navigate('/login');
-        //         enqueueAlert(error.message, 'error');
-        //     } else {
-        //         enqueueAlert((error as ServiceError).message, 'error');
-        //     }
-        // }
+
+    async onEditMessageFileDelete(fileId: number) {
+        try {
+            await this._hubConnection!.send('DeleteMessageMedia', this.courseId, fileId);
+
+        } catch (error) {
+            enqueueAlert('glossary.somethingWentWrong', 'error');
+        }
     }
 
     async sendMessage() {
         try {
             const mediaMessages: MediaMessage[] = [];
 
-            for(const file of this.createMessage!.attachedFiles){
+            for (const file of this.createMessage!.attachedFiles) {
                 const byteFile = await fileToBase64(file);
                 mediaMessages.push(new MediaMessage(byteFile, file.name))
             }
@@ -376,7 +451,7 @@ export default class ChatPageStore {
                 this.resetCreateMessage();
             });
         } catch (error) {
-            enqueueAlert('glossary.somethingWentWrong', 'error')
+            enqueueAlert('glossary.somethingWentWrong', 'error');
         }
     }
 
@@ -389,12 +464,19 @@ export default class ChatPageStore {
             })
         }
         catch (error) {
-            enqueueAlert('glossary.somethingWentWrong', 'error')
+            enqueueAlert('glossary.somethingWentWrong', 'error');
         }
     }
 
-    submitEdit() {
-        this.resetEditMessage();
+    async submitEdit() {
+        try {
+            await this._hubConnection?.send('EditMessage', this.courseId, this.editMessage);
+            runInAction(() => {
+                this.handleEditMessageClose();
+            })
+        } catch (error) {
+            enqueueAlert('glossary.somethingWentWrong', 'error');
+        }
     }
 
     resetCreateMessage() {
@@ -408,8 +490,6 @@ export default class ChatPageStore {
     }
 
     resetEditMessage() {
-        // const message = this.messages.find(m=>m.id === this.selectedMessage)
-        // this.editMessage!.messageText = message!.messageText === null? '': message!.messageText;
         this.editMessage = null;
         this.selectedMessage = null;
 
