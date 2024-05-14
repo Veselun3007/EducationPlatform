@@ -1,13 +1,10 @@
 import axios from 'axios';
 import { REFRESH_TOKEN } from './routesAPI';
-import TokenResponseModel from '../../models/auth/TokenResponseModel';
 
 const httpClient = axios.create({
-    formSerializer:{indexes:null}
+    formSerializer: { indexes: null },
 });
 
-// httpClient.defaults.headers.common['Authorization'] =
-//     'Bearer ' + localStorage.getItem('accessToken');
 
 async function refreshToken() {
     const accessToken = (
@@ -56,15 +53,15 @@ const isoDateFormat =
 function isIsoDateString(value: any): boolean {
     return value && typeof value === 'string' && isoDateFormat.test(value);
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function convertResponseDates(body: any) {
     if (body === null || body === undefined || typeof body !== 'object') return body;
 
     for (const key of Object.keys(body)) {
         const value = body[key];
         if (isIsoDateString(value)) {
-            body[key] = new Date(value)
-        }
-        else if (typeof value === 'object') convertResponseDates(value);
+            body[key] = new Date(value);
+        } else if (typeof value === 'object') convertResponseDates(value);
     }
 }
 

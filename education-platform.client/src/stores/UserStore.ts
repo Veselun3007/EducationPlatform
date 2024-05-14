@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { action, computed, flow, makeObservable, observable, runInAction } from 'mobx';
 import AuthService from '../services/AuthService';
-import IStore from './common/IStore';
 import RootStore from './RootStore';
 import UserModel from '../models/user/UserModel';
 import { enqueueAlert } from '../components/Notification/NotificationProvider';
@@ -19,8 +18,8 @@ export default class UserStore extends FormStore {
     private readonly _authService: AuthService;
     private readonly _userService: UserService;
 
-    user: UserModel | null = null; //new UserModel('renhach.valentyn@gmail.com', 'Valentyn Renhach', '/assets/Renhach.jpg')
-    data: UserUpdateModel | null = null; //new UserUpdateModel(this.user.email, this.user.userName, undefined);
+    user: UserModel | null = null;
+    data: UserUpdateModel | null = null;
     errors: Record<string, ValidationError | null> = {
         email: null,
         userName: null,

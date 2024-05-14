@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import IntroductionPage from './pages/IntroductionPage/IntroductionPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -63,13 +63,15 @@ function App() {
                                 path="/confirmEmail/:email"
                                 element={<ConfirmEmailPage />}
                             />
-
                         </Route>
 
                         <Route element={<AuthRoutes />}>
                             <Route path="/dashboard" element={<DashboardPage />} />
                             <Route path="/course/:id" element={<CoursePage />} />
-                            <Route path="/course/:courseId/join/:courseLink" element={<JoinCoursePage />} />
+                            <Route
+                                path="/course/:courseId/join/:courseLink"
+                                element={<JoinCoursePage />}
+                            />
                             <Route
                                 path="/course/:courseId/material/:materialId"
                                 element={<MaterialPage />}
@@ -78,10 +80,7 @@ function App() {
                                 path="/course/:courseId/assignment/:assignmentId"
                                 element={<AssignmentPage />}
                             />
-                            <Route
-                                path="/course/:courseId/chat"
-                                element={<ChatPage />}
-                            />
+                            <Route path="/course/:courseId/chat" element={<ChatPage />} />
 
                             <Route
                                 path="/course/:courseId/users"

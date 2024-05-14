@@ -1,9 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { action, computed, makeObservable, observable, runInAction } from 'mobx';
 import RootStore from './RootStore';
-import CourseModel from '../models/course/CourseModel';
 import ValidationError from '../helpers/validation/ValidationError';
-import CreateCourseModel from '../models/course/CreateCourseModel';
 import debounce from '../helpers/debounce';
 import { enqueueAlert } from '../components/Notification/NotificationProvider';
 import { NavigateFunction } from 'react-router-dom';
@@ -91,7 +89,14 @@ export default class CoursePageStore {
     isAdmin = false;
     isStudent = false;
 
-    constructor(rootStore: RootStore, courseService: CourseService, assignmentService: AssignmentService, materialService: MaterialService, topicService: TopicService, courseUserService: CourseUserService) {
+    constructor(
+        rootStore: RootStore,
+        courseService: CourseService,
+        assignmentService: AssignmentService,
+        materialService: MaterialService,
+        topicService: TopicService,
+        courseUserService: CourseUserService,
+    ) {
         this._rootStore = rootStore;
         this._assignmetnService = assignmentService;
         this._materialService = materialService;
@@ -182,7 +187,7 @@ export default class CoursePageStore {
             onEditTopicTitleChange: action.bound,
             submitEditTopic: action.bound,
             deleteTopic: action.bound,
-            leaveCourse: action.bound
+            leaveCourse: action.bound,
         });
     }
 
@@ -221,8 +226,12 @@ export default class CoursePageStore {
     async init(courseId: number, navigate: NavigateFunction) {
         try {
             const course = await this._courseService.getCourse(courseId);
-            const assignments = await this._assignmetnService.getAssignments(course.course.courseId);
-            const materials = await this._materialService.getMaterials(course.course.courseId);
+            const assignments = await this._assignmetnService.getAssignments(
+                course.course.courseId,
+            );
+            const materials = await this._materialService.getMaterials(
+                course.course.courseId,
+            );
             const topics = await this._topicService.getTopics(course.course.courseId);
 
             runInAction(() => {
@@ -231,11 +240,16 @@ export default class CoursePageStore {
                 this.materials = materials;
                 this.topics = topics;
 
-                this.courseData = new UpdateCourseModel(this.course.course.courseId,
+                this.courseData = new UpdateCourseModel(
+                    this.course.course.courseId,
                     this.course.course.courseName,
-                    this.course.course.courseDescription);
+                    this.course.course.courseDescription,
+                );
 
-                this.createTopicData = new CreateTopicModel(this.course.course.courseId, '');
+                this.createTopicData = new CreateTopicModel(
+                    this.course.course.courseId,
+                    '',
+                );
 
                 this.materialData = new CreateUpdateMaterialModel(
                     this.course.course.courseId,
@@ -257,7 +271,10 @@ export default class CoursePageStore {
                     new Date(Date.now()),
                 );
 
-                this.editTopicData = new CreateTopicModel(this.course.course.courseId, '');
+                this.editTopicData = new CreateTopicModel(
+                    this.course.course.courseId,
+                    '',
+                );
 
                 this.isLoading = false;
 
@@ -279,13 +296,14 @@ export default class CoursePageStore {
     async leaveCourse(navigate: NavigateFunction) {
         try {
             if (this.course?.userInfo.role === 0) return;
-            await this._courseUserService.deleteCourseUser(new DeleteCourseUserModel(this.course!.userInfo.courseuserId));
+            await this._courseUserService.deleteCourseUser(
+                new DeleteCourseUserModel(this.course!.userInfo.courseuserId),
+            );
 
             runInAction(() => {
                 navigate('/dashboard');
                 enqueueAlert('glossary.leaveCourseSuccess', 'success');
             });
-
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -519,16 +537,19 @@ export default class CoursePageStore {
 
     async submitCourse(navigate: NavigateFunction) {
         try {
-            const updatedCourse = await this._courseService.updateCourse(this.courseData!);
+            const updatedCourse = await this._courseService.updateCourse(
+                this.courseData!,
+            );
 
             runInAction(() => {
-                const index = this._rootStore.courseStore.coursesInfo.findIndex(c => c.course.courseId === updatedCourse.course.courseId);
+                const index = this._rootStore.courseStore.coursesInfo.findIndex(
+                    (c) => c.course.courseId === updatedCourse.course.courseId,
+                );
                 this._rootStore.courseStore.coursesInfo[index] = updatedCourse;
                 this.course = updatedCourse;
                 this.handleEditCourseClose();
                 enqueueAlert('glossary.editSuccess', 'success');
             });
-
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -537,17 +558,18 @@ export default class CoursePageStore {
                 enqueueAlert((error as ServiceError).message, 'error');
             }
         }
-
     }
 
     async submitCreateTopic(navigate: NavigateFunction) {
         try {
-            const createdTopic = await this._topicService.createTopic(this.createTopicData!);
+            const createdTopic = await this._topicService.createTopic(
+                this.createTopicData!,
+            );
             runInAction(() => {
                 this.topics!.push(createdTopic);
                 this.handleCreateTopicClose();
                 enqueueAlert('glossary.topicCreateSuccess', 'success');
-            })
+            });
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -556,17 +578,18 @@ export default class CoursePageStore {
                 enqueueAlert((error as ServiceError).message, 'error');
             }
         }
-
     }
 
     async submitMaterial(navigate: NavigateFunction) {
         try {
-            const createdMaterial = await this._materialService.createMaterial(this.materialData!);
+            const createdMaterial = await this._materialService.createMaterial(
+                this.materialData!,
+            );
             runInAction(() => {
                 this.materials!.push(createdMaterial);
                 this.handleCreateMaterialClose();
                 enqueueAlert('glossary.materialCreateSuccess', 'success');
-            })
+            });
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -575,17 +598,18 @@ export default class CoursePageStore {
                 enqueueAlert((error as ServiceError).message, 'error');
             }
         }
-
     }
 
     async submitAssignment(navigate: NavigateFunction) {
         try {
-            const createdAssignment = await this._assignmetnService.createAssignment(this.assignmentData!);
+            const createdAssignment = await this._assignmetnService.createAssignment(
+                this.assignmentData!,
+            );
             runInAction(() => {
                 this.assignments!.push(createdAssignment);
                 this.handleCreateAssignmentClose();
                 enqueueAlert('glossary.assignmentCreateSuccess', 'success');
-            })
+            });
         } catch (error) {
             this.handleCreateAssignmentClose();
             if (error instanceof LoginRequiredError) {
@@ -599,13 +623,15 @@ export default class CoursePageStore {
 
     async submitEditTopic(navigate: NavigateFunction) {
         try {
-            const updatedTopic = await this._topicService.updateTopic(this.editTopicData!);
+            const updatedTopic = await this._topicService.updateTopic(
+                this.editTopicData!,
+            );
             runInAction(() => {
-                const index = this.topics!.findIndex(t => t.id === updatedTopic.id);
+                const index = this.topics!.findIndex((t) => t.id === updatedTopic.id);
                 this.topics![index] = updatedTopic;
                 this.handleEditTopicClose();
                 enqueueAlert('glossary.editSuccess', 'success');
-            })
+            });
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -614,7 +640,6 @@ export default class CoursePageStore {
                 enqueueAlert((error as ServiceError).message, 'error');
             }
         }
-
     }
 
     openCourseMenu(event: React.MouseEvent<HTMLButtonElement>) {
@@ -692,7 +717,9 @@ export default class CoursePageStore {
         try {
             await this._courseService.deleteCourse(this.course!.course.courseId);
             runInAction(() => {
-                const index = this._rootStore.courseStore.coursesInfo.findIndex(c => c.course.courseId === this.course!.course.courseId);
+                const index = this._rootStore.courseStore.coursesInfo.findIndex(
+                    (c) => c.course.courseId === this.course!.course.courseId,
+                );
                 this._rootStore.courseStore.coursesInfo.splice(index, 1);
                 enqueueAlert('glossary.deleteCourseSuccess', 'success');
                 navigate('/dashboard');
@@ -727,7 +754,7 @@ export default class CoursePageStore {
 
                 this.topics!.splice(index, 1);
                 enqueueAlert('glossary.deleteTopicSuccess', 'success');
-            })
+            });
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');

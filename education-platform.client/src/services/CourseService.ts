@@ -1,9 +1,14 @@
 import { AxiosError } from 'axios';
-import CourseModel from '../models/course/CourseModel';
 import CreateCourseModel from '../models/course/CreateCourseModel';
 import AuthService from './AuthService';
 import httpClient from './common/httpClient';
-import { CREATE_COURSE, DELETE_COURSE, GET_ALL_COURSE, GET_COURSE, UPDATE_COURSE } from './common/routesAPI';
+import {
+    CREATE_COURSE,
+    DELETE_COURSE,
+    GET_ALL_COURSE,
+    GET_COURSE,
+    UPDATE_COURSE,
+} from './common/routesAPI';
 import LoginRequiredError from '../errors/LoginRequiredError';
 import ServiceError from '../errors/ServiceError';
 import UpdateCourseModel from '../models/course/UpdateCourseModel';
@@ -41,7 +46,7 @@ export default class CourseService {
 
     async getCourse(id: number) {
         try {
-            const course = (await httpClient.get(GET_COURSE+'?courseId='+id))
+            const course = (await httpClient.get(GET_COURSE + '?courseId=' + id))
                 .data as CourseInfoModel;
 
             return course;
@@ -53,7 +58,7 @@ export default class CourseService {
                             this._authService.clearTokens();
                             throw new LoginRequiredError('glossary.loginToContinue');
                         case 404:
-                            throw new ServiceError('glossary.courseNotFound')
+                            throw new ServiceError('glossary.courseNotFound');
                         default:
                             throw new ServiceError('glossary.somethingWentWrong');
                     }

@@ -6,14 +6,6 @@ export default class DateValidator extends BaseValidator<Date | undefined> {
         super(value);
     }
 
-    // lessThan(value: number): void {
-    //     if (this._value && this._value < value) {
-    //         this.errors.push(
-    //             new ValidationError('validation.lessThan', { value: value }),
-    //         );
-    //     }
-    // }
-
     greaterThan(value: number): void {
         if (this._value && this._value.getTime() < value) {
             this.errors.push(

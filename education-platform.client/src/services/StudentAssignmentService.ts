@@ -1,14 +1,21 @@
-import { AxiosError } from "axios";
-import SAInfoModel from "../models/studentAssignment/SAInfoModel";
-import AuthService from "./AuthService";
-import httpClient from "./common/httpClient";
-import { CREATE_COMMENT, EVALUATE, GET_ALL_SA, GET_FILELINK, GET_SA, UPDATE_WORK } from "./common/routesAPI";
-import LoginRequiredError from "../errors/LoginRequiredError";
-import ServiceError from "../errors/ServiceError";
-import CreateCommentModel from "../models/studentAssignment/CreateComentModel";
-import CommentInfoModel from "../models/studentAssignment/CommenttInfoModel";
-import UpdateMarkModel from "../models/studentAssignment/UpdateMarkModel";
-import UpdateWorkModel from "../models/studentAssignment/UpdateWorkModel";
+import { AxiosError } from 'axios';
+import SAInfoModel from '../models/studentAssignment/SAInfoModel';
+import AuthService from './AuthService';
+import httpClient from './common/httpClient';
+import {
+    CREATE_COMMENT,
+    EVALUATE,
+    GET_ALL_SA,
+    GET_FILELINK,
+    GET_SA,
+    UPDATE_WORK,
+} from './common/routesAPI';
+import LoginRequiredError from '../errors/LoginRequiredError';
+import ServiceError from '../errors/ServiceError';
+import CreateCommentModel from '../models/studentAssignment/CreateComentModel';
+import CommentInfoModel from '../models/studentAssignment/CommenttInfoModel';
+import UpdateMarkModel from '../models/studentAssignment/UpdateMarkModel';
+import UpdateWorkModel from '../models/studentAssignment/UpdateWorkModel';
 
 export default class StudentAssignmentService {
     private readonly _authService: AuthService;
@@ -71,8 +78,7 @@ export default class StudentAssignmentService {
 
     async getFileLink(id: number) {
         try {
-            const fileLink = (await httpClient.get(GET_FILELINK + id))
-                .data as string
+            const fileLink = (await httpClient.get(GET_FILELINK + id)).data as string;
 
             return fileLink;
         } catch (error) {
@@ -147,7 +153,6 @@ export default class StudentAssignmentService {
             }
             throw new ServiceError('glossary.somethingWentWrong');
         }
-
     }
     async updateWork(work: UpdateWorkModel) {
         try {
@@ -176,6 +181,5 @@ export default class StudentAssignmentService {
             }
             throw new ServiceError('glossary.somethingWentWrong');
         }
-
     }
 }

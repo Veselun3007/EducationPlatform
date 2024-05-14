@@ -1,14 +1,18 @@
-import { AxiosError } from "axios";
-import AuthService from "./AuthService";
-import httpClient from "./common/httpClient";
-import { CREATE_COURSE_USER, DELETE_COURSE_USER, GET_COURSE_USERS, UPDATE_COURSE_USER } from "./common/routesAPI";
-import LoginRequiredError from "../errors/LoginRequiredError";
-import ServiceError from "../errors/ServiceError";
-import CourseInfoModel from "../models/course/CourseInfoModel";
-import CourseUserInfoModel from "../models/courseUser/CourseUserInfoModel";
-import CreateCourseUserModel from "../models/courseUser/CreateCourseUserModel";
-import UpdateCourseUserModel from "../models/courseUser/UpdateCourseUserModel";
-import DeleteCourseUserModel from "../models/courseUser/DeleteCourseUserModel";
+import { AxiosError } from 'axios';
+import AuthService from './AuthService';
+import httpClient from './common/httpClient';
+import {
+    CREATE_COURSE_USER,
+    DELETE_COURSE_USER,
+    GET_COURSE_USERS,
+    UPDATE_COURSE_USER,
+} from './common/routesAPI';
+import LoginRequiredError from '../errors/LoginRequiredError';
+import ServiceError from '../errors/ServiceError';
+import CourseUserInfoModel from '../models/courseUser/CourseUserInfoModel';
+import CreateCourseUserModel from '../models/courseUser/CreateCourseUserModel';
+import UpdateCourseUserModel from '../models/courseUser/UpdateCourseUserModel';
+import DeleteCourseUserModel from '../models/courseUser/DeleteCourseUserModel';
 
 export default class CourseUserService {
     private readonly _authService: AuthService;
@@ -19,8 +23,9 @@ export default class CourseUserService {
 
     async getUsers(courseId: number) {
         try {
-            const users = (await httpClient.get(GET_COURSE_USERS+'?courseId='+courseId))
-                .data as CourseUserInfoModel[];
+            const users = (
+                await httpClient.get(GET_COURSE_USERS + '?courseId=' + courseId)
+            ).data as CourseUserInfoModel[];
 
             return users;
         } catch (error) {
@@ -41,7 +46,10 @@ export default class CourseUserService {
 
     async createUser(courseLink: string) {
         try {
-            await httpClient.post(CREATE_COURSE_USER, new CreateCourseUserModel(courseLink, this._authService.UserId))
+            await httpClient.post(
+                CREATE_COURSE_USER,
+                new CreateCourseUserModel(courseLink, this._authService.UserId),
+            );
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {

@@ -32,7 +32,6 @@ export default class CourseStore extends FormStore {
     isLoading = true;
     needRefresh = false;
 
-
     constructor(rootStore: RootStore, courseService: CourseService) {
         super();
         this._rootStore = rootStore;
@@ -183,7 +182,7 @@ export default class CourseStore extends FormStore {
     reset(): void {
         this.drawerOpen = false;
         this.toggled = false;
-        this.userMenuAnchorEl = null
+        this.userMenuAnchorEl = null;
         this.settingsOpen = false;
         this.settingsTab = '1';
         this.createCourseOpen = false;

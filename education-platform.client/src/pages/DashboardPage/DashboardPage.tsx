@@ -2,12 +2,9 @@ import React, { useEffect } from 'react';
 import {
     Badge,
     Box,
-    Button,
     Card,
     CardActionArea,
     CircularProgress,
-    Menu,
-    MenuItem,
     Stack,
     Typography,
     useTheme,
@@ -25,7 +22,7 @@ const DashboardPage = observer(() => {
     const { courseStore } = useStore();
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const theme =  useTheme();
+    const theme = useTheme();
 
     useEffect(() => {
         if (courseStore.needRefresh) {
@@ -50,107 +47,113 @@ const DashboardPage = observer(() => {
 
     return (
         <Grid container alignItems="center" justifyItems="center">
-            {courseStore.coursesInfo.length > 0 ? courseStore.coursesInfo.map((info) => (
-                <Grid
-                    key={info.course.courseId}
-                    sx={{ borderRadius: 2 }}
-                    marginInline={2}
-                    marginBlock={2}
-                    width="18.75rem"
-                    height="18.375rem"
-                    overflow="hidden"
-                >
-                    <Card sx={{ height: '100%' }}>
-                        <CardActionArea
-                            sx={{ height: '100%' }}
-                            onClick={() => navigate(`/course/${info.course.courseId}`)}
-                        >
-                            <Stack direction="column" height="100%">
-                                <Badge
-                                    anchorOrigin={{
-                                        vertical: 'bottom',
-                                        horizontal: 'right',
-                                    }}
-                                    badgeContent={
-                                        <ColoredAvatar
-                                            alt={info.adminInfo.adminName}
-                                            sx={{ width: 70, height: 70, right: 45 }}
-                                            src={info.adminInfo.imageLink}
-                                        />
-                                    }
-                                >
-                                    <AbstractBackground
-                                        value={info.course.courseName}
-                                        sx={{ width: '100%', height: '7rem' }}
-                                    >
-                                        <Stack alignSelf="center" pl={2}>
-                                            <Typography
-                                                variant="h5"
-                                                textAlign="left"
-                                                alignSelf="start"
-
-                                                sx={{
-                                                    display: '-webkit-box',
-                                                    overflow: 'hidden',
-                                                    WebkitBoxOrient: 'vertical',
-                                                    WebkitLineClamp: 1,
-                                                    textOverflow: 'ellipsis',
-                                                    whiteSpace: 'normal',
-                                                }}
-                                            >
-                                                {info.course.courseName}
-                                            </Typography>
-                                            <Typography
-
-                                                textAlign="left"
-                                                justifyItems="start"
-                                                sx={{
-                                                    display: '-webkit-box',
-                                                    overflow: 'hidden',
-                                                    WebkitBoxOrient: 'vertical',
-                                                    WebkitLineClamp: 1,
-                                                    textOverflow: 'ellipsis',
-                                                    whiteSpace: 'normal',
-                                                }}
-                                            >
-                                                {info.adminInfo.adminName}
-                                            </Typography>
-                                        </Stack>
-                                    </AbstractBackground>
-                                </Badge>
-                                {info.course.courseDescription &&
-                                    <>
-                                        <Typography mt={2} ml={2} variant="h6">
-                                            {t('glossary.courseDescription')}
-                                        </Typography>
-                                        <Typography
-                                            ml={2}
-                                            mr={2}
-                                            sx={{
-                                                display: '-webkit-box',
-                                                overflow: 'hidden',
-                                                WebkitBoxOrient: 'vertical',
-                                                WebkitLineClamp: 5,
-                                                textOverflow: 'ellipsis',
-                                                whiteSpace: 'normal',
-                                            }}
-                                        >
-                                            {info.course.courseDescription}
-                                        </Typography>
-                                    </>
+            {courseStore.coursesInfo.length > 0 ? (
+                courseStore.coursesInfo.map((info) => (
+                    <Grid
+                        key={info.course.courseId}
+                        sx={{ borderRadius: 2 }}
+                        marginInline={2}
+                        marginBlock={2}
+                        width="18.75rem"
+                        height="18.375rem"
+                        overflow="hidden"
+                    >
+                        <Card sx={{ height: '100%' }}>
+                            <CardActionArea
+                                sx={{ height: '100%' }}
+                                onClick={() =>
+                                    navigate(`/course/${info.course.courseId}`)
                                 }
-
-                            </Stack>
-                        </CardActionArea>
-                    </Card>
+                            >
+                                <Stack direction="column" height="100%">
+                                    <Badge
+                                        anchorOrigin={{
+                                            vertical: 'bottom',
+                                            horizontal: 'right',
+                                        }}
+                                        badgeContent={
+                                            <ColoredAvatar
+                                                alt={info.adminInfo.adminName}
+                                                sx={{ width: 70, height: 70, right: 45 }}
+                                                src={info.adminInfo.imageLink}
+                                            />
+                                        }
+                                    >
+                                        <AbstractBackground
+                                            value={info.course.courseName}
+                                            sx={{ width: '100%', height: '7rem' }}
+                                        >
+                                            <Stack alignSelf="center" pl={2}>
+                                                <Typography
+                                                    variant="h5"
+                                                    textAlign="left"
+                                                    alignSelf="start"
+                                                    sx={{
+                                                        display: '-webkit-box',
+                                                        overflow: 'hidden',
+                                                        WebkitBoxOrient: 'vertical',
+                                                        WebkitLineClamp: 1,
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'normal',
+                                                    }}
+                                                >
+                                                    {info.course.courseName}
+                                                </Typography>
+                                                <Typography
+                                                    textAlign="left"
+                                                    justifyItems="start"
+                                                    sx={{
+                                                        display: '-webkit-box',
+                                                        overflow: 'hidden',
+                                                        WebkitBoxOrient: 'vertical',
+                                                        WebkitLineClamp: 1,
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'normal',
+                                                    }}
+                                                >
+                                                    {info.adminInfo.adminName}
+                                                </Typography>
+                                            </Stack>
+                                        </AbstractBackground>
+                                    </Badge>
+                                    {info.course.courseDescription && (
+                                        <>
+                                            <Typography mt={2} ml={2} variant="h6">
+                                                {t('glossary.courseDescription')}
+                                            </Typography>
+                                            <Typography
+                                                ml={2}
+                                                mr={2}
+                                                sx={{
+                                                    display: '-webkit-box',
+                                                    overflow: 'hidden',
+                                                    WebkitBoxOrient: 'vertical',
+                                                    WebkitLineClamp: 5,
+                                                    textOverflow: 'ellipsis',
+                                                    whiteSpace: 'normal',
+                                                }}
+                                            >
+                                                {info.course.courseDescription}
+                                            </Typography>
+                                        </>
+                                    )}
+                                </Stack>
+                            </CardActionArea>
+                        </Card>
+                    </Grid>
+                ))
+            ) : (
+                <Grid xs={12} mt={2}>
+                    <Stack textAlign="center" alignItems="center" spacing={2}>
+                        <LibraryAdd
+                            sx={{ color: theme.palette.text.disabled, fontSize: 80 }}
+                        />
+                        <Typography color="InactiveCaptionText">
+                            {t('glossary.noCourses')}
+                        </Typography>
+                    </Stack>
                 </Grid>
-            )) : <Grid xs={12}  mt={2}>
-                <Stack textAlign="center" alignItems="center" spacing={2}>
-                    <LibraryAdd  sx={{color:theme.palette.text.disabled, fontSize: 80}}/>
-                    <Typography color="InactiveCaptionText">{t('glossary.noCourses')}</Typography>
-                </Stack>
-
-            </Grid>}
+            )}
         </Grid>
     );
 });

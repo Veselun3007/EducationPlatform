@@ -3,5 +3,5 @@ export default interface CommentModel {
     studentassignmentId: number;
     courseUserId: number;
     commentDate: Date;
-    commentText?: string
+    commentText?: string;
 }

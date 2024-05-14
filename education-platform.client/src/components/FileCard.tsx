@@ -1,37 +1,33 @@
 import React from 'react';
 
-import { observer, useLocalObservable } from 'mobx-react-lite';
-import Grid from '@mui/material/Unstable_Grid2';
+import { observer } from 'mobx-react-lite';
 import {
     Avatar,
-    Button,
     CardActionArea,
-    IconButton,
-    Modal,
     Paper,
     Stack,
-    TextField,
     Typography,
     useTheme,
 } from '@mui/material';
-import { AttachFile, Delete, Link } from '@mui/icons-material';
-import ValidationError from '../helpers/validation/ValidationError';
-
-import { useTranslation } from 'react-i18next';
-
-import { action, observable } from 'mobx';
-import { useNavigate } from 'react-router-dom';
+import { AttachFile } from '@mui/icons-material';
 
 interface FileCardProps {
     file: string;
     onClick(): void;
-    bgColor?: string
+    bgColor?: string;
 }
 
 const FileCard: React.FC<FileCardProps> = observer(({ file, onClick, bgColor }) => {
     const theme = useTheme();
     return (
-        <Paper sx={{maxWidth: '100%', height: '100%', overflow: 'hidden', bgcolor:bgColor }}>
+        <Paper
+            sx={{
+                maxWidth: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                bgcolor: bgColor,
+            }}
+        >
             <CardActionArea
                 onClick={onClick}
                 sx={{ width: '100%', height: '100%', alignContent: 'center' }}
@@ -60,7 +56,6 @@ const FileCard: React.FC<FileCardProps> = observer(({ file, onClick, bgColor }) 
                             textOverflow: 'ellipsis',
                             whiteSpace: 'normal',
                         }}
-                        
                     >
                         {file}
                     </Typography>

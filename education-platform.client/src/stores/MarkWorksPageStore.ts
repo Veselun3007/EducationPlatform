@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { action, makeObservable, observable, runInAction } from "mobx";
-import AssignmentService from "../services/AssignmentService";
-import StudentAssignmentService from "../services/StudentAssignmentService";
-import RootStore from "./RootStore";
-import { NavigateFunction } from "react-router-dom";
-import AssignmentModel from "../models/assignment/AssignmentModel";
-import SAInfoModel from "../models/studentAssignment/SAInfoModel";
-import LoginRequiredError from "../errors/LoginRequiredError";
-import { enqueueAlert } from "../components/Notification/NotificationProvider";
-import ServiceError from "../errors/ServiceError";
-import UpdateMarkModel from "../models/studentAssignment/UpdateMarkModel";
-import CreateCommentModel from "../models/studentAssignment/CreateComentModel";
+import { action, makeObservable, observable, runInAction } from 'mobx';
+import AssignmentService from '../services/AssignmentService';
+import StudentAssignmentService from '../services/StudentAssignmentService';
+import RootStore from './RootStore';
+import { NavigateFunction } from 'react-router-dom';
+import AssignmentModel from '../models/assignment/AssignmentModel';
+import SAInfoModel from '../models/studentAssignment/SAInfoModel';
+import LoginRequiredError from '../errors/LoginRequiredError';
+import { enqueueAlert } from '../components/Notification/NotificationProvider';
+import ServiceError from '../errors/ServiceError';
+import UpdateMarkModel from '../models/studentAssignment/UpdateMarkModel';
+import CreateCommentModel from '../models/studentAssignment/CreateComentModel';
 
 export default class MarkWorksPageStore {
     private readonly _rootStore: RootStore;
@@ -18,7 +18,7 @@ export default class MarkWorksPageStore {
     private readonly _saService: StudentAssignmentService;
 
     assignment: AssignmentModel | null = null;
-    saInfo: SAInfoModel[] | null = null
+    saInfo: SAInfoModel[] | null = null;
 
     isLoading = true;
     currentUser: number | null = null;
@@ -26,7 +26,11 @@ export default class MarkWorksPageStore {
     isFileViewerOpen = false;
     fileLink = '';
 
-    constructor(rootStore: RootStore, assignmentService: AssignmentService, saService: StudentAssignmentService) {
+    constructor(
+        rootStore: RootStore,
+        assignmentService: AssignmentService,
+        saService: StudentAssignmentService,
+    ) {
         this._rootStore = rootStore;
         this._assignmentService = assignmentService;
         this._saService = saService;
@@ -44,12 +48,14 @@ export default class MarkWorksPageStore {
             sendComment: action.bound,
             onWorkFileClick: action.bound,
             onFileViewerClose: action.bound,
-        })
+        });
     }
 
     async init(courseId: number, assignmentId: number, navigate: NavigateFunction) {
         try {
-            const course = this._rootStore.courseStore.coursesInfo.find(c => c.course.courseId === courseId);
+            const course = this._rootStore.courseStore.coursesInfo.find(
+                (c) => c.course.courseId === courseId,
+            );
             if (!course) navigate('/');
             const user = course!.userInfo;
             if (user.role === 2) {
@@ -61,14 +67,14 @@ export default class MarkWorksPageStore {
                 this.currentUser = user.courseuserId;
             });
 
-            const assignment = await this._assignmentService.getAssignmentById(assignmentId);
-            const saInfo = await this._saService.getStudentAssignments(assignmentId)
+            const assignment =
+                await this._assignmentService.getAssignmentById(assignmentId);
+            const saInfo = await this._saService.getStudentAssignments(assignmentId);
             runInAction(() => {
                 this.saInfo = saInfo;
                 this.assignment = assignment;
                 this.isLoading = false;
             });
-
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -82,11 +88,11 @@ export default class MarkWorksPageStore {
 
     async onWorkFileClick(id: number, navigate: NavigateFunction) {
         try {
-            const link = await this._saService.getFileLink(id)
+            const link = await this._saService.getFileLink(id);
             runInAction(() => {
                 this.isFileViewerOpen = true;
                 this.fileLink = link;
-            })
+            });
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -106,11 +112,14 @@ export default class MarkWorksPageStore {
         try {
             const sa = await this._saService.updateMark(mark);
             runInAction(() => {
-                const index = this.saInfo!.findIndex(s => s.studentAssignment.studentassignmentId === sa.studentAssignment.studentassignmentId)
+                const index = this.saInfo!.findIndex(
+                    (s) =>
+                        s.studentAssignment.studentassignmentId ===
+                        sa.studentAssignment.studentassignmentId,
+                );
                 this.saInfo![index] = sa;
             });
-        }
-        catch (error) {
+        } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
                 enqueueAlert(error.message, 'error');
@@ -124,11 +133,14 @@ export default class MarkWorksPageStore {
         try {
             const commentInfo = await this._saService.createComment(comment);
             runInAction(() => {
-                const index = this.saInfo!.findIndex(s => s.studentAssignment.studentassignmentId === comment.studentAssignmentId);
-                this.saInfo![index].comments = commentInfo
-            })
-        }
-        catch (error) {
+                const index = this.saInfo!.findIndex(
+                    (s) =>
+                        s.studentAssignment.studentassignmentId ===
+                        comment.studentAssignmentId,
+                );
+                this.saInfo![index].comments = commentInfo;
+            });
+        } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
                 enqueueAlert(error.message, 'error');

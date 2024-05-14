@@ -1,4 +1,4 @@
-export default interface AttachedFileModel{
+export default interface AttachedFileModel {
     attachedFileId: number;
     attachedFileName: string;
 }

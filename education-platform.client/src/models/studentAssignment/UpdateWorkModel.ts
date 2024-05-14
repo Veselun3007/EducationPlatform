@@ -1,8 +1,8 @@
-import { makeObservable, observable } from "mobx";
-import ValidationError from "../../helpers/validation/ValidationError";
-import FileValidator from "../../helpers/validation/FileValidator";
+import { makeObservable, observable } from 'mobx';
+import ValidationError from '../../helpers/validation/ValidationError';
+import FileValidator from '../../helpers/validation/FileValidator';
 
-export default class UpdateWorkModel{
+export default class UpdateWorkModel {
     public assignmentFiles: File[];
     public studentAssignmentId: number;
     public userId?: string;
@@ -10,10 +10,10 @@ export default class UpdateWorkModel{
     constructor(assignmentFiles: File[], studentAssignmentId: number) {
         this.assignmentFiles = assignmentFiles;
         this.studentAssignmentId = studentAssignmentId;
-        makeObservable(this,{
+        makeObservable(this, {
             assignmentFiles: observable,
             studentAssignmentId: observable,
-            userId: observable
+            userId: observable,
         });
     }
 

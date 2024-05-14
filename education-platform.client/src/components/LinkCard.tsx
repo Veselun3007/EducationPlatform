@@ -1,26 +1,15 @@
 import React from 'react';
 
-import { observer, useLocalObservable } from 'mobx-react-lite';
-import Grid from '@mui/material/Unstable_Grid2';
+import { observer } from 'mobx-react-lite';
 import {
     Avatar,
-    Button,
     CardActionArea,
-    IconButton,
-    Modal,
     Paper,
     Stack,
-    TextField,
     Typography,
     useTheme,
 } from '@mui/material';
-import { Delete, Link } from '@mui/icons-material';
-import ValidationError from '../helpers/validation/ValidationError';
-
-import { useTranslation } from 'react-i18next';
-
-import { action, observable } from 'mobx';
-import { useNavigate } from 'react-router-dom';
+import { Link } from '@mui/icons-material';
 
 interface LinkCardProps {
     link: string;
@@ -32,6 +21,7 @@ const LinkCard: React.FC<LinkCardProps> = observer(({ link }) => {
     return (
         <Paper sx={{ width: '100%', height: '100%', overflow: 'hidden' }}>
             <CardActionArea
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 onClick={(e) => {
                     window.location.replace(link);
                 }}

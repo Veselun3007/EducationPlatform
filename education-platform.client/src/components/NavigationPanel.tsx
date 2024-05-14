@@ -31,8 +31,7 @@ import {
     ToggleButtonGroup,
     useMediaQuery,
 } from '@mui/material';
-import { action, observable } from 'mobx';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+import { observer } from 'mobx-react-lite';
 import { useLocation, useNavigate } from 'react-router-dom';
 import debounce from '../helpers/debounce';
 import AbstractBackground from './AbstractBackground';
@@ -82,18 +81,6 @@ const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'isSmallScreen',
 })<AppBarProps>(({ theme, isSmallScreen }) => ({
     zIndex: isSmallScreen ? theme.zIndex.drawer : theme.zIndex.drawer + 1,
-    // transition: theme.transitions.create(['width', 'margin'], {
-    //     easing: theme.transitions.easing.sharp,
-    //     duration: theme.transitions.duration.leavingScreen,
-    // }),
-    // ...(open && {
-    //     marginLeft: drawerWidth,
-    //     width: `calc(100% - ${drawerWidth}px)`,
-    //     transition: theme.transitions.create(['width', 'margin'], {
-    //         easing: theme.transitions.easing.sharp,
-    //         duration: theme.transitions.duration.enteringScreen,
-    //     }),
-    // }),
 }));
 
 const PermanentDrawer = styled(MuiDrawer, {
@@ -129,7 +116,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
         userStore.getUser(navigate);
         courseStore.init(navigate);
         return () => {
-            userStore.reset()
+            userStore.reset();
             courseStore.reset();
         };
     }, []);
@@ -161,8 +148,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                     sx={{
                         minHeight: 48,
                         justifyContent:
-                            courseStore.drawerOpen ||
-                                courseStore.toggled
+                            courseStore.drawerOpen || courseStore.toggled
                                 ? 'initial'
                                 : 'center',
                         px: 2.5,
@@ -177,8 +163,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         sx={{
                             minWidth: 0,
                             mr:
-                            courseStore.drawerOpen ||
-                            courseStore.toggled
+                                courseStore.drawerOpen || courseStore.toggled
                                     ? 3
                                     : 'auto',
                             justifyContent: 'center',
@@ -190,10 +175,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         primary={'Dashboard'}
                         sx={{
                             opacity:
-                            courseStore.drawerOpen ||
-                            courseStore.toggled
-                                    ? 1
-                                    : 0,
+                                courseStore.drawerOpen || courseStore.toggled ? 1 : 0,
                         }}
                     />
                 </ListItemButton>
@@ -211,8 +193,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                             sx={{
                                 minHeight: 48,
                                 justifyContent:
-                                courseStore.drawerOpen ||
-                                courseStore.toggled
+                                    courseStore.drawerOpen || courseStore.toggled
                                         ? 'initial'
                                         : 'center',
                                 px: 2.5,
@@ -221,14 +202,15 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 maxWidth: drawerWidth,
                                 mr: 1,
                             }}
-                            selected={`/course/${info.course.courseId}` === courseTopLevelPath}
+                            selected={
+                                `/course/${info.course.courseId}` === courseTopLevelPath
+                            }
                         >
                             <ListItemIcon
                                 sx={{
                                     minWidth: 0,
                                     mr:
-                                    courseStore.drawerOpen ||
-                                    courseStore.toggled
+                                        courseStore.drawerOpen || courseStore.toggled
                                             ? 3
                                             : 'auto',
                                     justifyContent: 'center',
@@ -255,8 +237,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 primary={info.course.courseName}
                                 sx={{
                                     opacity:
-                                    courseStore.drawerOpen ||
-                                    courseStore.toggled
+                                        courseStore.drawerOpen || courseStore.toggled
                                             ? 1
                                             : 0,
                                     display: '-webkit-box',
@@ -367,42 +348,8 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         <Stack direction="row" spacing={2}>
                             {pathname === '/dashboard' && (
                                 <>
-                                    {/* <IconButton
-                                        id="menu-button"
-                                        aria-controls={localStore.courseMenuAnchorEl ? 'course-menu' : undefined}
-                                        aria-haspopup="true"
-                                        aria-expanded={localStore.courseMenuAnchorEl ? 'true' : undefined}
-                                        onClick={localStore.handleCourseMenuOpen}
-                                        sx={{ zIndex: 1, position: 'relative', right: "2%" }}
-                                    >
-                                        <Add />
-                                    </IconButton>
-                                    <Menu
-                                        id="course-menu"
-                                        anchorEl={localStore.courseMenuAnchorEl}
-                                        open={Boolean(localStore.courseMenuAnchorEl)}
-                                        onClose={localStore.handleCourseMenuClose}
-                                        MenuListProps={{
-                                            'aria-labelledby': 'menu-button',
-                                        }}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'right',
-                                        }}
-                                        transformOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                        }}
-                                    >
-                                        <MenuItem onClick={localStore.handleCourseMenuClose}>Profile</MenuItem>
-                                        <MenuItem onClick={localStore.handleCourseMenuClose}>My account</MenuItem>
-                                        <MenuItem onClick={localStore.handleCourseMenuClose}>Logout</MenuItem>
-                                    </Menu> */}
-
                                     <IconButton
-                                        onClick={
-                                            courseStore.handleCreateCourseOpen
-                                        }
+                                        onClick={courseStore.handleCreateCourseOpen}
                                     >
                                         <Add />
                                     </IconButton>
@@ -457,9 +404,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         }}
                                     >
                                         <MenuItem
-                                            onClick={
-                                                courseStore.handleSettingsOpen
-                                            }
+                                            onClick={courseStore.handleSettingsOpen}
                                             sx={{ height: 50 }}
                                         >
                                             {t('common.settings')}
@@ -501,11 +446,7 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                 justifyContent="space-between"
                                 overflow="visible"
                             >
-                                <TabList
-                                    onChange={
-                                        courseStore.handleSettingsTabChange
-                                    }
-                                >
+                                <TabList onChange={courseStore.handleSettingsTabChange}>
                                     <Tab label={t('common.commonSettings')} value="1" />
                                     <Tab label={t('common.userSettings')} value="2" />
                                 </TabList>
@@ -531,9 +472,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         onChange={handleLanguageChange}
                                         aria-label="Platform"
                                     >
-                                        {locales.map((value, id) => (
-                                            <ToggleButton key={id} value={value}>
-                                                {value}
+                                        {locales.map((locale, id) => (
+                                            <ToggleButton key={id} value={locale.code}>
+                                                {locale.value}
                                             </ToggleButton>
                                         ))}
                                     </ToggleButtonGroup>
@@ -626,9 +567,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         >
                                             {userStore.errors.userImage !== null
                                                 ? t(
-                                                    userStore.errors.userImage.errorKey,
-                                                    userStore.errors.userImage.options,
-                                                )
+                                                      userStore.errors.userImage.errorKey,
+                                                      userStore.errors.userImage.options,
+                                                  )
                                                 : null}
                                         </Typography>
                                     </Stack>
@@ -643,9 +584,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         helperText={
                                             userStore.errors.email !== null
                                                 ? t(
-                                                    userStore.errors.email.errorKey,
-                                                    userStore.errors.email.options,
-                                                )
+                                                      userStore.errors.email.errorKey,
+                                                      userStore.errors.email.options,
+                                                  )
                                                 : null
                                         }
                                     />
@@ -659,9 +600,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                         helperText={
                                             userStore.errors.userName !== null
                                                 ? t(
-                                                    userStore.errors.userName.errorKey,
-                                                    userStore.errors.userName.options,
-                                                )
+                                                      userStore.errors.userName.errorKey,
+                                                      userStore.errors.userName.options,
+                                                  )
                                                 : null
                                         }
                                     />
@@ -678,9 +619,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                                     >
                                         {userStore.errors.meta !== null
                                             ? t(
-                                                userStore.errors.meta.errorKey,
-                                                userStore.errors.meta.options,
-                                            )
+                                                  userStore.errors.meta.errorKey,
+                                                  userStore.errors.meta.options,
+                                              )
                                             : null}
                                     </Typography>
                                     <Button
@@ -742,9 +683,9 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         helperText={
                             courseStore.errors.name !== null
                                 ? t(
-                                    courseStore.errors.name.errorKey,
-                                    courseStore.errors.name.options,
-                                )
+                                      courseStore.errors.name.errorKey,
+                                      courseStore.errors.name.options,
+                                  )
                                 : null
                         }
                     />
@@ -761,16 +702,14 @@ const NavigationPanel: React.FC<NavigationPanelProps> = observer(({ children }) 
                         variant="caption"
                         align="center"
                         visibility={
-                            courseStore.errors.meta !== null
-                                ? 'visible'
-                                : 'collapse'
+                            courseStore.errors.meta !== null ? 'visible' : 'collapse'
                         }
                     >
                         {courseStore.errors.meta !== null
                             ? t(
-                                courseStore.errors.meta.errorKey,
-                                courseStore.errors.meta.options,
-                            )
+                                  courseStore.errors.meta.errorKey,
+                                  courseStore.errors.meta.options,
+                              )
                             : null}
                     </Typography>
                     <Stack direction="row" width="100%" justifyContent="end">

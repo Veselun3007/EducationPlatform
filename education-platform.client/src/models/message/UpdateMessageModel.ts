@@ -1,7 +1,6 @@
-import { makeObservable, observable } from "mobx";
-import FileValidator from "../../helpers/validation/FileValidator";
-import StringValidator from "../../helpers/validation/StringValidator";
-import ValidationError from "../../helpers/validation/ValidationError";
+import { makeObservable, observable } from 'mobx';
+import StringValidator from '../../helpers/validation/StringValidator';
+import ValidationError from '../../helpers/validation/ValidationError';
 
 export default class UpdateMessageModel {
     public id: number;
@@ -10,7 +9,13 @@ export default class UpdateMessageModel {
     public creatorId: number;
     public createdIn: Date;
 
-    constructor(id: number,courseId: number, creatorId: number, createdIn: Date, messageText = '') {
+    constructor(
+        id: number,
+        courseId: number,
+        creatorId: number,
+        createdIn: Date,
+        messageText = '',
+    ) {
         this.id = id;
         this.courseId = courseId;
         this.messageText = messageText;
@@ -19,13 +24,12 @@ export default class UpdateMessageModel {
 
         makeObservable(this, {
             createdIn: observable,
-            id:observable,
+            id: observable,
             courseId: observable,
             messageText: observable,
             creatorId: observable,
         });
     }
-
 
     validateMessageText(): ValidationError[] {
         const validator = new StringValidator(this.messageText);
