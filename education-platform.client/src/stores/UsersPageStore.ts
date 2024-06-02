@@ -1,17 +1,16 @@
-import { action, makeObservable, observable, runInAction } from "mobx";
-import CourseUserService from "../services/CourseUserService";
-import RootStore from "./RootStore";
-import CourseUserInfoModel from "../models/courseUser/CourseUserInfoModel";
-import LoginRequiredError from "../errors/LoginRequiredError";
-import { NavigateFunction } from "react-router-dom";
-import { enqueueAlert } from "../components/Notification/NotificationProvider";
-import ServiceError from "../errors/ServiceError";
-import { SelectChangeEvent } from "@mui/material";
-import UpdateCourseUserModel from "../models/courseUser/UpdateCourseUserModel";
-import DeleteCourseUserModel from "../models/courseUser/DeleteCourseUserModel";
+import { action, makeObservable, observable, runInAction } from 'mobx';
+import CourseUserService from '../services/CourseUserService';
+import RootStore from './RootStore';
+import CourseUserInfoModel from '../models/courseUser/CourseUserInfoModel';
+import LoginRequiredError from '../errors/LoginRequiredError';
+import { NavigateFunction } from 'react-router-dom';
+import { enqueueAlert } from '../components/Notification/NotificationProvider';
+import ServiceError from '../errors/ServiceError';
+import { SelectChangeEvent } from '@mui/material';
+import UpdateCourseUserModel from '../models/courseUser/UpdateCourseUserModel';
+import DeleteCourseUserModel from '../models/courseUser/DeleteCourseUserModel';
 
 export default class UsersPageStore {
-
     private readonly _rootStore: RootStore;
     private readonly _courseUserService: CourseUserService;
 
@@ -43,7 +42,9 @@ export default class UsersPageStore {
                 this.users = users;
                 this.isLoading = false;
 
-                const course = this._rootStore.courseStore.coursesInfo.find(c => c.course.courseId === courseId);
+                const course = this._rootStore.courseStore.coursesInfo.find(
+                    (c) => c.course.courseId === courseId,
+                );
                 if (!course) navigate('/');
                 this.isAdmin = course?.userInfo.role === 0;
             });
@@ -58,24 +59,29 @@ export default class UsersPageStore {
         }
     }
 
-    async onUserRoleChange(event: SelectChangeEvent<number>, navigate: NavigateFunction, courseUserId: number) {
+    async onUserRoleChange(
+        event: SelectChangeEvent<number>,
+        navigate: NavigateFunction,
+        courseUserId: number,
+    ) {
         try {
             let role: number;
-            if (typeof (event.target.value) === 'string') {
+            if (typeof event.target.value === 'string') {
                 role = Number.parseInt(event.target.value);
             } else {
                 role = event.target.value;
             }
             const updatedUser = await this._courseUserService.updateCourseUser(
-                new UpdateCourseUserModel(courseUserId, role)
+                new UpdateCourseUserModel(courseUserId, role),
             );
 
             runInAction(() => {
-                const index = this.users.findIndex(u => u.courseuserId === updatedUser.courseuserId);
+                const index = this.users.findIndex(
+                    (u) => u.courseuserId === updatedUser.courseuserId,
+                );
                 this.users[index] = updatedUser;
                 enqueueAlert('glossary.editSuccess', 'success');
             });
-
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');
@@ -88,14 +94,17 @@ export default class UsersPageStore {
 
     async kickUser(courseUserId: number, navigate: NavigateFunction) {
         try {
-            await this._courseUserService.deleteCourseUser(new DeleteCourseUserModel(courseUserId));
+            await this._courseUserService.deleteCourseUser(
+                new DeleteCourseUserModel(courseUserId),
+            );
 
             runInAction(() => {
-                const index = this.users.findIndex(u => u.courseuserId === courseUserId);
+                const index = this.users.findIndex(
+                    (u) => u.courseuserId === courseUserId,
+                );
                 this.users.splice(index, 1);
                 enqueueAlert('glossary.kickUserSuccess', 'success');
             });
-
         } catch (error) {
             if (error instanceof LoginRequiredError) {
                 navigate('/login');

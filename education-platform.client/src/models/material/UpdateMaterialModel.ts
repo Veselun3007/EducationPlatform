@@ -11,7 +11,7 @@ export default class UpdateMaterialModel {
     materialDatePublication?: Date;
 
     constructor(
-        id:number,
+        id: number,
         courseId: number,
         materialName: string,
         materialDatePublication?: Date,
@@ -25,14 +25,12 @@ export default class UpdateMaterialModel {
         this.materialDescription = materialDescription;
         this.materialDatePublication = materialDatePublication;
 
-
         makeObservable(this, {
             courseId: observable,
             topicId: observable,
             materialName: observable,
             materialDescription: observable,
             materialDatePublication: observable,
-
         });
     }
 

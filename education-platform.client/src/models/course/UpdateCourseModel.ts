@@ -8,13 +8,13 @@ export default class UpdateCourseModel {
     public courseDescription?: string;
     public userId?: string;
 
-    constructor(courseId: number,name: string, description?: string) {
+    constructor(courseId: number, name: string, description?: string) {
         makeObservable(this, {
-            courseId:observable,
+            courseId: observable,
             courseName: observable,
             courseDescription: observable,
         });
-        this.courseId =courseId;
+        this.courseId = courseId;
         this.courseName = name;
         this.courseDescription = description;
     }

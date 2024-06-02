@@ -24,9 +24,6 @@ import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AttachFile, Delete, Link, MoreVert } from '@mui/icons-material';
-import FilesPicker from '../../components/FilesPicker';
-
-import LinksPicker from '../../components/LinksPicker';
 import LinkCard from '../../components/LinkCard';
 import FileCard from '../../components/FileCard';
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
@@ -44,7 +41,11 @@ const MaterialPage = observer(() => {
 
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        materialPageStore.init(Number.parseInt(courseId!), Number.parseInt(materialId!), navigate);
+        materialPageStore.init(
+            Number.parseInt(courseId!),
+            Number.parseInt(materialId!),
+            navigate,
+        );
         return () => materialPageStore.reset();
     }, [courseId, materialId]);
 
@@ -63,10 +64,8 @@ const MaterialPage = observer(() => {
     }
     const editString = materialPageStore.material!.isEdited
         ? ` (${t(
-            'glossary.changed',
-        )}: ${materialPageStore.material!.editedTime?.toLocaleString(
-            i18n.language,
-        )})`
+              'glossary.changed',
+          )}: ${materialPageStore.material!.editedTime?.toLocaleString(i18n.language)})`
         : '';
 
     return (
@@ -85,7 +84,7 @@ const MaterialPage = observer(() => {
                             <Typography variant="h5" color={theme.palette.primary.light}>
                                 {materialPageStore.material!.materialName}
                             </Typography>
-                            {materialPageStore.isTeacher &&
+                            {materialPageStore.isTeacher && (
                                 <>
                                     <IconButton
                                         id="menu-button"
@@ -109,7 +108,9 @@ const MaterialPage = observer(() => {
                                         elevation={4}
                                         id="material-menu"
                                         anchorEl={materialPageStore.materialMenuAnchor}
-                                        open={Boolean(materialPageStore.materialMenuAnchor)}
+                                        open={Boolean(
+                                            materialPageStore.materialMenuAnchor,
+                                        )}
                                         onClose={materialPageStore.closeMaterialMenu}
                                         MenuListProps={{
                                             'aria-labelledby': 'menu-button',
@@ -124,7 +125,9 @@ const MaterialPage = observer(() => {
                                         }}
                                     >
                                         <MenuItem
-                                            onClick={materialPageStore.handleEditMaterialOpen}
+                                            onClick={
+                                                materialPageStore.handleEditMaterialOpen
+                                            }
                                         >
                                             {t('glossary.editMaterial')}
                                         </MenuItem>
@@ -139,7 +142,8 @@ const MaterialPage = observer(() => {
                                             {t('glossary.deleteMaterial')}
                                         </MenuItem>
                                     </Menu>
-                                    </>}
+                                </>
+                            )}
                         </Stack>
                         <Typography variant="caption">
                             {materialPageStore.material!.materialDatePublication.toLocaleString(
@@ -169,21 +173,24 @@ const MaterialPage = observer(() => {
                     <Grid container spacing={1}>
                         {
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            materialPageStore.material!.materialfiles!.map(
-                                (file) => (
-                                    <Grid key={file.id} xs={12} md={6} height={55}>
-                                        <FileCard
-                                            file={
-                                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                                file.materialFile!.slice(file.materialFile!.indexOf('_') + 1)
-                                            }
-                                            onClick={() =>
-                                                materialPageStore.onFileClick(file.id, navigate)
-                                            }
-                                        />
-                                    </Grid>
-                                ),
-                            )
+                            materialPageStore.material!.materialfiles!.map((file) => (
+                                <Grid key={file.id} xs={12} md={6} height={55}>
+                                    <FileCard
+                                        file={
+                                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                            file.materialFile!.slice(
+                                                file.materialFile!.indexOf('_') + 1,
+                                            )
+                                        }
+                                        onClick={() =>
+                                            materialPageStore.onFileClick(
+                                                file.id,
+                                                navigate,
+                                            )
+                                        }
+                                    />
+                                </Grid>
+                            ))
                         }
                     </Grid>
                 </Stack>
@@ -254,11 +261,11 @@ const MaterialPage = observer(() => {
                             helperText={
                                 materialPageStore.editMaterialErrors.materialName !== null
                                     ? t(
-                                        materialPageStore.editMaterialErrors
-                                            .materialName.errorKey,
-                                        materialPageStore.editMaterialErrors
-                                            .materialName.options,
-                                    )
+                                          materialPageStore.editMaterialErrors
+                                              .materialName.errorKey,
+                                          materialPageStore.editMaterialErrors
+                                              .materialName.options,
+                                      )
                                     : null
                             }
                         />
@@ -308,9 +315,9 @@ const MaterialPage = observer(() => {
                         >
                             {materialPageStore.editMaterialErrors.meta !== null
                                 ? t(
-                                    materialPageStore.editMaterialErrors.meta.errorKey,
-                                    materialPageStore.editMaterialErrors.meta.options,
-                                )
+                                      materialPageStore.editMaterialErrors.meta.errorKey,
+                                      materialPageStore.editMaterialErrors.meta.options,
+                                  )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">
@@ -322,7 +329,9 @@ const MaterialPage = observer(() => {
                             </Button>
                             <Button
                                 color="primary"
-                                onClick={() => materialPageStore.submitMaterialEdit(navigate)}
+                                onClick={() =>
+                                    materialPageStore.submitMaterialEdit(navigate)
+                                }
                                 disabled={!materialPageStore.isEditMaterialValid}
                             >
                                 {t('common.edit')}
@@ -364,9 +373,18 @@ const MaterialPage = observer(() => {
                                                 }}
                                                 flexGrow={1}
                                             >
-                                                {file.materialFile!.slice(file.materialFile!.indexOf('_') + 1)}
+                                                {file.materialFile!.slice(
+                                                    file.materialFile!.indexOf('_') + 1,
+                                                )}
                                             </Typography>
-                                            <IconButton onClick={() => materialPageStore.onMaterialFileDelete(file.id, navigate)}>
+                                            <IconButton
+                                                onClick={() =>
+                                                    materialPageStore.onMaterialFileDelete(
+                                                        file.id,
+                                                        navigate,
+                                                    )
+                                                }
+                                            >
                                                 <Delete />
                                             </IconButton>
                                         </Stack>
@@ -382,7 +400,16 @@ const MaterialPage = observer(() => {
                                     startIcon={<AttachFile />}
                                 >
                                     {t('common.addFile')}
-                                    <input type="file" hidden onChange={(e) => materialPageStore.onMaterialFileAdd(e, navigate)} />
+                                    <input
+                                        type="file"
+                                        hidden
+                                        onChange={(e) =>
+                                            materialPageStore.onMaterialFileAdd(
+                                                e,
+                                                navigate,
+                                            )
+                                        }
+                                    />
                                 </Button>
                             </Grid>
                         </Grid>
@@ -392,46 +419,60 @@ const MaterialPage = observer(() => {
 
                         <Stack direction="column" width="100%">
                             <Grid container spacing={1}>
-                                {materialPageStore.material!.materiallinks!.map((link) => (
-                                    <Grid key={link.id} xs={12}>
-                                        <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
-                                            <Stack
-                                                direction="row"
-                                                pr={1}
-                                                height={50}
-                                                alignItems="center"
-                                                spacing={1}
+                                {materialPageStore.material!.materiallinks!.map(
+                                    (link) => (
+                                        <Grid key={link.id} xs={12}>
+                                            <Paper
+                                                variant="outlined"
+                                                sx={{ overflow: 'hidden' }}
                                             >
-                                                <Avatar
-                                                    sx={{
-                                                        height: '100%',
-                                                        bgcolor: theme.palette.primary.main,
-                                                    }}
-                                                    variant="square"
+                                                <Stack
+                                                    direction="row"
+                                                    pr={1}
+                                                    height={50}
+                                                    alignItems="center"
+                                                    spacing={1}
                                                 >
-                                                    <Link />
-                                                </Avatar>
-                                                <Typography
-                                                    textAlign="left"
-                                                    sx={{
-                                                        display: '-webkit-box',
-                                                        overflow: 'hidden',
-                                                        WebkitBoxOrient: 'vertical',
-                                                        WebkitLineClamp: 1,
-                                                        textOverflow: 'ellipsis',
-                                                        whiteSpace: 'normal',
-                                                    }}
-                                                    flexGrow={1}
-                                                >
-                                                    {link.materialLink}
-                                                </Typography>
-                                                <IconButton onClick={() => materialPageStore.onMaterialLinkDelete(link.id, navigate)}>
-                                                    <Delete />
-                                                </IconButton>
-                                            </Stack>
-                                        </Paper>
-                                    </Grid>
-                                ))}
+                                                    <Avatar
+                                                        sx={{
+                                                            height: '100%',
+                                                            bgcolor:
+                                                                theme.palette.primary
+                                                                    .main,
+                                                        }}
+                                                        variant="square"
+                                                    >
+                                                        <Link />
+                                                    </Avatar>
+                                                    <Typography
+                                                        textAlign="left"
+                                                        sx={{
+                                                            display: '-webkit-box',
+                                                            overflow: 'hidden',
+                                                            WebkitBoxOrient: 'vertical',
+                                                            WebkitLineClamp: 1,
+                                                            textOverflow: 'ellipsis',
+                                                            whiteSpace: 'normal',
+                                                        }}
+                                                        flexGrow={1}
+                                                    >
+                                                        {link.materialLink}
+                                                    </Typography>
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            materialPageStore.onMaterialLinkDelete(
+                                                                link.id,
+                                                                navigate,
+                                                            )
+                                                        }
+                                                    >
+                                                        <Delete />
+                                                    </IconButton>
+                                                </Stack>
+                                            </Paper>
+                                        </Grid>
+                                    ),
+                                )}
                                 <Grid xs={12}>
                                     <Button
                                         sx={{ height: 50 }}
@@ -479,12 +520,17 @@ const MaterialPage = observer(() => {
                                     onChange={materialPageStore.onLinkAddChange}
                                 />
                                 <Stack direction="row" width="100%" justifyContent="end">
-                                    <Button color="inherit" onClick={materialPageStore.handleLinkAddClose}>
+                                    <Button
+                                        color="inherit"
+                                        onClick={materialPageStore.handleLinkAddClose}
+                                    >
                                         {t('common.close')}
                                     </Button>
                                     <Button
                                         color="primary"
-                                        onClick={() => materialPageStore.onMaterialLinkAdd(navigate)}
+                                        onClick={() =>
+                                            materialPageStore.onMaterialLinkAdd(navigate)
+                                        }
                                     >
                                         {t('common.add')}
                                     </Button>

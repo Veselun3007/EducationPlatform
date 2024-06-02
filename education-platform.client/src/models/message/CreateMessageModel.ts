@@ -1,10 +1,9 @@
-import { makeObservable, observable } from "mobx";
-import FileValidator from "../../helpers/validation/FileValidator";
-import StringValidator from "../../helpers/validation/StringValidator";
-import ValidationError from "../../helpers/validation/ValidationError";
+import { makeObservable, observable } from 'mobx';
+import FileValidator from '../../helpers/validation/FileValidator';
+import StringValidator from '../../helpers/validation/StringValidator';
+import ValidationError from '../../helpers/validation/ValidationError';
 
 export default class CreateMessageModel {
-
     public courseId: number;
     public messageText?: string;
     public creatorId: number;

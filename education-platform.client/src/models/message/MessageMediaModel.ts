@@ -1,4 +1,4 @@
-export default interface MessageMediaModel{
+export default interface MessageMediaModel {
     id: number;
     messageId: number;
     mediaLink: string;

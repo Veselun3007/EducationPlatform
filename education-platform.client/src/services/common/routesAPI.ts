@@ -49,7 +49,7 @@ export const DELETE_TOPIC = COURSE_CONTENT_BASE_ROUTE + '/topic/delete/';
 export const GET_BY_ID_TOPIC = COURSE_CONTENT_BASE_ROUTE + '/topic/getById/';
 export const GET_ALL_TOPIC = COURSE_CONTENT_BASE_ROUTE + '/topic/getAll/';
 
-const COURSE_BASE_ROUTE = 'https://localhost:7198/api'
+const COURSE_BASE_ROUTE = 'https://localhost:7198/api';
 
 export const GET_COURSE_USERS = COURSE_BASE_ROUTE + '/CourseUser/get_courseusers_course';
 export const CREATE_COURSE_USER = COURSE_BASE_ROUTE + '/CourseUser/create_courseuser';
@@ -62,5 +62,13 @@ export const CREATE_COURSE = COURSE_BASE_ROUTE + '/Course/create_course';
 export const UPDATE_COURSE = COURSE_BASE_ROUTE + '/Course/update_course';
 export const DELETE_COURSE = COURSE_BASE_ROUTE + '/Course/delete_course';
 
-
 export const HUB_URL = 'https://localhost:5003/chat';
+
+const SA_BASE_ROUTE = 'https://localhost:7038/api';
+
+export const GET_SA = SA_BASE_ROUTE + '/StudentAssignment/get_sa/';
+export const GET_ALL_SA = SA_BASE_ROUTE + '/StudentAssignment/get_all_sa/';
+export const GET_FILELINK = SA_BASE_ROUTE + '/StudentAssignment/get_file_link/';
+export const CREATE_COMMENT = SA_BASE_ROUTE + '/StudentAssignment/create_comment';
+export const EVALUATE = SA_BASE_ROUTE + '/StudentAssignment/evaluation';
+export const UPDATE_WORK = SA_BASE_ROUTE + '/StudentAssignment/update_work';

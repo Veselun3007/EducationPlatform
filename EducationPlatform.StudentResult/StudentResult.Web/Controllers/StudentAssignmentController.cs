@@ -37,7 +37,7 @@ namespace StudentResult.Web.Controllers {
         [Authorize]
         [HttpGet("get_all_sa/{assignmentId}")]
         public async Task<IActionResult> GetAllStudentAssignments(int assignmentId) {
-            GetStudentAssignmentQuery request = new GetStudentAssignmentQuery(assignmentId, HttpContext.User.FindFirst("username")?.Value);
+            GetAllStudentAssignmentQuery request = new GetAllStudentAssignmentQuery(assignmentId, HttpContext.User.FindFirst("username")?.Value);
             //GetAllStudentAssignmentQuery request = new GetAllStudentAssignmentQuery(assignmentId, "945864e8-30e1-7010-6377-79d39e0c3261");
             var result = await _mediator.Send(request, new CancellationToken());
             return ReturnResult(result);
@@ -111,7 +111,7 @@ namespace StudentResult.Web.Controllers {
 
         [Authorize]
         [HttpPut("update_work")]
-        public async Task<IActionResult> UpdateStudentAssignment(UpdateStudentAssignmentCommand request) {
+        public async Task<IActionResult> UpdateStudentAssignment([FromForm] UpdateStudentAssignmentCommand request) {
             request.UserId = HttpContext.User.FindFirst("username")?.Value;
             //request.UserId = "2428f4f8-c071-708f-229b-4763a5e3f703";
             var result = await _mediator.Send(request, new CancellationToken());

@@ -29,7 +29,8 @@
         "minMark":"Мінімальний бал",
         "maxMark":"Максимальний бал",
         "send":"Надіслати",
-        "role": "Роль"
+        "role": "Роль",
+        "mark":"Оцінка"
     },
     "validation":{
         "isRequired": "Обов'язкове поле",
@@ -42,7 +43,9 @@
         "lessThan": "Значення повинно бути меншим за {{value}}",
         "greaterThan": "Значення повинно бути більшим за {{value}}",
         "unsupportedFileExtension":"Підтримуються файли лише типу {{extensions}}",
-        "invalidLink": "Невірне посилання"
+        "invalidLink": "Невірне посилання",
+        "lessThanNonStrict": "Значення повинно бути меншим або дорівнювати {{value}}",
+        "greaterThanNonStrict": "Значення повинно бути більшим або дорівнювати {{value}}"
     },
     "glossary":{
         "introductionTitle": "Нове слово у навчальних платформах",
@@ -151,6 +154,23 @@
         "editMessage": "Редагування повідомлення",
         "courseChat":"Чат курсу",
         "messageNotFound": "Повідомлення не знайдено",
-        "endMessage": "Ви все прочитали"
+        "endMessage": "Ви все прочитали",
+        "alreadyMarked": "Робота вже оцінена. Її не можна змінити",
+        "graded": "Оцінена",
+        "submitted":"Здана",
+        "expired":"Сплив термін здачі",
+        "markedAsDone":"Помічена як виконана",
+        "assigned":"Призначена",
+        "submittedExpired":"Здана з запізенням",
+        "cancelEdit": "Скасувати оновлення",
+        "editWork": "Редагувати роботу",
+        "writeComment": "Написати коментарій",
+        "notGraded": "Не оцінено",
+        "attachedFiles": "Прикріплені файли",
+        "noAttachedFiles": "Студент не прикріпив файли для перевірки",
+        "gradeWork":"Оцінити роботу",
+        "changeGrade":"Змінити оцінку",
+        "assignmentGrade":"Оцінка робіт студентів з завдання \"{{name}}\"",
+        "noComments":"Коментарів немає"
     }
 }

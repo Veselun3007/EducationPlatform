@@ -114,7 +114,8 @@ export default class TopicService {
 
     async getTopics(courseId: number) {
         try {
-            const topics = (await httpClient.get(GET_ALL_TOPIC + courseId)).data as TopicModel[];
+            const topics = (await httpClient.get(GET_ALL_TOPIC + courseId))
+                .data as TopicModel[];
 
             return topics;
         } catch (error) {

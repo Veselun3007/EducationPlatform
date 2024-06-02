@@ -13,9 +13,10 @@ import MaterialPageStore from './MaterialPageStore';
 import CourseStore from './CourseStore';
 import SignUpPageStore from './SignUpPageStore';
 import UserStore from './UserStore';
-import CommonService from '../services/common/CommonService';
 import UsersPageStore from './UsersPageStore';
 import ChatPageStore from './ChatPageStore';
+import StudentAssignmentService from '../services/StudentAssignmentService';
+import MarkWorksPageStore from './MarkWorksPageStore';
 
 export default class RootStore {
     readonly authService: AuthService;
@@ -25,7 +26,7 @@ export default class RootStore {
     readonly materialService: MaterialService;
     readonly topicService: TopicService;
     readonly courseUserService: CourseUserService;
-    readonly commonService: CommonService;
+    readonly markWorksPageStore: MarkWorksPageStore;
 
     readonly signUpPageStore: SignUpPageStore;
     readonly loginPageStore: LoginPageStore;
@@ -36,7 +37,8 @@ export default class RootStore {
     readonly assignmentPageStore: AssignmentPageStore;
     readonly materialPageStore: MaterialPageStore;
     readonly usersPageStore: UsersPageStore;
-    readonly chatPageStore: ChatPageStore
+    readonly chatPageStore: ChatPageStore;
+    readonly saService: StudentAssignmentService;
 
     constructor() {
         //Service creation
@@ -47,17 +49,39 @@ export default class RootStore {
         this.assignmentService = new AssignmentService(this.authService);
         this.materialService = new MaterialService(this.authService);
         this.topicService = new TopicService(this.authService);
-        this.commonService = new CommonService();
+        this.saService = new StudentAssignmentService(this.authService);
+
         //Store creation
         this.signUpPageStore = new SignUpPageStore(this, this.authService);
         this.loginPageStore = new LoginPageStore(this, this.authService);
         this.confirmUserPageStore = new ConfirmUserPageStore(this, this.authService);
         this.userStore = new UserStore(this, this.authService, this.userService);
         this.courseStore = new CourseStore(this, this.courseService);
-        this.coursePageStore = new CoursePageStore(this, this.courseService, this.assignmentService,this.materialService, this.topicService, this.courseUserService);
-        this.assignmentPageStore = new AssignmentPageStore(this, this.assignmentService, this.topicService, this.commonService);
-        this.materialPageStore = new MaterialPageStore(this, this.materialService, this.topicService, this.commonService);
-        this.usersPageStore =new UsersPageStore(this, this.courseUserService);
+        this.coursePageStore = new CoursePageStore(
+            this,
+            this.courseService,
+            this.assignmentService,
+            this.materialService,
+            this.topicService,
+            this.courseUserService,
+        );
+        this.assignmentPageStore = new AssignmentPageStore(
+            this,
+            this.assignmentService,
+            this.topicService,
+            this.saService,
+        );
+        this.materialPageStore = new MaterialPageStore(
+            this,
+            this.materialService,
+            this.topicService,
+        );
+        this.usersPageStore = new UsersPageStore(this, this.courseUserService);
         this.chatPageStore = new ChatPageStore(this, this.courseUserService);
+        this.markWorksPageStore = new MarkWorksPageStore(
+            this,
+            this.assignmentService,
+            this.saService,
+        );
     }
 }

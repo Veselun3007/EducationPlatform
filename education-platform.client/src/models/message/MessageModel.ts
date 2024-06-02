@@ -1,4 +1,4 @@
-import MessageMediaModel from "./MessageMediaModel";
+import MessageMediaModel from './MessageMediaModel';
 
 export default interface MessageModel {
     id: number;

@@ -14,7 +14,6 @@ import {
     Modal,
     Paper,
     Select,
-    Skeleton,
     Stack,
     TextField,
     Typography,
@@ -25,16 +24,14 @@ import { useStore } from '../../context/RootStoreContext';
 import { useTranslation } from 'react-i18next';
 import Grid from '@mui/material/Unstable_Grid2';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Assessment, AttachFile, Delete, Link, MoreVert } from '@mui/icons-material';
+import { AttachFile, Delete, Link, MoreVert } from '@mui/icons-material';
 import FilesPicker from '../../components/FilesPicker';
-
-import LinksPicker from '../../components/LinksPicker';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import LinkCard from '../../components/LinkCard';
 import FileCard from '../../components/FileCard';
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
-import ValidationError from '../../helpers/validation/ValidationError';
+import CommentBlock from '../../components/CommentBlock';
 
 const AssignmentPage = observer(() => {
     const { assignmentPageStore } = useStore();
@@ -52,7 +49,7 @@ const AssignmentPage = observer(() => {
         assignmentPageStore.init(
             Number.parseInt(courseId!),
             Number.parseInt(assignmentId!),
-            navigate
+            navigate,
         );
         return () => assignmentPageStore.reset();
     }, [courseId, assignmentId]);
@@ -72,17 +69,17 @@ const AssignmentPage = observer(() => {
     }
     const editString = assignmentPageStore.assignment!.isEdited
         ? ` (${t(
-            'glossary.changed',
-        )}: ${assignmentPageStore.assignment!.editedTime?.toLocaleString(
-            i18n.language,
-        )})`
+              'glossary.changed',
+          )}: ${assignmentPageStore.assignment!.editedTime?.toLocaleString(
+              i18n.language,
+          )})`
         : '';
 
     return (
         <Grid container mt={2}>
             <Grid xs />
             <Grid container xs={12} md={10} xl={8} spacing={2}>
-                <Grid xs={12} lg={!assignmentPageStore.isTeacher? 8: 12}>
+                <Grid xs={12} lg={!assignmentPageStore.isTeacher ? 8 : 12}>
                     <Stack spacing={2}>
                         <Stack
                             borderBottom={2}
@@ -98,72 +95,82 @@ const AssignmentPage = observer(() => {
                                 >
                                     {assignmentPageStore.assignment!.assignmentName}
                                 </Typography>
-                                {assignmentPageStore.isTeacher && <><IconButton
-                                    id="menu-button"
-                                    aria-controls={
-                                        assignmentPageStore.assignmentMenuAnchor
-                                            ? 'assignment-menu'
-                                            : undefined
-                                    }
-                                    aria-haspopup="true"
-                                    aria-expanded={
-                                        assignmentPageStore.assignmentMenuAnchor
-                                            ? 'true'
-                                            : undefined
-                                    }
-                                    onClick={assignmentPageStore.openAssignmentMenu}
-                                    sx={{ textAlign: 'end' }}
-                                >
-                                    <MoreVert />
-                                </IconButton>
-                                    <Menu
-                                        elevation={4}
-                                        id="assignment-menu"
-                                        anchorEl={assignmentPageStore.assignmentMenuAnchor}
-                                        open={Boolean(
-                                            assignmentPageStore.assignmentMenuAnchor,
-                                        )}
-                                        onClose={assignmentPageStore.closeAssignmentMenu}
-                                        MenuListProps={{
-                                            'aria-labelledby': 'menu-button',
-                                        }}
-                                        anchorOrigin={{
-                                            vertical: 'bottom',
-                                            horizontal: 'right',
-                                        }}
-                                        transformOrigin={{
-                                            vertical: 'top',
-                                            horizontal: 'right',
-                                        }}
-                                    >
-                                        <MenuItem
+                                {assignmentPageStore.isTeacher && (
+                                    <>
+                                        <IconButton
+                                            id="menu-button"
+                                            aria-controls={
+                                                assignmentPageStore.assignmentMenuAnchor
+                                                    ? 'assignment-menu'
+                                                    : undefined
+                                            }
+                                            aria-haspopup="true"
+                                            aria-expanded={
+                                                assignmentPageStore.assignmentMenuAnchor
+                                                    ? 'true'
+                                                    : undefined
+                                            }
                                             onClick={
-                                                assignmentPageStore.handleEditAssignmentOpen
+                                                assignmentPageStore.openAssignmentMenu
                                             }
+                                            sx={{ textAlign: 'end' }}
                                         >
-                                            {t('glossary.editAssignment')}
-                                        </MenuItem>
-                                        <MenuItem
-                                            onClick={() =>
-                                                assignmentPageStore.deleteAssignment(
-                                                    Number.parseInt(courseId!),
-                                                    navigate,
-                                                )
+                                            <MoreVert />
+                                        </IconButton>
+                                        <Menu
+                                            elevation={4}
+                                            id="assignment-menu"
+                                            anchorEl={
+                                                assignmentPageStore.assignmentMenuAnchor
                                             }
-                                        >
-                                            {t('glossary.deleteAssignment')}
-                                        </MenuItem>
-                                        <MenuItem
-                                            onClick={() => {
-                                                assignmentPageStore.closeAssignmentMenu();
-                                                navigate(
-                                                    `/course/${courseId}/assignment/${assignmentId}/mark`,
-                                                );
+                                            open={Boolean(
+                                                assignmentPageStore.assignmentMenuAnchor,
+                                            )}
+                                            onClose={
+                                                assignmentPageStore.closeAssignmentMenu
+                                            }
+                                            MenuListProps={{
+                                                'aria-labelledby': 'menu-button',
+                                            }}
+                                            anchorOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
                                             }}
                                         >
-                                            {t('glossary.markWorks')}
-                                        </MenuItem>
-                                    </Menu></>}
+                                            <MenuItem
+                                                onClick={
+                                                    assignmentPageStore.handleEditAssignmentOpen
+                                                }
+                                            >
+                                                {t('glossary.editAssignment')}
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() =>
+                                                    assignmentPageStore.deleteAssignment(
+                                                        Number.parseInt(courseId!),
+                                                        navigate,
+                                                    )
+                                                }
+                                            >
+                                                {t('glossary.deleteAssignment')}
+                                            </MenuItem>
+                                            <MenuItem
+                                                onClick={() => {
+                                                    assignmentPageStore.closeAssignmentMenu();
+                                                    navigate(
+                                                        `/course/${courseId}/assignment/${assignmentId}/mark`,
+                                                    );
+                                                }}
+                                            >
+                                                {t('glossary.markWorks')}
+                                            </MenuItem>
+                                        </Menu>
+                                    </>
+                                )}
                             </Stack>
                             <Typography variant="caption">
                                 {assignmentPageStore.assignment!.assignmentDatePublication.toLocaleString(
@@ -208,10 +215,17 @@ const AssignmentPage = observer(() => {
                                             <FileCard
                                                 file={
                                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                                    file.assignmentFile!.slice(file.assignmentFile!.indexOf('_') + 1)
+                                                    file.assignmentFile!.slice(
+                                                        file.assignmentFile!.indexOf(
+                                                            '_',
+                                                        ) + 1,
+                                                    )
                                                 }
                                                 onClick={() =>
-                                                    assignmentPageStore.onFileClick(file.id, navigate)
+                                                    assignmentPageStore.onFileClick(
+                                                        file.id,
+                                                        navigate,
+                                                    )
                                                 }
                                             />
                                         </Grid>
@@ -292,11 +306,11 @@ const AssignmentPage = observer(() => {
                                     assignmentPageStore.editAssignmentErrors
                                         .assignmentName !== null
                                         ? t(
-                                            assignmentPageStore.editAssignmentErrors
-                                                .assignmentName.errorKey,
-                                            assignmentPageStore.editAssignmentErrors
-                                                .assignmentName.options,
-                                        )
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .assignmentName.errorKey,
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .assignmentName.options,
+                                          )
                                         : null
                                 }
                             />
@@ -383,11 +397,11 @@ const AssignmentPage = observer(() => {
                                     {assignmentPageStore.editAssignmentErrors
                                         .assignmentDeadline !== null
                                         ? t(
-                                            assignmentPageStore.editAssignmentErrors
-                                                .assignmentDeadline.errorKey,
-                                            assignmentPageStore.editAssignmentErrors
-                                                .assignmentDeadline.options,
-                                        )
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .assignmentDeadline.errorKey,
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .assignmentDeadline.options,
+                                          )
                                         : null}
                                 </FormHelperText>
                             </FormControl>
@@ -404,13 +418,13 @@ const AssignmentPage = observer(() => {
                                 }
                                 helperText={
                                     assignmentPageStore.editAssignmentErrors.minMark !==
-                                        null
+                                    null
                                         ? t(
-                                            assignmentPageStore.editAssignmentErrors
-                                                .minMark.errorKey,
-                                            assignmentPageStore.editAssignmentErrors
-                                                .minMark.options,
-                                        )
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .minMark.errorKey,
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .minMark.options,
+                                          )
                                         : null
                                 }
                             />
@@ -428,13 +442,13 @@ const AssignmentPage = observer(() => {
                                 }
                                 helperText={
                                     assignmentPageStore.editAssignmentErrors.maxMark !==
-                                        null
+                                    null
                                         ? t(
-                                            assignmentPageStore.editAssignmentErrors
-                                                .maxMark.errorKey,
-                                            assignmentPageStore.editAssignmentErrors
-                                                .maxMark.options,
-                                        )
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .maxMark.errorKey,
+                                              assignmentPageStore.editAssignmentErrors
+                                                  .maxMark.options,
+                                          )
                                         : null
                                 }
                             />
@@ -451,11 +465,11 @@ const AssignmentPage = observer(() => {
                             >
                                 {assignmentPageStore.editAssignmentErrors.meta !== null
                                     ? t(
-                                        assignmentPageStore.editAssignmentErrors.meta
-                                            .errorKey,
-                                        assignmentPageStore.editAssignmentErrors.meta
-                                            .options,
-                                    )
+                                          assignmentPageStore.editAssignmentErrors.meta
+                                              .errorKey,
+                                          assignmentPageStore.editAssignmentErrors.meta
+                                              .options,
+                                      )
                                     : null}
                             </Typography>
                             <Stack direction="row" width="100%" justifyContent="end">
@@ -469,7 +483,9 @@ const AssignmentPage = observer(() => {
                                 </Button>
                                 <Button
                                     color="primary"
-                                    onClick={() => assignmentPageStore.submitEditAssignment(navigate)}
+                                    onClick={() =>
+                                        assignmentPageStore.submitEditAssignment(navigate)
+                                    }
                                     disabled={!assignmentPageStore.isEditAssignmentValid}
                                 >
                                     {t('common.edit')}
@@ -479,84 +495,31 @@ const AssignmentPage = observer(() => {
                                 {t('glossary.editFiles')}
                             </Typography>
                             <Grid container spacing={1}>
-                                {assignmentPageStore.assignment!.assignmentfiles!.map((file) => (
-                                    <Grid key={file.id} xs={12}>
-                                        <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
-                                            <Stack
-                                                direction="row"
-                                                height={50}
-                                                alignItems="center"
-                                                spacing={1}
-                                                overflow="hidden"
-                                                pr={1}
+                                {assignmentPageStore.assignment!.assignmentfiles!.map(
+                                    (file) => (
+                                        <Grid key={file.id} xs={12}>
+                                            <Paper
+                                                variant="outlined"
+                                                sx={{ overflow: 'hidden' }}
                                             >
-                                                <Avatar
-                                                    sx={{
-                                                        height: '100%',
-                                                        bgcolor: theme.palette.primary.main,
-                                                    }}
-                                                    variant="square"
-                                                >
-                                                    <AttachFile />
-                                                </Avatar>
-                                                <Typography
-                                                    textAlign="left"
-                                                    sx={{
-                                                        display: '-webkit-box',
-                                                        overflow: 'hidden',
-                                                        WebkitBoxOrient: 'vertical',
-                                                        WebkitLineClamp: 1,
-                                                        textOverflow: 'ellipsis',
-                                                        whiteSpace: 'normal',
-                                                    }}
-                                                    flexGrow={1}
-                                                >
-                                                    {file.assignmentFile!.slice(file.assignmentFile!.indexOf('_') + 1)}
-                                                </Typography>
-                                                <IconButton onClick={() => assignmentPageStore.onAssignmentFileDelete(file.id, navigate)}>
-                                                    <Delete />
-                                                </IconButton>
-                                            </Stack>
-                                        </Paper>
-                                    </Grid>
-                                ))}
-                                <Grid xs={12}>
-                                    <Button
-                                        sx={{ height: 50 }}
-                                        variant="contained"
-                                        component="label"
-                                        color="secondary"
-                                        startIcon={<AttachFile />}
-                                    >
-                                        {t('common.addFile')}
-                                        <input type="file" hidden onChange={(e) => assignmentPageStore.onAssignmentFileAdd(e, navigate)} />
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                            <Typography textAlign="start" width="100%" variant="h6">
-                                {t('glossary.editLinks')}
-                            </Typography>
-
-                            <Stack direction="column" width="100%">
-                                <Grid container spacing={1}>
-                                    {assignmentPageStore.assignment!.assignmentlinks!.map((link) => (
-                                        <Grid key={link.id} xs={12}>
-                                            <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
                                                 <Stack
                                                     direction="row"
-                                                    pr={1}
                                                     height={50}
                                                     alignItems="center"
                                                     spacing={1}
+                                                    overflow="hidden"
+                                                    pr={1}
                                                 >
                                                     <Avatar
                                                         sx={{
                                                             height: '100%',
-                                                            bgcolor: theme.palette.primary.main,
+                                                            bgcolor:
+                                                                theme.palette.primary
+                                                                    .main,
                                                         }}
                                                         variant="square"
                                                     >
-                                                        <Link />
+                                                        <AttachFile />
                                                     </Avatar>
                                                     <Typography
                                                         textAlign="left"
@@ -570,15 +533,110 @@ const AssignmentPage = observer(() => {
                                                         }}
                                                         flexGrow={1}
                                                     >
-                                                        {link.assignmentLink}
+                                                        {file.assignmentFile!.slice(
+                                                            file.assignmentFile!.indexOf(
+                                                                '_',
+                                                            ) + 1,
+                                                        )}
                                                     </Typography>
-                                                    <IconButton onClick={() => assignmentPageStore.onAssignmentLinkDelete(link.id, navigate)}>
+                                                    <IconButton
+                                                        onClick={() =>
+                                                            assignmentPageStore.onAssignmentFileDelete(
+                                                                file.id,
+                                                                navigate,
+                                                            )
+                                                        }
+                                                    >
                                                         <Delete />
                                                     </IconButton>
                                                 </Stack>
                                             </Paper>
                                         </Grid>
-                                    ))}
+                                    ),
+                                )}
+                                <Grid xs={12}>
+                                    <Button
+                                        sx={{ height: 50 }}
+                                        variant="contained"
+                                        component="label"
+                                        color="secondary"
+                                        startIcon={<AttachFile />}
+                                    >
+                                        {t('common.addFile')}
+                                        <input
+                                            type="file"
+                                            hidden
+                                            onChange={(e) =>
+                                                assignmentPageStore.onAssignmentFileAdd(
+                                                    e,
+                                                    navigate,
+                                                )
+                                            }
+                                        />
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                            <Typography textAlign="start" width="100%" variant="h6">
+                                {t('glossary.editLinks')}
+                            </Typography>
+
+                            <Stack direction="column" width="100%">
+                                <Grid container spacing={1}>
+                                    {assignmentPageStore.assignment!.assignmentlinks!.map(
+                                        (link) => (
+                                            <Grid key={link.id} xs={12}>
+                                                <Paper
+                                                    variant="outlined"
+                                                    sx={{ overflow: 'hidden' }}
+                                                >
+                                                    <Stack
+                                                        direction="row"
+                                                        pr={1}
+                                                        height={50}
+                                                        alignItems="center"
+                                                        spacing={1}
+                                                    >
+                                                        <Avatar
+                                                            sx={{
+                                                                height: '100%',
+                                                                bgcolor:
+                                                                    theme.palette.primary
+                                                                        .main,
+                                                            }}
+                                                            variant="square"
+                                                        >
+                                                            <Link />
+                                                        </Avatar>
+                                                        <Typography
+                                                            textAlign="left"
+                                                            sx={{
+                                                                display: '-webkit-box',
+                                                                overflow: 'hidden',
+                                                                WebkitBoxOrient:
+                                                                    'vertical',
+                                                                WebkitLineClamp: 1,
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: 'normal',
+                                                            }}
+                                                            flexGrow={1}
+                                                        >
+                                                            {link.assignmentLink}
+                                                        </Typography>
+                                                        <IconButton
+                                                            onClick={() =>
+                                                                assignmentPageStore.onAssignmentLinkDelete(
+                                                                    link.id,
+                                                                    navigate,
+                                                                )
+                                                            }
+                                                        >
+                                                            <Delete />
+                                                        </IconButton>
+                                                    </Stack>
+                                                </Paper>
+                                            </Grid>
+                                        ),
+                                    )}
                                     <Grid xs={12}>
                                         <Button
                                             sx={{ height: 50 }}
@@ -586,7 +644,9 @@ const AssignmentPage = observer(() => {
                                             component="label"
                                             color="secondary"
                                             startIcon={<Link />}
-                                            onClick={assignmentPageStore.handleLinkAddOpen}
+                                            onClick={
+                                                assignmentPageStore.handleLinkAddOpen
+                                            }
                                         >
                                             {t('common.addLink')}
                                         </Button>
@@ -614,7 +674,11 @@ const AssignmentPage = observer(() => {
                                     p={3}
                                     alignItems="center"
                                 >
-                                    <Typography textAlign="start" width="100%" variant="h6">
+                                    <Typography
+                                        textAlign="start"
+                                        width="100%"
+                                        variant="h6"
+                                    >
                                         {t('common.addLink')}
                                     </Typography>
                                     <TextField
@@ -625,13 +689,26 @@ const AssignmentPage = observer(() => {
                                         value={assignmentPageStore.linkAdd}
                                         onChange={assignmentPageStore.onLinkAddChange}
                                     />
-                                    <Stack direction="row" width="100%" justifyContent="end">
-                                        <Button color="inherit" onClick={assignmentPageStore.handleLinkAddClose}>
+                                    <Stack
+                                        direction="row"
+                                        width="100%"
+                                        justifyContent="end"
+                                    >
+                                        <Button
+                                            color="inherit"
+                                            onClick={
+                                                assignmentPageStore.handleLinkAddClose
+                                            }
+                                        >
                                             {t('common.close')}
                                         </Button>
                                         <Button
                                             color="primary"
-                                            onClick={() => assignmentPageStore.onAssignmentLinkAdd(navigate)}
+                                            onClick={() =>
+                                                assignmentPageStore.onAssignmentLinkAdd(
+                                                    navigate,
+                                                )
+                                            }
                                         >
                                             {t('common.add')}
                                         </Button>
@@ -641,29 +718,232 @@ const AssignmentPage = observer(() => {
                         </Stack>
                     </Modal>
                 </Grid>
-                {!assignmentPageStore.isTeacher && <Grid xs={12} lg={4}>
-                    <Paper sx={{ p: 2 }}>
-                        <Stack direction="column" spacing={2}>
-                            <Typography variant="h6">{t('glossary.myWork')}</Typography>
+                {!assignmentPageStore.isTeacher && (
+                    <Grid xs={12} lg={4}>
+                        <Stack spacing={2}>
+                            <Paper sx={{ p: 2 }}>
+                                <Stack direction="column" spacing={2}>
+                                    <Stack
+                                        direction="row"
+                                        justifyContent="space-between"
+                                        alignItems="center"
+                                    >
+                                        <Typography variant="h6">
+                                            {t('glossary.myWork')}
+                                        </Typography>
+                                        {assignmentPageStore.saInfo?.studentAssignment
+                                            .isDone &&
+                                            assignmentPageStore.saInfo?.studentAssignment
+                                                .currentMark && (
+                                                <Stack direction="column">
+                                                    <Typography
+                                                        color={theme.palette.success.main}
+                                                    >
+                                                        {t('glossary.graded')}
+                                                    </Typography>
+                                                    <Typography
+                                                        color={theme.palette.success.main}
+                                                    >
+                                                        {`${
+                                                            assignmentPageStore.saInfo
+                                                                .studentAssignment
+                                                                .currentMark
+                                                        }/${
+                                                            assignmentPageStore.assignment!
+                                                                .maxMark
+                                                        }`}
+                                                    </Typography>
+                                                </Stack>
+                                            )}
 
-                            <FilesPicker
-                                onFileAdd={assignmentPageStore.onWorkFileAdd}
-                                fullWidth={true}
-                                onFileDelete={assignmentPageStore.onWorkFileDelete}
-                                files={assignmentPageStore.work.workFiles}
-                                error={assignmentPageStore.workErrors.workFiles}
-                            />
-                            <Button
-                                variant="outlined"
-                                disabled={!assignmentPageStore.isWorkValid}
-                                fullWidth
-                                sx={{ height: 50 }}
-                            >
-                                {t('common.send')}
-                            </Button>
+                                        {assignmentPageStore.saInfo?.studentAssignment
+                                            .isDone &&
+                                            !assignmentPageStore.saInfo?.studentAssignment
+                                                .currentMark &&
+                                            assignmentPageStore.saInfo.studentAssignment
+                                                .submissionDate &&
+                                            assignmentPageStore.saInfo.studentAssignment
+                                                .submissionDate <
+                                                assignmentPageStore.assignment!
+                                                    .assignmentDeadline &&
+                                            assignmentPageStore.saInfo.files.length >
+                                                0 && (
+                                                <Typography>
+                                                    {t('glossary.submitted')}
+                                                </Typography>
+                                            )}
+
+                                        {assignmentPageStore.saInfo?.studentAssignment
+                                            .isDone &&
+                                            !assignmentPageStore.saInfo?.studentAssignment
+                                                .currentMark &&
+                                            assignmentPageStore.saInfo.studentAssignment
+                                                .submissionDate &&
+                                            assignmentPageStore.saInfo.studentAssignment
+                                                .submissionDate >
+                                                assignmentPageStore.assignment!
+                                                    .assignmentDeadline && (
+                                                <Typography
+                                                    color={theme.palette.error.light}
+                                                >
+                                                    {t('glossary.submittedExpired')}
+                                                </Typography>
+                                            )}
+
+                                        {!assignmentPageStore.saInfo?.studentAssignment
+                                            .isDone &&
+                                            new Date(Date.now()) >
+                                                assignmentPageStore.assignment!
+                                                    .assignmentDeadline && (
+                                                <Typography
+                                                    color={theme.palette.error.main}
+                                                >
+                                                    {t('glossary.expired')}
+                                                </Typography>
+                                            )}
+
+                                        {!assignmentPageStore.saInfo?.studentAssignment
+                                            .isDone &&
+                                            new Date(Date.now()) <
+                                                assignmentPageStore.assignment!
+                                                    .assignmentDeadline && (
+                                                <Typography
+                                                    color={theme.palette.success.main}
+                                                >
+                                                    {t('glossary.assigned')}
+                                                </Typography>
+                                            )}
+
+                                        {assignmentPageStore.saInfo?.studentAssignment
+                                            .isDone &&
+                                            !assignmentPageStore.saInfo?.studentAssignment
+                                                .currentMark &&
+                                            assignmentPageStore.saInfo.studentAssignment
+                                                .submissionDate &&
+                                            assignmentPageStore.saInfo.studentAssignment
+                                                .submissionDate <
+                                                assignmentPageStore.assignment!
+                                                    .assignmentDeadline &&
+                                            assignmentPageStore.saInfo.files.length ===
+                                                0 && (
+                                                <Typography>
+                                                    {t('glossary.markedAsDone')}
+                                                </Typography>
+                                            )}
+                                    </Stack>
+
+                                    {assignmentPageStore.isEditWork && (
+                                        <>
+                                            <FilesPicker
+                                                onFileAdd={
+                                                    assignmentPageStore.onWorkFileAdd
+                                                }
+                                                fullWidth={true}
+                                                onFileDelete={
+                                                    assignmentPageStore.onWorkFileDelete
+                                                }
+                                                files={
+                                                    assignmentPageStore.work!
+                                                        .assignmentFiles
+                                                }
+                                                error={
+                                                    assignmentPageStore.workErrors
+                                                        .workFiles
+                                                }
+                                            />
+                                            <Button
+                                                variant="outlined"
+                                                disabled={
+                                                    !assignmentPageStore.isWorkValid
+                                                }
+                                                fullWidth
+                                                sx={{ height: 50 }}
+                                                onClick={() =>
+                                                    assignmentPageStore.submitWorkUpdate(
+                                                        navigate,
+                                                    )
+                                                }
+                                            >
+                                                {t('common.send')}
+                                            </Button>
+
+                                            {assignmentPageStore.saInfo?.studentAssignment
+                                                .isDone && (
+                                                <Button
+                                                    color="error"
+                                                    fullWidth
+                                                    sx={{ height: 50 }}
+                                                    variant="contained"
+                                                    onClick={
+                                                        assignmentPageStore.disableEditMode
+                                                    }
+                                                >
+                                                    {t('glossary.cancelEdit')}
+                                                </Button>
+                                            )}
+                                        </>
+                                    )}
+
+                                    {!assignmentPageStore.isEditWork && (
+                                        <>
+                                            {assignmentPageStore.saInfo!.files!.map(
+                                                (file) => (
+                                                    <Box
+                                                        key={file.attachedFileId}
+                                                        width="100%"
+                                                        height={55}
+                                                    >
+                                                        <FileCard
+                                                            file={
+                                                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                                                file.attachedFileName!.slice(
+                                                                    file.attachedFileName!.indexOf(
+                                                                        '_',
+                                                                    ) + 1,
+                                                                )
+                                                            }
+                                                            onClick={() =>
+                                                                assignmentPageStore.onWorkFileClick(
+                                                                    file.attachedFileId,
+                                                                    navigate,
+                                                                )
+                                                            }
+                                                        />
+                                                    </Box>
+                                                ),
+                                            )}
+
+                                            {!assignmentPageStore.saInfo
+                                                ?.studentAssignment.currentMark && (
+                                                <Button
+                                                    fullWidth
+                                                    sx={{ height: 50 }}
+                                                    variant="contained"
+                                                    onClick={
+                                                        assignmentPageStore.enableEditMode
+                                                    }
+                                                >
+                                                    {t('glossary.editWork')}
+                                                </Button>
+                                            )}
+                                        </>
+                                    )}
+                                </Stack>
+                            </Paper>
+                            <Paper sx={{ p: 2, minHeight: 100 }}>
+                                <CommentBlock
+                                    comments={assignmentPageStore.saInfo!.comments}
+                                    currentUser={assignmentPageStore.currentUser!}
+                                    assignmentId={
+                                        assignmentPageStore.saInfo!.studentAssignment
+                                            .studentassignmentId
+                                    }
+                                    sendComment={assignmentPageStore.sendComment}
+                                />
+                            </Paper>
                         </Stack>
-                    </Paper>
-                </Grid>}
+                    </Grid>
+                )}
             </Grid>
             <Grid xs />
         </Grid>

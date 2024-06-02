@@ -6,7 +6,7 @@ export default class NotificationProviderStore {
     isOpen = false;
     key = '';
     variant = 'default';
-    options?: Record<string,unknown> = undefined
+    options?: Record<string, unknown> = undefined;
 
     constructor() {
         makeObservable(this, {
@@ -18,7 +18,11 @@ export default class NotificationProviderStore {
         });
     }
 
-    enqueueAlert(text: string, variant: NotificationVariants = 'default', options?: Record<string, unknown>) {
+    enqueueAlert(
+        text: string,
+        variant: NotificationVariants = 'default',
+        options?: Record<string, unknown>,
+    ) {
         this.isOpen = true;
         this.key = text;
         this.variant = variant;

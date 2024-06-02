@@ -50,7 +50,6 @@ const CoursePage = observer(() => {
     const navigate = useNavigate();
     const { id } = useParams();
 
-
     if (!id || isNaN(Number(id))) {
         navigate('/404');
     }
@@ -135,25 +134,31 @@ const CoursePage = observer(() => {
                                         horizontal: 'right',
                                     }}
                                 >
-                                    {coursePageStore.isAdmin && <MenuItem
-                                        onClick={coursePageStore.handleEditCourseOpen}
-                                    >
-                                        {t('glossary.editCourse')}
-                                    </MenuItem>}
-                                    {coursePageStore.isAdmin && <MenuItem
-                                        onClick={() =>
-                                            coursePageStore.deleteCourse(navigate)
-                                        }
-                                    >
-                                        {t('glossary.deleteCourse')}
-                                    </MenuItem>}
-                                    {(coursePageStore.isStudent) && <MenuItem
-                                        onClick={() =>
-                                            coursePageStore.leaveCourse(navigate)
-                                        }
-                                    >
-                                        {t('glossary.leaveCourse')}
-                                    </MenuItem>}
+                                    {coursePageStore.isAdmin && (
+                                        <MenuItem
+                                            onClick={coursePageStore.handleEditCourseOpen}
+                                        >
+                                            {t('glossary.editCourse')}
+                                        </MenuItem>
+                                    )}
+                                    {coursePageStore.isAdmin && (
+                                        <MenuItem
+                                            onClick={() =>
+                                                coursePageStore.deleteCourse(navigate)
+                                            }
+                                        >
+                                            {t('glossary.deleteCourse')}
+                                        </MenuItem>
+                                    )}
+                                    {coursePageStore.isStudent && (
+                                        <MenuItem
+                                            onClick={() =>
+                                                coursePageStore.leaveCourse(navigate)
+                                            }
+                                        >
+                                            {t('glossary.leaveCourse')}
+                                        </MenuItem>
+                                    )}
                                     <MenuItem
                                         onClick={() => {
                                             coursePageStore.closeCourseMenu();
@@ -200,7 +205,11 @@ const CoursePage = observer(() => {
                                     >
                                         <Typography>{t('glossary.joinLink')}</Typography>
                                         <Typography sx={{ fontStyle: 'italic' }}>
-                                            {`${window.location.origin}/course/${id}/join/${coursePageStore.course!.course.courseLink}`}
+                                            {`${
+                                                window.location.origin
+                                            }/course/${id}/join/${
+                                                coursePageStore.course!.course.courseLink
+                                            }`}
                                         </Typography>
                                         <IconButton
                                             onClick={() => {
@@ -210,7 +219,12 @@ const CoursePage = observer(() => {
                                                 );
                                                 navigator.clipboard.writeText(
                                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                                    `${window.location.origin}/course/${id}/join/${coursePageStore.course!.course.courseLink}`
+                                                    `${
+                                                        window.location.origin
+                                                    }/course/${id}/join/${
+                                                        coursePageStore.course!.course
+                                                            .courseLink
+                                                    }`,
                                                 );
                                             }}
                                         >
@@ -222,34 +236,40 @@ const CoursePage = observer(() => {
                             <Grid xs={12} flexGrow={1}></Grid>
                         </Grid>
                     </AbstractBackground>
-                    {coursePageStore.course?.course.courseDescription && <Paper sx={{ width: '100%', p: 2, borderRadius: 3 }}>
-                        <Stack>
-                            <Typography variant='h6'>
-                                {t('glossary.courseDescription')}
-                            </Typography>
-                            <Typography textAlign="left">
-                                {coursePageStore.course?.course.courseDescription}
-                            </Typography>
-                        </Stack>
-                    </Paper>}
+                    {coursePageStore.course?.course.courseDescription && (
+                        <Paper sx={{ width: '100%', p: 2, borderRadius: 3 }}>
+                            <Stack>
+                                <Typography variant="h6">
+                                    {t('glossary.courseDescription')}
+                                </Typography>
+                                <Typography textAlign="left">
+                                    {coursePageStore.course?.course.courseDescription}
+                                </Typography>
+                            </Stack>
+                        </Paper>
+                    )}
 
-                    {(coursePageStore.isAdmin || coursePageStore.isTeacher) && <Button
-                        id="contentMenu-button"
-                        aria-controls={
-                            coursePageStore.contentMenuAnchor ? 'content-menu' : undefined
-                        }
-                        aria-haspopup="true"
-                        aria-expanded={
-                            coursePageStore.contentMenuAnchor ? 'true' : undefined
-                        }
-                        onClick={coursePageStore.openContentMenu}
-                        sx={{ width: 'fit-content' }}
-                        startIcon={<Add />}
-                        variant="contained"
-                        color="secondary"
-                    >
-                        {t('common.create')}
-                    </Button>}
+                    {(coursePageStore.isAdmin || coursePageStore.isTeacher) && (
+                        <Button
+                            id="contentMenu-button"
+                            aria-controls={
+                                coursePageStore.contentMenuAnchor
+                                    ? 'content-menu'
+                                    : undefined
+                            }
+                            aria-haspopup="true"
+                            aria-expanded={
+                                coursePageStore.contentMenuAnchor ? 'true' : undefined
+                            }
+                            onClick={coursePageStore.openContentMenu}
+                            sx={{ width: 'fit-content' }}
+                            startIcon={<Add />}
+                            variant="contained"
+                            color="secondary"
+                        >
+                            {t('common.create')}
+                        </Button>
+                    )}
                     <Menu
                         elevation={4}
                         id="content-menu"
@@ -296,10 +316,10 @@ const CoursePage = observer(() => {
                                 .map((material) => {
                                     const editString = material.isEdited
                                         ? ` (${t(
-                                            'glossary.changed',
-                                        )}: ${material.editedTime?.toLocaleString(
-                                            i18n.language,
-                                        )})`
+                                              'glossary.changed',
+                                          )}: ${material.editedTime?.toLocaleString(
+                                              i18n.language,
+                                          )})`
                                         : '';
                                     return (
                                         <Card key={material.id}>
@@ -345,10 +365,10 @@ const CoursePage = observer(() => {
                                 .map((assignment) => {
                                     const editString = assignment.isEdited
                                         ? ` (${t(
-                                            'glossary.changed',
-                                        )}: ${assignment.editedTime?.toLocaleString(
-                                            i18n.language,
-                                        )})`
+                                              'glossary.changed',
+                                          )}: ${assignment.editedTime?.toLocaleString(
+                                              i18n.language,
+                                          )})`
                                         : '';
                                     return (
                                         <Card key={assignment.id}>
@@ -389,14 +409,14 @@ const CoursePage = observer(() => {
 
                         {
                             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                            (!coursePageStore.assignments!.some(
+                            !coursePageStore.assignments!.some(
                                 (m) => m.topicId === null,
                             ) &&
                                 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                 !coursePageStore.materials!.some(
                                     (m) => m.topicId === null,
-                                )) &&
-                            emptyTopic
+                                ) &&
+                                emptyTopic
                         }
                     </Stack>
                     {
@@ -426,24 +446,30 @@ const CoursePage = observer(() => {
                                     >
                                         {topic.title}
                                     </Typography>
-                                    {(coursePageStore.isAdmin || coursePageStore.isTeacher) && <Stack direction="row">
-                                        <IconButton
-                                            onClick={() =>
-                                                coursePageStore.handleEditTopicOpen(
-                                                    topic.id,
-                                                )
-                                            }
-                                        >
-                                            <Edit />
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={() =>
-                                                coursePageStore.deleteTopic(topic.id, navigate)
-                                            }
-                                        >
-                                            <Delete />
-                                        </IconButton>
-                                    </Stack>}
+                                    {(coursePageStore.isAdmin ||
+                                        coursePageStore.isTeacher) && (
+                                        <Stack direction="row">
+                                            <IconButton
+                                                onClick={() =>
+                                                    coursePageStore.handleEditTopicOpen(
+                                                        topic.id,
+                                                    )
+                                                }
+                                            >
+                                                <Edit />
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={() =>
+                                                    coursePageStore.deleteTopic(
+                                                        topic.id,
+                                                        navigate,
+                                                    )
+                                                }
+                                            >
+                                                <Delete />
+                                            </IconButton>
+                                        </Stack>
+                                    )}
                                 </Stack>
                                 {
                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -452,10 +478,10 @@ const CoursePage = observer(() => {
                                         .map((material) => {
                                             const editString = material.isEdited
                                                 ? ` (${t(
-                                                    'glossary.changed',
-                                                )}: ${material.editedTime?.toLocaleString(
-                                                    i18n.language,
-                                                )})`
+                                                      'glossary.changed',
+                                                  )}: ${material.editedTime?.toLocaleString(
+                                                      i18n.language,
+                                                  )})`
                                                 : '';
                                             return (
                                                 <Card key={material.id}>
@@ -509,10 +535,10 @@ const CoursePage = observer(() => {
                                         .map((assignment) => {
                                             const editString = assignment.isEdited
                                                 ? ` (${t(
-                                                    'glossary.changed',
-                                                )}: ${assignment.editedTime?.toLocaleString(
-                                                    i18n.language,
-                                                )})`
+                                                      'glossary.changed',
+                                                  )}: ${assignment.editedTime?.toLocaleString(
+                                                      i18n.language,
+                                                  )})`
                                                 : '';
                                             return (
                                                 <Card key={assignment.id}>
@@ -559,14 +585,14 @@ const CoursePage = observer(() => {
 
                                 {
                                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                    (!coursePageStore.assignments!.some(
+                                    !coursePageStore.assignments!.some(
                                         (m) => m.topicId === topic.id,
                                     ) &&
                                         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                         !coursePageStore.materials!.some(
                                             (m) => m.topicId === topic.id,
-                                        )) &&
-                                    emptyTopic
+                                        ) &&
+                                        emptyTopic
                                 }
                             </Stack>
                         ))
@@ -606,9 +632,9 @@ const CoursePage = observer(() => {
                             helperText={
                                 coursePageStore.editTopicErrors.title !== null
                                     ? t(
-                                        coursePageStore.editTopicErrors.title.errorKey,
-                                        coursePageStore.editTopicErrors.title.options,
-                                    )
+                                          coursePageStore.editTopicErrors.title.errorKey,
+                                          coursePageStore.editTopicErrors.title.options,
+                                      )
                                     : null
                             }
                         />
@@ -625,9 +651,9 @@ const CoursePage = observer(() => {
                         >
                             {coursePageStore.editTopicErrors.meta !== null
                                 ? t(
-                                    coursePageStore.editTopicErrors.meta.errorKey,
-                                    coursePageStore.editTopicErrors.meta.options,
-                                )
+                                      coursePageStore.editTopicErrors.meta.errorKey,
+                                      coursePageStore.editTopicErrors.meta.options,
+                                  )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">
@@ -682,9 +708,9 @@ const CoursePage = observer(() => {
                             helperText={
                                 coursePageStore.courseErrors.name !== null
                                     ? t(
-                                        coursePageStore.courseErrors.name.errorKey,
-                                        coursePageStore.courseErrors.name.options,
-                                    )
+                                          coursePageStore.courseErrors.name.errorKey,
+                                          coursePageStore.courseErrors.name.options,
+                                      )
                                     : null
                             }
                         />
@@ -708,9 +734,9 @@ const CoursePage = observer(() => {
                         >
                             {coursePageStore.courseErrors.meta !== null
                                 ? t(
-                                    coursePageStore.courseErrors.meta.errorKey,
-                                    coursePageStore.courseErrors.meta.options,
-                                )
+                                      coursePageStore.courseErrors.meta.errorKey,
+                                      coursePageStore.courseErrors.meta.options,
+                                  )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">
@@ -764,10 +790,10 @@ const CoursePage = observer(() => {
                             helperText={
                                 coursePageStore.createTopicErrors.title !== null
                                     ? t(
-                                        coursePageStore.createTopicErrors.title
-                                            .errorKey,
-                                        coursePageStore.createTopicErrors.title.options,
-                                    )
+                                          coursePageStore.createTopicErrors.title
+                                              .errorKey,
+                                          coursePageStore.createTopicErrors.title.options,
+                                      )
                                     : null
                             }
                         />
@@ -784,9 +810,9 @@ const CoursePage = observer(() => {
                         >
                             {coursePageStore.createTopicErrors.meta !== null
                                 ? t(
-                                    coursePageStore.createTopicErrors.meta.errorKey,
-                                    coursePageStore.createTopicErrors.meta.options,
-                                )
+                                      coursePageStore.createTopicErrors.meta.errorKey,
+                                      coursePageStore.createTopicErrors.meta.options,
+                                  )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">
@@ -798,7 +824,9 @@ const CoursePage = observer(() => {
                             </Button>
                             <Button
                                 color="primary"
-                                onClick={() => coursePageStore.submitCreateTopic(navigate)}
+                                onClick={() =>
+                                    coursePageStore.submitCreateTopic(navigate)
+                                }
                                 disabled={!coursePageStore.isCreateTopicValid}
                             >
                                 {t('common.create')}
@@ -839,11 +867,11 @@ const CoursePage = observer(() => {
                             helperText={
                                 coursePageStore.materialErrors.materialName !== null
                                     ? t(
-                                        coursePageStore.materialErrors.materialName
-                                            .errorKey,
-                                        coursePageStore.materialErrors.materialName
-                                            .options,
-                                    )
+                                          coursePageStore.materialErrors.materialName
+                                              .errorKey,
+                                          coursePageStore.materialErrors.materialName
+                                              .options,
+                                      )
                                     : null
                             }
                         />
@@ -906,9 +934,9 @@ const CoursePage = observer(() => {
                         >
                             {coursePageStore.materialErrors.meta !== null
                                 ? t(
-                                    coursePageStore.materialErrors.meta.errorKey,
-                                    coursePageStore.materialErrors.meta.options,
-                                )
+                                      coursePageStore.materialErrors.meta.errorKey,
+                                      coursePageStore.materialErrors.meta.options,
+                                  )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">
@@ -963,11 +991,11 @@ const CoursePage = observer(() => {
                             helperText={
                                 coursePageStore.assignmentErrors.assignmentName !== null
                                     ? t(
-                                        coursePageStore.assignmentErrors.assignmentName
-                                            .errorKey,
-                                        coursePageStore.assignmentErrors.assignmentName
-                                            .options,
-                                    )
+                                          coursePageStore.assignmentErrors.assignmentName
+                                              .errorKey,
+                                          coursePageStore.assignmentErrors.assignmentName
+                                              .options,
+                                      )
                                     : null
                             }
                         />
@@ -1036,13 +1064,13 @@ const CoursePage = observer(() => {
                             />
                             <FormHelperText error>
                                 {coursePageStore.assignmentErrors.assignmentDeadline !==
-                                    null
+                                null
                                     ? t(
-                                        coursePageStore.assignmentErrors
-                                            .assignmentDeadline.errorKey,
-                                        coursePageStore.assignmentErrors
-                                            .assignmentDeadline.options,
-                                    )
+                                          coursePageStore.assignmentErrors
+                                              .assignmentDeadline.errorKey,
+                                          coursePageStore.assignmentErrors
+                                              .assignmentDeadline.options,
+                                      )
                                     : null}
                             </FormHelperText>
                         </FormControl>
@@ -1057,11 +1085,11 @@ const CoursePage = observer(() => {
                             helperText={
                                 coursePageStore.assignmentErrors.minMark !== null
                                     ? t(
-                                        coursePageStore.assignmentErrors.minMark
-                                            .errorKey,
-                                        coursePageStore.assignmentErrors.minMark
-                                            .options,
-                                    )
+                                          coursePageStore.assignmentErrors.minMark
+                                              .errorKey,
+                                          coursePageStore.assignmentErrors.minMark
+                                              .options,
+                                      )
                                     : null
                             }
                         />
@@ -1077,11 +1105,11 @@ const CoursePage = observer(() => {
                             helperText={
                                 coursePageStore.assignmentErrors.maxMark !== null
                                     ? t(
-                                        coursePageStore.assignmentErrors.maxMark
-                                            .errorKey,
-                                        coursePageStore.assignmentErrors.maxMark
-                                            .options,
-                                    )
+                                          coursePageStore.assignmentErrors.maxMark
+                                              .errorKey,
+                                          coursePageStore.assignmentErrors.maxMark
+                                              .options,
+                                      )
                                     : null
                             }
                         />
@@ -1112,9 +1140,9 @@ const CoursePage = observer(() => {
                         >
                             {coursePageStore.assignmentErrors.meta !== null
                                 ? t(
-                                    coursePageStore.assignmentErrors.meta.errorKey,
-                                    coursePageStore.assignmentErrors.meta.options,
-                                )
+                                      coursePageStore.assignmentErrors.meta.errorKey,
+                                      coursePageStore.assignmentErrors.meta.options,
+                                  )
                                 : null}
                         </Typography>
                         <Stack direction="row" width="100%" justifyContent="end">

@@ -96,9 +96,9 @@ const IntroductionPage = () => {
                         onChange={handleLanguageChange}
                         aria-label="Platform"
                     >
-                        {locales.map((value, id) => (
-                            <ToggleButton key={id} value={value}>
-                                {value}
+                        {locales.map((locale, id) => (
+                            <ToggleButton key={id} value={locale.code}>
+                                {locale.value}
                             </ToggleButton>
                         ))}
                     </ToggleButtonGroup>

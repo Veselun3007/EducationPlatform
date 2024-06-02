@@ -52,9 +52,8 @@ export default class MaterialService {
 
     async updateMaterial(material: UpdateMaterialModel) {
         try {
-            const updatedMaterial = (
-                await httpClient.putForm(UPDATE_MATERIAL, material)
-            ).data.result as MaterialModel;
+            const updatedMaterial = (await httpClient.putForm(UPDATE_MATERIAL, material))
+                .data.result as MaterialModel;
 
             return updatedMaterial;
         } catch (error) {
@@ -122,7 +121,8 @@ export default class MaterialService {
 
     async getMaterials(courseId: number) {
         try {
-            const materials = (await httpClient.get(GET_ALL_MATERIAL + courseId)).data as MaterialModel[];
+            const materials = (await httpClient.get(GET_ALL_MATERIAL + courseId))
+                .data as MaterialModel[];
 
             return materials;
         } catch (error) {
@@ -169,7 +169,7 @@ export default class MaterialService {
 
     async deleteFileById(fileId: number) {
         try {
-            await httpClient.delete(DELETE_MATERIAL_FILE + fileId)
+            await httpClient.delete(DELETE_MATERIAL_FILE + fileId);
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
@@ -190,8 +190,9 @@ export default class MaterialService {
 
     async addFile(file: File, materialId: number) {
         try {
-            const createdFile = (await httpClient.postForm(ADD_MATERIAL_FILE + materialId, { file: file }))
-                .data.result as MaterialFileModel;
+            const createdFile = (
+                await httpClient.postForm(ADD_MATERIAL_FILE + materialId, { file: file })
+            ).data.result as MaterialFileModel;
 
             return createdFile;
         } catch (error) {
@@ -235,11 +236,13 @@ export default class MaterialService {
 
     async addLink(materialId: number, link: string) {
         try {
-            const createdLink = (await httpClient.post(ADD_MATERIAL_LINK + materialId, link, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })).data.result as MaterialLinkModel
+            const createdLink = (
+                await httpClient.post(ADD_MATERIAL_LINK + materialId, link, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+            ).data.result as MaterialLinkModel;
             return createdLink;
         } catch (error) {
             if (error instanceof AxiosError) {

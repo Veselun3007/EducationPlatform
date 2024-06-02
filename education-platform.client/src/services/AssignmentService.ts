@@ -1,4 +1,4 @@
-import { AxiosError, toFormData } from 'axios';
+import { AxiosError } from 'axios';
 import LoginRequiredError from '../errors/LoginRequiredError';
 import ServiceError from '../errors/ServiceError';
 import CreateAssignmentModel from '../models/assignment/CreateAssignmentModel';
@@ -123,7 +123,8 @@ export default class AssignmentService {
 
     async getAssignments(id: number) {
         try {
-            const assignments = (await httpClient.get(GET_ALL_ASSIGNMENT + id)).data as AssignmentModel[];
+            const assignments = (await httpClient.get(GET_ALL_ASSIGNMENT + id))
+                .data as AssignmentModel[];
 
             return assignments;
         } catch (error) {
@@ -170,7 +171,7 @@ export default class AssignmentService {
 
     async deleteFileById(fileId: number) {
         try {
-            await httpClient.delete(DELETE_ASSIGNMENT_FILE + fileId)
+            await httpClient.delete(DELETE_ASSIGNMENT_FILE + fileId);
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {
@@ -191,8 +192,11 @@ export default class AssignmentService {
 
     async addFile(file: File, assignmentId: number) {
         try {
-            const createdFile = (await httpClient.postForm(ADD_ASSIGNMENT_FILE + assignmentId, { file: file }))
-                .data.result as AssignmentFileModel;
+            const createdFile = (
+                await httpClient.postForm(ADD_ASSIGNMENT_FILE + assignmentId, {
+                    file: file,
+                })
+            ).data.result as AssignmentFileModel;
 
             return createdFile;
         } catch (error) {
@@ -236,11 +240,13 @@ export default class AssignmentService {
 
     async addLink(assignmentId: number, link: string) {
         try {
-            const createdLink = (await httpClient.post(ADD_ASSIGNMENT_LINK + assignmentId, link, {
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })).data.result as AssignmentLinkModel
+            const createdLink = (
+                await httpClient.post(ADD_ASSIGNMENT_LINK + assignmentId, link, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+            ).data.result as AssignmentLinkModel;
             return createdLink;
         } catch (error) {
             if (error instanceof AxiosError) {

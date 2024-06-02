@@ -1,6 +1,6 @@
 export default class DeleteCourseUserModel {
     courseuserId: number;
-    userId?: string
+    userId?: string;
 
     constructor(courseuserId: number) {
         this.courseuserId = courseuserId;

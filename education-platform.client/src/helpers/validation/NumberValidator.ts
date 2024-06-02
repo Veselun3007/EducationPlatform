@@ -9,13 +9,33 @@ export default class NumberValidator extends BaseValidator<number | undefined> {
     lessThan(value: number): void {
         if (this._value && this._value > value) {
             this.errors.push(
-                new ValidationError('validation.lessThan', { value: value.toString() }),
+                new ValidationError('validation.lessThanNonStrict', {
+                    value: value.toString(),
+                }),
             );
         }
     }
 
     greaterThan(value: number): void {
         if (this._value && this._value < value) {
+            this.errors.push(
+                new ValidationError('validation.greaterThanNonStrict', {
+                    value: value.toString(),
+                }),
+            );
+        }
+    }
+
+    lessThanNonStrict(value: number): void {
+        if (this._value && this._value >= value) {
+            this.errors.push(
+                new ValidationError('validation.lessThan', { value: value.toString() }),
+            );
+        }
+    }
+
+    greaterThanNonStrict(value: number): void {
+        if (this._value && this._value <= value) {
             this.errors.push(
                 new ValidationError('validation.greaterThan', {
                     value: value.toString(),

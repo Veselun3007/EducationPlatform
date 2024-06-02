@@ -25,6 +25,7 @@ interface FilesPickerProps {
 }
 
 const FilesPicker: React.FC<FilesPickerProps> = observer(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     ({ onFileAdd, error, onFileDelete, files, fullWidth, variant }) => {
         const { t } = useTranslation();
         const theme = useTheme();

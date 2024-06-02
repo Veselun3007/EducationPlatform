@@ -1,4 +1,4 @@
-export default interface CourseUserInfoModel{
+export default interface CourseUserInfoModel {
     courseuserId: number;
     role: number;
     userId: string;

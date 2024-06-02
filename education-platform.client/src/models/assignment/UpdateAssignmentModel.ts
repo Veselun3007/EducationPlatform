@@ -1,7 +1,6 @@
 import { makeObservable, observable } from 'mobx';
 import BaseValidator from '../../helpers/validation/BaseValidator';
 import DateValidator from '../../helpers/validation/DateValidator';
-import FileValidator from '../../helpers/validation/FileValidator';
 import NumberValidator from '../../helpers/validation/NumberValidator';
 import StringValidator from '../../helpers/validation/StringValidator';
 import ValidationError from '../../helpers/validation/ValidationError';
