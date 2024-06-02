@@ -42,16 +42,16 @@ namespace Identity.Web.Controllers
         }
 
         [HttpPost("reset-password-request")]
-        public async Task<IActionResult> SendPasswordResetEmail([FromBody] string email)
+        public async Task<IActionResult> SendPasswordResetEmail([FromBody] ConfirmResetPasswordRequest model)
         {
-            var result = await _identityOperation.SendPasswordResetEmail(email);
+            var result = await _identityOperation.SendPasswordResetEmail(model.Email);
             return FromResult(result);
         }
 
         [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromForm] ConfirmEmailRequest model)
+        public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordRequest model)
         {
-            var result = await _identityOperation.ResetPassword(model.Email, model.ConfirmCode);
+            var result = await _identityOperation.ResetPassword(model.Email, model.ConfirmCode, model.Password);
             return FromResult(result);
         }
 

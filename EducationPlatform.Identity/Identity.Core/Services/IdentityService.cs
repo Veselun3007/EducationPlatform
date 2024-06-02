@@ -125,12 +125,13 @@ namespace Identity.Core.Services
             }
         }
 
-        public async Task<Result<string, Error>> ResetPassword(string email, string code)
+        public async Task<Result<string, Error>> ResetPassword(string email, string code, string password)
         {
             var forgotRequest = new ConfirmForgotPasswordRequest()
             {
                 Username = email,
                 ConfirmationCode = code,
+                Password = password,
                 ClientId = _options.ClientId,
             };
             try
