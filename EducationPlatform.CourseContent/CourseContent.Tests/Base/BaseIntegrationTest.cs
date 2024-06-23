@@ -1,6 +1,4 @@
-﻿using Amazon.Extensions.NETCore.Setup;
-using Amazon.S3;
-using Amazon.S3.Model;
+﻿using Amazon.S3;
 using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Context;
 using Microsoft.Extensions.DependencyInjection;

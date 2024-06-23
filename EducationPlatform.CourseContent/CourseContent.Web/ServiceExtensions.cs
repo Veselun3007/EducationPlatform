@@ -18,7 +18,7 @@ namespace EducationPlatform.Identity
                 Region = new EnvironmentVariableAWSRegion().Region
             };
             services.AddDefaultAWSOptions(awsOptions);
-            services.AddAWSService<AmazonS3Client>();
+            services.AddAWSService<IAmazonS3>();
 
             return services;
         }

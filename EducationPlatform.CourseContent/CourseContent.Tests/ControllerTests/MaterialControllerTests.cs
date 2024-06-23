@@ -1,15 +1,15 @@
-﻿using CourseContent.Core.DTO.Requests.UpdateDTO;
-using CourseContent.Core.DTO.Requests;
+﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Tests.Base;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Net.Http.Headers;
-using Xunit.Abstractions;
-using System.Net;
-using System.Text;
 using CourseContent.Tests.Config;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
+using Xunit.Abstractions;
 
 namespace CourseContent.Tests.ControllerTests
 {
@@ -18,7 +18,6 @@ namespace CourseContent.Tests.ControllerTests
     {
         private readonly HttpClient _client = factory.CreateClient();
         private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
-        private const string baseUrl = "https://localhost:5002/api/material";
         const int courseId = 1;
 
         [Fact]
@@ -52,7 +51,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.PostAsync($"{baseUrl}/create", materialFormData);
+            var response = await _client.PostAsync($"{Setup.MaterialBaseURL}/create", materialFormData);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -83,7 +82,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.GetAsync($"{baseUrl}/getAll/{courseId}");
+            var response = await _client.GetAsync($"{Setup.MaterialBaseURL}/getAll/{courseId}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -132,7 +131,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.PutAsync($"{baseUrl}/update", materialFormData);
+            var response = await _client.PutAsync($"{Setup.MaterialBaseURL}/update", materialFormData);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -161,7 +160,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.GetAsync($"{baseUrl}/getById/{1}");
+            var response = await _client.GetAsync($"{Setup.MaterialBaseURL}/getById/{1}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -190,7 +189,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.DeleteAsync($"{baseUrl}/delete/{id}");
+            var response = await _client.DeleteAsync($"{Setup.MaterialBaseURL}/delete/{id}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -223,7 +222,7 @@ namespace CourseContent.Tests.ControllerTests
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
-                RequestUri = new Uri($"{baseUrl}/removeList"),
+                RequestUri = new Uri($"{Setup.MaterialBaseURL}/removeList"),
                 Content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json")
             };
             var response = await _client.SendAsync(request);
@@ -253,12 +252,12 @@ namespace CourseContent.Tests.ControllerTests
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
             var id = 1;
-            var link = "https://materialeExample.com/link";            
+            var link = "https://materialeExample.com/link";
             var jsonContent = JsonConvert.SerializeObject(link);
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync($"{baseUrl}/addLink/{id}", content);
+            var response = await _client.PostAsync($"{Setup.MaterialBaseURL}/addLink/{id}", content);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -290,7 +289,7 @@ namespace CourseContent.Tests.ControllerTests
 
             var linkId = 1;
             // Act
-            var response = await _client.DeleteAsync($"{baseUrl}/deleteLinkById/{linkId}");
+            var response = await _client.DeleteAsync($"{Setup.MaterialBaseURL}/deleteLinkById/{linkId}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);

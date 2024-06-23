@@ -1,15 +1,15 @@
 ﻿using CourseContent.Core.DTO.Requests.AssignmentDTO;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Tests.Base;
+using CourseContent.Tests.Config;
 using Microsoft.AspNetCore.Http;
-using System.Net.Http.Headers;
-using Xunit.Abstractions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using CourseContent.Core.DTO.Requests.UpdateDTO;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
-using CourseContent.Tests.Config;
+using Xunit.Abstractions;
 
 namespace CourseContent.Tests.ControllerTests
 {
@@ -17,8 +17,7 @@ namespace CourseContent.Tests.ControllerTests
         : BaseIntegrationTest(factory)
     {
         private readonly HttpClient _client = factory.CreateClient();
-        private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
-        private const string baseUrl = "https://localhost:5002/api/assignment";
+        private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;       
         const int courseId = 1;
 
         [Fact]
@@ -54,11 +53,11 @@ namespace CourseContent.Tests.ControllerTests
             foreach (var link in assignmentDto.AssignmentLinks)
             {
                 assignmentFormData.Add(new StringContent(link), $"AssignmentLinks[{assignmentDto.AssignmentLinks.IndexOf(link)}]");
-            }           
+            }
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.PostAsync($"{baseUrl}/create", assignmentFormData);
+            var response = await _client.PostAsync($"{Setup.AssignmentBaseURL}/create", assignmentFormData);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -92,7 +91,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.GetAsync($"{baseUrl}/getAll/{courseId}");
+            var response = await _client.GetAsync($"{Setup.AssignmentBaseURL}/getAll/{courseId}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -113,7 +112,7 @@ namespace CourseContent.Tests.ControllerTests
             Assert.NotNull(assignments);
             Assert.NotEmpty(assignments);
             _testOutputHelper.WriteLine($"Row count:\t {assignments.Count}");
-            foreach(AssignmentOutDTO assignment in assignments)
+            foreach (AssignmentOutDTO assignment in assignments)
             {
                 _testOutputHelper.WriteLine(assignment.AssignmentName);
             }
@@ -151,7 +150,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.PutAsync($"{baseUrl}/update", assignmentFormData);
+            var response = await _client.PutAsync($"{Setup.AssignmentBaseURL}/update", assignmentFormData);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -180,7 +179,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.GetAsync($"{baseUrl}/getById/{1}");
+            var response = await _client.GetAsync($"{Setup.AssignmentBaseURL}/getById/{1}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -209,7 +208,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.DeleteAsync($"{baseUrl}/delete/{id}");
+            var response = await _client.DeleteAsync($"{Setup.AssignmentBaseURL}/delete/{id}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -242,7 +241,7 @@ namespace CourseContent.Tests.ControllerTests
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
-                RequestUri = new Uri($"{baseUrl}/removeList"),
+                RequestUri = new Uri($"{Setup.AssignmentBaseURL}/removeList"),
                 Content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json")
             };
             var response = await _client.SendAsync(request);
@@ -277,7 +276,7 @@ namespace CourseContent.Tests.ControllerTests
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
             // Act
-            var response = await _client.PostAsync($"{baseUrl}/addLink/{id}", content);
+            var response = await _client.PostAsync($"{Setup.AssignmentBaseURL}/addLink/{id}", content);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -310,7 +309,7 @@ namespace CourseContent.Tests.ControllerTests
 
             var linkId = 1;
             // Act
-            var response = await _client.DeleteAsync($"{baseUrl}/deleteLinkById/{linkId}");
+            var response = await _client.DeleteAsync($"{Setup.AssignmentBaseURL}/deleteLinkById/{linkId}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -330,6 +329,85 @@ namespace CourseContent.Tests.ControllerTests
             Assert.Equal("Deleted was successful", resultValue);
             _testOutputHelper.WriteLine($"{resultValue}");
         }
-       
+
+        [Fact]
+        public async Task AddAssignmentFile_ValidFileAndId_ReturnsOk()
+        {
+            // Arrange
+            byte[] bytes;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("Test file content")),
+                0, Encoding.UTF8.GetBytes("Test file content").Length, "data.txt", "testFile.txt");
+            var id = 1;
+
+            // Act
+            using (var stream = file.OpenReadStream())
+            {
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                bytes = memoryStream.ToArray();
+            }
+
+            var request = new MultipartFormDataContent
+            {
+                { new ByteArrayContent(bytes), "file", file.Name }
+            };
+
+            var response = await _client.PostAsync($"{Setup.AssignmentBaseURL}/addFile/{id}", request);
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+            if (jsonObject is null)
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var addedFile = jsonObject?.TryGetValue("result", out var resultToken) == true
+                       ? resultToken.ToObject<AssignmentfileOutDTO>() : null;
+            _testOutputHelper.WriteLine(
+                        $"Id:\t{addedFile?.Id}" +
+                        $"\nFileLink:\t {addedFile?.AssignmentFile}");
+        }
+
+        [Fact]
+        public async Task GetByIdAssignmentFile_ValidFileAndId_ReturnsOk()
+        {
+            // Arrange
+            var id = 1;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+
+            // Act
+            var response = await _client.GetAsync($"{Setup.AssignmentBaseURL}/getFileById/{id}");
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+            if (jsonObject is null)
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var fileLink = jsonObject?.TryGetValue("result", out var resultToken) == true
+                      ? resultToken.ToString() : null;
+
+            var receivedFile = new AssignmentfileOutDTO { AssignmentFile = fileLink };
+
+            _testOutputHelper.WriteLine($"\nFileLink:\t {receivedFile?.AssignmentFile}");
+        }
     }
 }

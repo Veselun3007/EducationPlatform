@@ -28,14 +28,14 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="CourseContent.Web.Controllers.Base.BaseController">
-    <Position X="17.75" Y="9.75" Width="4.25" />
+    <Position X="15.25" Y="9.25" Width="4.25" />
     <TypeIdentifier>
       <HashCode>gAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAABAAAAAAA=</HashCode>
       <FileName>Controllers\Base\BaseController.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CourseContent.Web.Controllers.TopicController">
-    <Position X="23" Y="5" Width="4" />
+    <Position X="15.25" Y="12" Width="4.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAQAAAAgAAAAAAAABAAAAAAAAAAAAAEAAACgAAA=</HashCode>
       <FileName>Controllers\TopicController.cs</FileName>
@@ -48,14 +48,14 @@
     <Position X="12.5" Y="1.75" Width="4.25" />
     <InheritanceLine Type="CourseContent.Core.Interfaces.IBaseOperation&lt;O, Error, I, U&gt;" FixedToPoint="true">
       <Path>
-        <Point X="23" Y="2.562" />
+        <Point X="21.75" Y="2.562" />
         <Point X="16.75" Y="2.562" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier />
   </Interface>
   <Interface Name="CourseContent.Core.Interfaces.IBaseOperation&lt;O, Error, I, U&gt;">
-    <Position X="23" Y="2" Width="4" />
+    <Position X="21.75" Y="2" Width="4" />
     <TypeIdentifier />
   </Interface>
   <Font Name="Segoe UI" Size="9" />

@@ -1,14 +1,14 @@
-﻿using CourseContent.Core.DTO.Requests.UpdateDTO;
-using CourseContent.Core.DTO.Requests;
+﻿using CourseContent.Core.DTO.Requests;
+using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Tests.Base;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
-using System.Net.Http.Headers;
-using Xunit.Abstractions;
-using System.Text;
 using CourseContent.Tests.Config;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Net.Http.Headers;
+using System.Text;
+using Xunit.Abstractions;
 
 namespace CourseContent.Tests.ControllerTests
 {
@@ -17,7 +17,6 @@ namespace CourseContent.Tests.ControllerTests
     {
         private readonly HttpClient _client = factory.CreateClient();
         private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
-        private const string baseUrl = "https://localhost:5002/api/topic";
         const int courseId = 1;
 
         [Fact]
@@ -39,7 +38,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.PostAsync($"{baseUrl}/create", topicFormData);
+            var response = await _client.PostAsync($"{Setup.TopicBaseURL}/create", topicFormData);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -68,7 +67,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.GetAsync($"{baseUrl}/getAll/{courseId}");
+            var response = await _client.GetAsync($"{Setup.TopicBaseURL}/getAll/{courseId}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -108,7 +107,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.PutAsync($"{baseUrl}/update", jsonContent);
+            var response = await _client.PutAsync($"{Setup.TopicBaseURL}/update", jsonContent);
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -136,7 +135,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.GetAsync($"{baseUrl}/getById/{1}");
+            var response = await _client.GetAsync($"{Setup.TopicBaseURL}/getById/{1}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
@@ -166,7 +165,7 @@ namespace CourseContent.Tests.ControllerTests
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
 
             // Act
-            var response = await _client.DeleteAsync($"{baseUrl}/delete/{id}");
+            var response = await _client.DeleteAsync($"{Setup.TopicBaseURL}/delete/{id}");
 
             // Assert
             Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
