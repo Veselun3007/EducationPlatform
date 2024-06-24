@@ -17,14 +17,13 @@ namespace CourseContent.Tests.ControllerTests
         : BaseIntegrationTest(factory)
     {
         private readonly HttpClient _client = factory.CreateClient();
-        private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;       
+        private readonly ITestOutputHelper _testOutputHelper = testOutputHelper;
         const int courseId = 1;
 
         [Fact]
-        public async Task CreateAssignment_ValidAssignment_ReturnsOk()
+        public async Task CreateAssignment_ReturnsOk()
         {
             // Arrange
-
             var assignmentDto = new AssignmentDTO
             {
                 CourseId = 1,
@@ -36,25 +35,34 @@ namespace CourseContent.Tests.ControllerTests
                 MaxMark = 10,
                 MinMark = 5,
                 IsRequired = true,
-                AssignmentLinks = ["https://example.com/link1", "https://example.com/link2"],
+                AssignmentLinks = ["https://example.com/link1", "https://example.com/link2" ],
             };
 
+            var projectDir = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName;
+            var filePath = Path.Combine(projectDir, "Assets", "imgForTest.jpg");
+            var fileStream = File.OpenRead(filePath);
+            var fileStreamContent = new StreamContent(fileStream);
+            fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
+            
             var assignmentFormData = new MultipartFormDataContent
-             {
-                 { new StringContent(assignmentDto.CourseId.ToString()), "CourseId" },
-                 { new StringContent(assignmentDto.TopicId.ToString()!), "TopicId" },
-                 { new StringContent(assignmentDto.AssignmentName), "AssignmentName" },
-                 { new StringContent(assignmentDto.AssignmentDescription), "AssignmentDescription" },
-                 { new StringContent(assignmentDto.MaxMark.ToString()), "MaxMark" },
-                 { new StringContent(assignmentDto.MinMark.ToString()), "MinMark" },
-                 { new StringContent(assignmentDto.IsRequired.ToString()), "IsRequired" },
-                 { new StringContent(assignmentDto.AssignmentDeadline.ToString("o")), "AssignmentDeadline" },
-             };
+            {
+                { new StringContent(assignmentDto.CourseId.ToString()), "CourseId" },
+                { new StringContent(assignmentDto.TopicId.ToString()!), "TopicId" },
+                { new StringContent(assignmentDto.AssignmentName), "AssignmentName" },
+                { new StringContent(assignmentDto.AssignmentDescription), "AssignmentDescription" },
+                { new StringContent(assignmentDto.MaxMark.ToString()), "MaxMark" },
+                { new StringContent(assignmentDto.MinMark.ToString()), "MinMark" },
+                { new StringContent(assignmentDto.IsRequired.ToString()), "IsRequired" },
+                { new StringContent(assignmentDto.AssignmentDeadline.ToString("o")), "AssignmentDeadline" },
+            };
             foreach (var link in assignmentDto.AssignmentLinks)
             {
-                assignmentFormData.Add(new StringContent(link), $"AssignmentLinks[{assignmentDto.AssignmentLinks.IndexOf(link)}]");
+                assignmentFormData.Add(new StringContent(link), "AssignmentLinks");
             }
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
+
+            assignmentFormData.Add(fileStreamContent, "AssignmentFiles", "imgForTest.jpg");
 
             // Act
             var response = await _client.PostAsync($"{Setup.AssignmentBaseURL}/create", assignmentFormData);
@@ -69,7 +77,7 @@ namespace CourseContent.Tests.ControllerTests
 
             var jsonObject = JsonConvert.DeserializeObject<JObject>(responseContent);
             var createdAssignment = jsonObject?.TryGetValue("result", out var resultToken) == true
-                       ? resultToken.ToObject<AssignmentOutDTO>() : null;
+                      ? resultToken.ToObject<AssignmentOutDTO>() : null;
 
             Assert.NotNull(createdAssignment);
             _testOutputHelper.WriteLine
@@ -79,13 +87,14 @@ namespace CourseContent.Tests.ControllerTests
                     $"Description:\t{createdAssignment.AssignmentDescription}\n" +
                     $"Date Publication:\t{createdAssignment.AssignmentDatePublication}\n" +
                     $"Deadline:\t{createdAssignment.AssignmentDeadline}\n" +
-                    $"Is Edited:\t{createdAssignment.IsEdited}\n"
+                    $"Is Edited:\t{createdAssignment.IsEdited}\n" +
+                    $"Link:\t{createdAssignment.Assignmentlinks?.Count}\n" +
+                    $"File:\t{createdAssignment.Assignmentfiles?.Count}\n"
                 );
-
         }
 
         [Fact]
-        public async Task GetAllAssignment_ReturnsExpectedAssignments()
+        public async Task GetAllAssignment_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -119,7 +128,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task UpdateAssignment_ValidAssignment_ReturnsOk()
+        public async Task UpdateAssignment_ReturnsOk()
         {
             // Arrange
             var assignmentDto = new AssignmentUpdateDTO
@@ -173,7 +182,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetByIdAssignment_ValidId_ReturnsOk()
+        public async Task GetByIdAssignment_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -201,7 +210,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task DeleteAssignment_ValidAssignment_ReturnsOk()
+        public async Task DeleteAssignment_ReturnsOk()
         {
             // Arrange
             int id = 2;
@@ -230,7 +239,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task RemoveAssignments_ValidEntities_ReturnsOk()
+        public async Task RemoveAssignments_ReturnsOk()
         {
             // Arrange
             var entities = new List<int> { 3, 4 };
@@ -266,7 +275,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task AddAssignmentLink_ValidLinkAndId_ReturnsOk()
+        public async Task AddAssignmentLink_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -302,7 +311,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task DeleteAssignmentLinkById_ValidLinkId_ReturnsOk()
+        public async Task DeleteAssignmentLinkById_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -331,7 +340,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task AddAssignmentFile_ValidFileAndId_ReturnsOk()
+        public async Task AddAssignmentFile_ReturnsOk()
         {
             // Arrange
             byte[] bytes;
@@ -378,7 +387,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetByIdAssignmentFile_ValidFileAndId_ReturnsOk()
+        public async Task GetByIdAssignmentFile_ReturnsOk()
         {
             // Arrange
             var id = 1;
@@ -408,6 +417,37 @@ namespace CourseContent.Tests.ControllerTests
             var receivedFile = new AssignmentfileOutDTO { AssignmentFile = fileLink };
 
             _testOutputHelper.WriteLine($"\nFileLink:\t {receivedFile?.AssignmentFile}");
+        }
+
+        [Fact]
+        public async Task DeleteByIdAssignmentFile_ReturnsOk()
+        {
+            // Arrange
+            var id = 2;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
+
+            // Act
+            var response = await _client.DeleteAsync($"{Setup.AssignmentBaseURL}/deleteFileById/{id}");
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+            if (jsonObject is null)
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var resultValue = jsonObject["result"]?.ToString();
+
+            Assert.Equal("Deleted was successful", resultValue);
+            _testOutputHelper.WriteLine($"{resultValue}");
         }
     }
 }

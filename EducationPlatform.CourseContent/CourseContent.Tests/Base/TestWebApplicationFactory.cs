@@ -19,10 +19,14 @@ namespace CourseContent.Tests.Base
 
         private readonly PostgreSqlContainer _pgContainer;
         private readonly LocalStackContainer _localStack;
-        private static string ToAbsolute(string path) => Path.GetFullPath(path);
+        public int Port { get; }
+        public string LocalstackUri => $"http://localhost:{Port}";
+      
 
         public TestWebApplicationFactory()
         {
+            Port = Random.Shared.Next(4000, 5000);
+
             _pgContainer = new PostgreSqlBuilder()
                 .WithImage("postgres:15-alpine")
                 .WithDatabase("educationdb")
@@ -36,13 +40,15 @@ namespace CourseContent.Tests.Base
             _localStack = new LocalStackBuilder()
                 .WithImage("localstack/localstack")
                 .WithCleanUp(true)
-                .WithPortBinding(Random.Shared.Next(5000, 6000), Setup.LocalStackPort)
+                .WithPortBinding(Port, Setup.LocalStackPort)
                 .WithWaitStrategy(Wait.ForUnixContainer()
                     .UntilHttpRequestIsSucceeded(request => request
                     .ForPath("/_localstack/health")
                     .ForPort(Setup.LocalStackPort)))
-                .WithBindMount(ToAbsolute("./localstack/aws-seed-data"), "/etc/localstack/init/ready.d", AccessMode.ReadOnly)
-                .WithBindMount(ToAbsolute("./localstack/aws-seed-data/scripts"), "/scripts", AccessMode.ReadOnly)
+                .WithBindMount(Setup.ToAbsolute("./localstack/aws-seed-data"), 
+                    "/etc/localstack/init/ready.d", AccessMode.ReadOnly)
+                .WithBindMount(Setup.ToAbsolute("./localstack/aws-seed-data/scripts"),
+                    "/scripts", AccessMode.ReadOnly)
                 .Build();
         }
 
@@ -65,7 +71,7 @@ namespace CourseContent.Tests.Base
                 services.AddSingleton<IAmazonS3>(sc =>
                 {
                     return AwsS3ClientFactory.CreateAwsS3Client(
-                       Setup.ServiceURL,
+                       LocalstackUri,
                        Setup.Region, Setup.ForcePathStyle,
                        Setup.AwsAccessKey, Setup.AwsSecretKey);
                 });

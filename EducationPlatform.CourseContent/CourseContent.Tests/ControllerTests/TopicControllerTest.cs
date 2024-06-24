@@ -20,7 +20,7 @@ namespace CourseContent.Tests.ControllerTests
         const int courseId = 1;
 
         [Fact]
-        public async Task CreateTopic_ValidTopic_ReturnsOk()
+        public async Task CreateTopic_ReturnsOk()
         {
             // Arrange
             var topicDto = new TopicDTO
@@ -61,7 +61,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetAllTopics_ReturnsExpectedTopics()
+        public async Task GetAllTopics_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -92,7 +92,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task UpdateTopic_ValidTopic_ReturnsOk()
+        public async Task UpdateTopic_ReturnsOk()
         {
             // Arrange
             var topicUpdateDto = new TopicUpdateDTO
@@ -129,7 +129,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetTopicById_ValidId_ReturnsOk()
+        public async Task GetTopicById_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -158,7 +158,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task DeleteTopic_ValidTopic_ReturnsOk()
+        public async Task DeleteTopic_ReturnsOk()
         {
             // Arrange
             int id = 2;

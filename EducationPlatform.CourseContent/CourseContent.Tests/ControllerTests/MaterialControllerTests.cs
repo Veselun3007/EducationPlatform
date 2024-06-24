@@ -21,7 +21,7 @@ namespace CourseContent.Tests.ControllerTests
         const int courseId = 1;
 
         [Fact]
-        public async Task CreateMaterial_ValidMaterial_ReturnsOk()
+        public async Task CreateMaterial_ReturnsOk()
         {
             // Arrange
             var materialDto = new MaterialDTO
@@ -35,6 +35,12 @@ namespace CourseContent.Tests.ControllerTests
                 MaterialLinks = ["https://example.com/link1", "https://example.com/link2"]
             };
 
+            var projectDir = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName;
+            var filePath = Path.Combine(projectDir, "Assets", "imgForTest.jpg");
+            var fileStream = File.OpenRead(filePath);
+            var fileStreamContent = new StreamContent(fileStream);
+            fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
             var materialFormData = new MultipartFormDataContent
             {
                 { new StringContent(materialDto.CourseId.ToString()), "CourseId" },
@@ -47,7 +53,7 @@ namespace CourseContent.Tests.ControllerTests
             {
                 materialFormData.Add(new StringContent(link), $"MaterialLinks[{materialDto.MaterialLinks.IndexOf(link)}]");
             }
-
+            materialFormData.Add(fileStreamContent, "MaterialFiles", "imgForTest.jpg");
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
@@ -76,7 +82,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetAllMaterials_ReturnsExpectedMaterials()
+        public async Task GetAllMaterials_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -106,7 +112,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task UpdateMaterial_ValidMaterial_ReturnsOk()
+        public async Task UpdateMaterial_ReturnsOk()
         {
             // Arrange
             var materialUpdateDto = new MaterialUpdateDTO
@@ -154,7 +160,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task GetMaterialById_ValidId_ReturnsOk()
+        public async Task GetMaterialById_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -182,7 +188,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task DeleteMaterial_ValidMaterial_ReturnsOk()
+        public async Task DeleteMaterial_ReturnsOk()
         {
             // Arrange
             int id = 2;
@@ -211,7 +217,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task RemoveMaterials_ValidEntities_ReturnsOk()
+        public async Task RemoveMaterials_ReturnsOk()
         {
             // Arrange
             var entities = new List<int> { 3, 4 };
@@ -247,7 +253,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task AddMaterialLink_ValidLinkAndId_ReturnsOk()
+        public async Task AddMaterialLink_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -282,7 +288,7 @@ namespace CourseContent.Tests.ControllerTests
         }
 
         [Fact]
-        public async Task DeleteMaterialLinkById_ValidLinkId_ReturnsOk()
+        public async Task DeleteMaterialLinkById_ReturnsOk()
         {
             // Arrange
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
@@ -304,6 +310,117 @@ namespace CourseContent.Tests.ControllerTests
             {
                 Assert.Fail("Response content is empty");
             }
+            var resultValue = jsonObject["result"]?.ToString();
+
+            Assert.Equal("Deleted was successful", resultValue);
+            _testOutputHelper.WriteLine($"{resultValue}");
+        }
+
+        [Fact]
+        public async Task AddMaterialFile_ReturnsOk()
+        {
+            // Arrange
+            byte[] bytes;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
+            var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("Test file content")),
+                0, Encoding.UTF8.GetBytes("Test file content").Length, "data.txt", "testFile.txt");
+            var id = 1;
+
+            // Act
+            using (var stream = file.OpenReadStream())
+            {
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                bytes = memoryStream.ToArray();
+            }
+
+            var request = new MultipartFormDataContent
+            {
+                { new ByteArrayContent(bytes), "file", file.Name }
+            };
+
+            var response = await _client.PostAsync($"{Setup.MaterialBaseURL}/addFile/{id}", request);
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+            if (jsonObject is null)
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var addedFile = jsonObject?.TryGetValue("result", out var resultToken) == true
+                       ? resultToken.ToObject<MaterialfileOutDTO>() : null;
+            _testOutputHelper.WriteLine(
+                        $"Id:\t{addedFile?.Id}" +
+                        $"\nFileLink:\t {addedFile?.MaterialFile}");
+        }
+
+        [Fact]
+        public async Task GetByIdMaterialFile_ReturnsOk()
+        {
+            // Arrange
+            var id = 1;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
+
+            // Act
+            var response = await _client.GetAsync($"{Setup.MaterialBaseURL}/getFileById/{id}");
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+            if (jsonObject is null)
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var fileLink = jsonObject?.TryGetValue("result", out var resultToken) == true
+                      ? resultToken.ToString() : null;
+
+            var receivedFile = new MaterialfileOutDTO { MaterialFile = fileLink };
+
+            _testOutputHelper.WriteLine($"\nFileLink:\t {receivedFile?.MaterialFile}");
+        }
+
+        [Fact]
+        public async Task DeleteByIdMaterialFile_ReturnsOk()
+        {
+            // Arrange
+            var id = 2;
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
+
+            // Act
+            var response = await _client.DeleteAsync($"{Setup.MaterialBaseURL}/deleteFileById/{id}");
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, (int)response.StatusCode);
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(responseContent))
+            {
+                Assert.Fail("Response content is empty");
+            }
+
+            var jsonObject = JsonConvert.DeserializeObject<JObject>(responseContent);
+            if (jsonObject is null)
+            {
+                Assert.Fail("Response content is empty");
+            }
+
             var resultValue = jsonObject["result"]?.ToString();
 
             Assert.Equal("Deleted was successful", resultValue);
