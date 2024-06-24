@@ -54,7 +54,7 @@ namespace CourseContent.Tests.ControllerTests
             {
                 assignmentFormData.Add(new StringContent(link), $"AssignmentLinks[{assignmentDto.AssignmentLinks.IndexOf(link)}]");
             }
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.PostAsync($"{Setup.AssignmentBaseURL}/create", assignmentFormData);
@@ -88,7 +88,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task GetAllAssignment_ReturnsExpectedAssignments()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.GetAsync($"{Setup.AssignmentBaseURL}/getAll/{courseId}");
@@ -147,7 +147,7 @@ namespace CourseContent.Tests.ControllerTests
                  { new StringContent(assignmentDto.AssignmentDeadline.ToString("o")), "AssignmentDeadline" },
              };
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.PutAsync($"{Setup.AssignmentBaseURL}/update", assignmentFormData);
@@ -176,7 +176,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task GetByIdAssignment_ValidId_ReturnsOk()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.GetAsync($"{Setup.AssignmentBaseURL}/getById/{1}");
@@ -205,7 +205,7 @@ namespace CourseContent.Tests.ControllerTests
         {
             // Arrange
             int id = 2;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.DeleteAsync($"{Setup.AssignmentBaseURL}/delete/{id}");
@@ -234,7 +234,7 @@ namespace CourseContent.Tests.ControllerTests
         {
             // Arrange
             var entities = new List<int> { 3, 4 };
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var jsonContent = JsonConvert.SerializeObject(entities);
@@ -269,7 +269,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task AddAssignmentLink_ValidLinkAndId_ReturnsOk()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
             var link = "https://example.com/link";
             var id = 1;
             var jsonContent = JsonConvert.SerializeObject(link);
@@ -305,7 +305,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task DeleteAssignmentLinkById_ValidLinkId_ReturnsOk()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             var linkId = 1;
             // Act
@@ -335,7 +335,7 @@ namespace CourseContent.Tests.ControllerTests
         {
             // Arrange
             byte[] bytes;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
             var file = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("Test file content")),
                 0, Encoding.UTF8.GetBytes("Test file content").Length, "data.txt", "testFile.txt");
             var id = 1;
@@ -382,7 +382,7 @@ namespace CourseContent.Tests.ControllerTests
         {
             // Arrange
             var id = 1;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.GetAsync($"{Setup.AssignmentBaseURL}/getFileById/{id}");

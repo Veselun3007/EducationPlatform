@@ -5,9 +5,8 @@ namespace CourseContent.Tests.Base
 {
     public static class AwsS3ClientFactory
     {
-        public static AmazonS3Client CreateAwsS3Client(string serviceUrl,
-            string awsRegion, bool forcePathStyle,
-            string awsAccessKey, string awsSecretKey)
+        public static AmazonS3Client CreateAwsS3Client(string serviceUrl, string awsRegion, 
+            bool forcePathStyle, string awsAccessKey, string awsSecretKey)
         {
             var awsS3Config = GetAwsS3Config(serviceUrl, awsRegion, forcePathStyle);
 
@@ -18,7 +17,8 @@ namespace CourseContent.Tests.Base
             return s3Client;
         }
 
-        private static AmazonS3Config GetAwsS3Config(string localstackUrl, string awsRegion, bool forcePathStyle)
+        private static AmazonS3Config GetAwsS3Config(string localstackUrl, string awsRegion, 
+            bool forcePathStyle)
         {
             return new AmazonS3Config
             {

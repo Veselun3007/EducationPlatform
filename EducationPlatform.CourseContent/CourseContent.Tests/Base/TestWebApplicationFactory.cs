@@ -1,8 +1,6 @@
-﻿using Amazon.Runtime;
-using Amazon.S3;
+﻿using Amazon.S3;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Tests.Config;
-using CourseContent.Tests.Model;
 using CourseContent.Web;
 using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Configurations;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Testcontainers.LocalStack;
 using Testcontainers.PostgreSql;
@@ -22,7 +19,6 @@ namespace CourseContent.Tests.Base
 
         private readonly PostgreSqlContainer _pgContainer;
         private readonly LocalStackContainer _localStack;
-
         private static string ToAbsolute(string path) => Path.GetFullPath(path);
 
         public TestWebApplicationFactory()
@@ -40,7 +36,7 @@ namespace CourseContent.Tests.Base
             _localStack = new LocalStackBuilder()
                 .WithImage("localstack/localstack")
                 .WithCleanUp(true)
-                .WithPortBinding(Random.Shared.Next(4000, 5000), Setup.LocalStackPort)
+                .WithPortBinding(Random.Shared.Next(5000, 6000), Setup.LocalStackPort)
                 .WithWaitStrategy(Wait.ForUnixContainer()
                     .UntilHttpRequestIsSucceeded(request => request
                     .ForPath("/_localstack/health")
@@ -54,12 +50,6 @@ namespace CourseContent.Tests.Base
         {
             builder.ConfigureTestServices(services =>
             {
-                builder.ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.SetBasePath(AppContext.BaseDirectory)
-                        .AddJsonFile("appsettings.IntegrationTest.json", false);
-                });
-
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType ==
                         typeof(DbContextOptions<EducationPlatformContext>));
@@ -72,37 +62,12 @@ namespace CourseContent.Tests.Base
                 services.AddDbContextPool<EducationPlatformContext>(options =>
                     options.UseNpgsql(_pgContainer.GetConnectionString()));
 
-                /*services.AddScoped<IAmazonS3>(provider =>
-                {
-
-                    AmazonS3Config config = new()
-                    {
-                        ServiceURL = $"http://localhost/{Setup.LocalStackPort}",
-                        UseHttp = true,
-                        ForcePathStyle = true
-                    };
-                    AWSCredentials creds = new BasicAWSCredentials("dummy-access-key", "dummy-secret-key");
-                    _s3Client = new(creds, config);
-
-                    return _s3Client;
-                });*/
-
                 services.AddSingleton<IAmazonS3>(sc =>
                 {
-                    var configuration = sc.GetRequiredService<IConfiguration>();
-                    var awsConfiguration = configuration.GetSection("AWS").Get<AwsConfiguration>();
-
-                    if (awsConfiguration?.ServiceURL is null)
-                    {
-                        return new AmazonS3Client();
-                    }
-                    else
-                    {
-                        return AwsS3ClientFactory.CreateAwsS3Client(
-                            awsConfiguration.ServiceURL!,
-                            awsConfiguration.Region!, awsConfiguration.ForcePathStyle!,
-                            awsConfiguration.AwsAccessKey!, awsConfiguration.AwsSecretKey!);
-                    }
+                    return AwsS3ClientFactory.CreateAwsS3Client(
+                       Setup.ServiceURL,
+                       Setup.Region, Setup.ForcePathStyle,
+                       Setup.AwsAccessKey, Setup.AwsSecretKey);
                 });
             });
         }

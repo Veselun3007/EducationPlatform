@@ -35,7 +35,7 @@ namespace CourseContent.Tests.ControllerTests
                 { new StringContent(topicDto.Title), "Title" }
             };
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.PostAsync($"{Setup.TopicBaseURL}/create", topicFormData);
@@ -64,7 +64,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task GetAllTopics_ReturnsExpectedTopics()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.GetAsync($"{Setup.TopicBaseURL}/getAll/{courseId}");
@@ -104,7 +104,7 @@ namespace CourseContent.Tests.ControllerTests
 
             var jsonContent = new StringContent(JsonConvert.SerializeObject(topicUpdateDto), Encoding.UTF8, "application/json");
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.PutAsync($"{Setup.TopicBaseURL}/update", jsonContent);
@@ -132,7 +132,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task GetTopicById_ValidId_ReturnsOk()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.GetAsync($"{Setup.TopicBaseURL}/getById/{1}");
@@ -162,7 +162,7 @@ namespace CourseContent.Tests.ControllerTests
         {
             // Arrange
             int id = 2;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.DeleteAsync($"{Setup.TopicBaseURL}/delete/{id}");

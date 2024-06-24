@@ -48,7 +48,7 @@ namespace CourseContent.Tests.ControllerTests
                 materialFormData.Add(new StringContent(link), $"MaterialLinks[{materialDto.MaterialLinks.IndexOf(link)}]");
             }
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.PostAsync($"{Setup.MaterialBaseURL}/create", materialFormData);
@@ -79,7 +79,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task GetAllMaterials_ReturnsExpectedMaterials()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.GetAsync($"{Setup.MaterialBaseURL}/getAll/{courseId}");
@@ -128,7 +128,7 @@ namespace CourseContent.Tests.ControllerTests
                 { new StringContent(materialUpdateDto.MaterialDatePublication.ToString("o")), "MaterialDatePublication" },
             };
 
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.PutAsync($"{Setup.MaterialBaseURL}/update", materialFormData);
@@ -157,7 +157,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task GetMaterialById_ValidId_ReturnsOk()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.GetAsync($"{Setup.MaterialBaseURL}/getById/{1}");
@@ -186,7 +186,7 @@ namespace CourseContent.Tests.ControllerTests
         {
             // Arrange
             int id = 2;
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var response = await _client.DeleteAsync($"{Setup.MaterialBaseURL}/delete/{id}");
@@ -215,7 +215,7 @@ namespace CourseContent.Tests.ControllerTests
         {
             // Arrange
             var entities = new List<int> { 3, 4 };
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             // Act
             var jsonContent = JsonConvert.SerializeObject(entities);
@@ -250,7 +250,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task AddMaterialLink_ValidLinkAndId_ReturnsOk()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
             var id = 1;
             var link = "https://materialeExample.com/link";
             var jsonContent = JsonConvert.SerializeObject(link);
@@ -285,7 +285,7 @@ namespace CourseContent.Tests.ControllerTests
         public async Task DeleteMaterialLinkById_ValidLinkId_ReturnsOk()
         {
             // Arrange
-            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.token);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
 
             var linkId = 1;
             // Act
