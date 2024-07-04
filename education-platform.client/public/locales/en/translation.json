@@ -1,6 +1,7 @@
 {
     "common": {
         "signUp": "SignUp",
+        "forgotPassword": "Reset",
         "login": "Login",
         "dashboard": "My dashboard",
         "email": "Email",
@@ -172,7 +173,10 @@
         "gradeWork":"Grade work",
         "changeGrade":"Change grade",
         "assignmentGrade":"Students' work grading for assignment \"{{name}}\"",
-        "noComments":"No comments"
-        
+        "noComments":"No comments",
+        "forgotPassword":"Forgot passwowrd?",
+        "confirmResetPasswordHeader": "Confirm reset password",
+        "resetPasswordHeader": "Reset your password",
+        "resetPassword": "Set new password"
     }
 }

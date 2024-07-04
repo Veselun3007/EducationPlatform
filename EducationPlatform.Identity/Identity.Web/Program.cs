@@ -9,10 +9,7 @@ using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 
 namespace EducationPlatform.Identity
 {

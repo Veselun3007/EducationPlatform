@@ -1,12 +1,14 @@
 import { AxiosError } from 'axios';
 import SignUpModel from '../models/auth/SignUpModel';
 import httpClient from './common/httpClient';
-import { CONFIRM_USER, LOGIN, SIGNOUT, SIGNUP } from './common/routesAPI';
+import { CONFIRM_USER, LOGIN, SIGNOUT, SIGNUP, RESET_PASSWORD_REQUEST, RESET_PASSWORD } from './common/routesAPI';
 import ServiceError from '../errors/ServiceError';
 import LoginModel from '../models/auth/LoginModel';
 import TokenResponseModel from '../models/auth/TokenResponseModel';
 import ConfirmUserModel from '../models/auth/ConfirmUserModel';
 import SignOutModel from '../models/auth/SignOutModel';
+import ConfirmResetPasswordModel from '../models/auth/ConfirmResetPasswordModel';
+import ResetPasswordModel from '../models/auth/ResetPasswordModel';
 
 export default class AuthService {
     async signUp(data: SignUpModel): Promise<void> {
@@ -51,6 +53,46 @@ export default class AuthService {
     async confirmUser(data: ConfirmUserModel): Promise<void> {
         try {
             await httpClient.postForm(CONFIRM_USER, data);
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 400:
+                            throw new ServiceError(
+                                'glossary.confiramtionCodeExpiredOrWrong',
+                            );
+                        case 404:
+                            throw new ServiceError('glossary.wrongEmail');
+                        default:
+                            throw new ServiceError('glossary.somethingWentWrong');
+                    }
+                }
+            }
+            throw new ServiceError('glossary.somethingWentWrong');
+        }
+    }
+
+    async confirmResetPassword(data: ConfirmResetPasswordModel): Promise<void> {
+        try {
+            await httpClient.post(RESET_PASSWORD_REQUEST, data);
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                if (error.response) {
+                    switch (error.response.status) {
+                        case 404:
+                            throw new ServiceError('glossary.wrongEmail');
+                        default:
+                            throw new ServiceError('glossary.somethingWentWrong');
+                    }
+                }
+            }
+            throw new ServiceError('glossary.somethingWentWrong');
+        }
+    }
+
+    async resetPassword(data: ResetPasswordModel): Promise<void> {
+        try {
+            await httpClient.postForm(RESET_PASSWORD, data);
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response) {

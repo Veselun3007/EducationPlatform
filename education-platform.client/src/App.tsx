@@ -23,6 +23,8 @@ import JoinCoursePage from './pages/JoinCoursePage/JoinCoursePage';
 import UsersPage from './pages/UsersPage/UsersPage';
 import ChatPage from './pages/ChatPage/ChatPage';
 import MarkWorksPage from './pages/MarkWorksPage/MarkWorksPage';
+import ConfirmResetPasswordPage from './pages/ConfirmResetPasswordPage/ConfirmResetPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 
 const darkTheme = createTheme({
     palette: {
@@ -59,6 +61,11 @@ function App() {
                         <Route element={<NotAuthRoutes />}>
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/signup" element={<SignUpPage />} />
+                            <Route path="/forgot-password" element={<ConfirmResetPasswordPage />} />
+                            <Route
+                                path="/reset-password/:email"
+                                element={<ResetPasswordPage />}
+                            />
                             <Route
                                 path="/confirmEmail/:email"
                                 element={<ConfirmEmailPage />}

@@ -5,6 +5,8 @@ export const LOGIN = AUTH_BASE_ROUTE + '/account/sign-in';
 export const CONFIRM_USER = AUTH_BASE_ROUTE + '/account/confirm';
 export const REFRESH_TOKEN = AUTH_BASE_ROUTE + '/account/refresh';
 export const SIGNOUT = AUTH_BASE_ROUTE + '/account/sign-out';
+export const RESET_PASSWORD_REQUEST = AUTH_BASE_ROUTE + '/account/reset-password-request';
+export const RESET_PASSWORD = AUTH_BASE_ROUTE + '/account/reset-password';
 
 export const UPDATE_USER = AUTH_BASE_ROUTE + '/userManagement/update';
 export const GET_USER = AUTH_BASE_ROUTE + '/userManagement/get';

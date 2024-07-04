@@ -57,9 +57,9 @@ const LoginPage = observer(() => {
                                 helperText={
                                     loginPageStore.errors.email !== null
                                         ? t(
-                                              loginPageStore.errors.email.errorKey,
-                                              loginPageStore.errors.email.options,
-                                          )
+                                            loginPageStore.errors.email.errorKey,
+                                            loginPageStore.errors.email.options,
+                                        )
                                         : null
                                 }
                             />
@@ -74,9 +74,9 @@ const LoginPage = observer(() => {
                                 helperText={
                                     loginPageStore.errors.password !== null
                                         ? t(
-                                              loginPageStore.errors.password.errorKey,
-                                              loginPageStore.errors.password.options,
-                                          )
+                                            loginPageStore.errors.password.errorKey,
+                                            loginPageStore.errors.password.options,
+                                        )
                                         : null
                                 }
                             />
@@ -92,9 +92,9 @@ const LoginPage = observer(() => {
                             >
                                 {loginPageStore.errors.meta !== null
                                     ? t(
-                                          loginPageStore.errors.meta.errorKey,
-                                          loginPageStore.errors.meta.options,
-                                      )
+                                        loginPageStore.errors.meta.errorKey,
+                                        loginPageStore.errors.meta.options,
+                                    )
                                     : null}
                             </Typography>
                             <Divider
@@ -122,6 +122,17 @@ const LoginPage = observer(() => {
                                     underline="none"
                                 >
                                     {t('common.signUp')}
+                                </Link>
+                                <Typography variant="body2">
+                                    {t('glossary.forgotPassword')}
+                                </Typography>
+                                <Link
+                                    component="button"
+                                    onClick={() => navigate('/forgot-password')}
+                                    variant="body2"
+                                    underline="none"
+                                >
+                                    {t('common.forgotPassword')}
                                 </Link>
                             </Stack>
                         </Stack>

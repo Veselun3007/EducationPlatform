@@ -22,7 +22,6 @@ namespace CourseContent.Tests.Base
         public int Port { get; }
         public string LocalstackUri => $"http://localhost:{Port}";
       
-
         public TestWebApplicationFactory()
         {
             Port = Random.Shared.Next(4000, 5000);

@@ -1,6 +1,7 @@
 {
     "common":{
         "signUp": "Зареєструватися",
+        "forgotPassword": "Скинути",
         "login": "Увійти",
         "dashboard": "Мій кабінет",
         "email": "Ел. пошта",
@@ -171,6 +172,10 @@
         "gradeWork":"Оцінити роботу",
         "changeGrade":"Змінити оцінку",
         "assignmentGrade":"Оцінка робіт студентів з завдання \"{{name}}\"",
-        "noComments":"Коментарів немає"
+        "noComments":"Коментарів немає",
+        "forgotPassword": "Забули пароль?",
+        "confirmResetPasswordHeader": "Підтвердьте скидання пароля",
+        "resetPasswordHeader": "Скидання пароля",
+        "resetPassword": "Встановіть новий пароль"
     }
 }
