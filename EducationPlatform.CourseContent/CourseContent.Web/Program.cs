@@ -1,7 +1,4 @@
-using Amazon.Extensions.NETCore.Setup;
-using Amazon.Runtime;
 using CourseContent.Core.DTO.Requests;
-using CourseContent.Core.DTO.Requests.AssignmentDTO;
 using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Helpers;
@@ -13,8 +10,6 @@ using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces;
-using EducationPlatform.Identity;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseContent.Web
@@ -26,18 +21,13 @@ namespace CourseContent.Web
             var builder = WebApplication.CreateBuilder(args);
             var _configuration = builder.Configuration;
 
-            _configuration.AddSystemsManager("/education-platform/Development", new AWSOptions
-            {
-                Credentials = new EnvironmentVariablesAWSCredentials(),
-                Region = new EnvironmentVariableAWSRegion().Region,
-            });
-            builder.Services.AddAWS();
+            builder.Services.AddAWS(_configuration);
 
             builder.Services
                 .Configure<AwsOptions>(_configuration.GetSection(nameof(AwsOptions)))
                 .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
 
-            var (awsOptions, dbOptions) = builder.Services.AddVariables();
+            var (awsOptions, dbOptions) = ServiceExtensions.AddVariables(_configuration);
 
             builder.Services.AddDbContextPool<EducationPlatformContext>(options =>
             {
@@ -50,7 +40,6 @@ namespace CourseContent.Web
             builder.Services.AddScoped<IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO>, TopicService>();
             builder.Services.AddScoped<IOperation<AssignmentOutDTO, Error, AssignmentDTO, AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink>, AssignmentService>();
             builder.Services.AddScoped<IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink>, MaterialService>();
-
 
             builder.Services.AddControllers();
             builder.Services.AddProblemDetails();
@@ -65,40 +54,15 @@ namespace CourseContent.Web
 
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.Authority = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}";
-                options.TokenValidationParameters = new()
-                {
-                    IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
-                    {
-                        return ServiceExtensions.GetKeys(parameters).GetAwaiter().GetResult();
-                    },
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",
-                    ValidateLifetime = true,
-                    LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateAudience = false
-                };
-            });
-
             var app = builder.Build();
 
             app.UseCors("AllowAll");
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CourseContent");
                 });
             }
 
@@ -106,7 +70,6 @@ namespace CourseContent.Web
             app.UseExceptionHandler();
             app.UseAuthentication();
             app.UseAuthorization();
-
             app.MapControllers();
 
             app.Run();

@@ -1,4 +1,4 @@
-﻿namespace Identity.Core.DTO.User
+﻿namespace Identity.Core.DTO.Requests
 {
     public class ConfirmEmailRequest
     {

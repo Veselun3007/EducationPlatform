@@ -35,7 +35,7 @@ namespace CourseContent.Tests.ControllerTests
                 MaxMark = 10,
                 MinMark = 5,
                 IsRequired = true,
-                AssignmentLinks = ["https://example.com/link1", "https://example.com/link2" ],
+                AssignmentLinks = ["https://example.com/link1", "https://example.com/link2"],
             };
 
             var projectDir = Directory.GetParent(Directory.GetCurrentDirectory())!.Parent!.Parent!.FullName;
@@ -45,7 +45,7 @@ namespace CourseContent.Tests.ControllerTests
             fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Setup.Token);
-            
+
             var assignmentFormData = new MultipartFormDataContent
             {
                 { new StringContent(assignmentDto.CourseId.ToString()), "CourseId" },

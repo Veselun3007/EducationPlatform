@@ -1,7 +1,7 @@
-﻿using CourseContent.Core.Models.Config;
+﻿using Amazon.S3;
+using CourseContent.Core.Models.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Amazon.S3;
 
 namespace CourseContent.Core.Helpers
 {
@@ -13,9 +13,7 @@ namespace CourseContent.Core.Helpers
         public async Task<string> AddFileAsync(IFormFile file)
         {
             string objectName = Guid.NewGuid().ToString() + "_" + file.FileName;
-
             bool uploadSuccess = await _awsHelper.PostObjectAsync(_options.BucketName, objectName, file);
-
             return (uploadSuccess) ? objectName : "File upload failed.";
         }
 

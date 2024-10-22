@@ -1,12 +1,11 @@
 ﻿using Amazon.Extensions.NETCore.Setup;
 using Amazon.Runtime;
 using Amazon.S3;
-using CourseContent.Core.Models.Config;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using EPChat.Core.Models.Config;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
-namespace CourseContent.Web
+namespace EPChat.Web
 {
     internal static class ServiceExtensions
     {
@@ -42,33 +41,6 @@ namespace CourseContent.Web
             var json = await client.GetStringAsync(parameters.ValidIssuer + "/.well-known/jwks.json");
             var keys = JsonConvert.DeserializeObject<JsonWebKeySet>(json)?.Keys;
             return keys;
-        }
-
-        internal static void AddJwtValidation(WebApplicationBuilder builder, AwsOptions awsOptions)
-        {
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.Authority = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}";
-                options.TokenValidationParameters = new()
-                {
-                    IssuerSigningKeyResolver = (s, securityToken, identifier, parameters) =>
-                    {
-                        return GetKeys(parameters).GetAwaiter().GetResult();
-                    },
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidIssuer = $"https://cognito-idp.{awsOptions.Region}.amazonaws.com/{awsOptions.UserPoolId}",
-                    ValidateLifetime = true,
-                    LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateAudience = false
-                };
-            });
-        }
+        }      
     }
 }

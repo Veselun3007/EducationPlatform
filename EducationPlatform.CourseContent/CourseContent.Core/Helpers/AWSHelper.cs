@@ -12,9 +12,7 @@ namespace CourseContent.Core.Helpers
         public async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
         {
             PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
-
             var response = await _s3Client.PutObjectAsync(request);
-
             return (response.HttpStatusCode == HttpStatusCode.OK ||
                     response.HttpStatusCode == HttpStatusCode.NoContent);
         }
@@ -22,25 +20,18 @@ namespace CourseContent.Core.Helpers
         public async Task<bool> DeleteObjectAsync(string bucketName, string objectName)
         {
             DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
-
             var deleteResponse = await _s3Client.DeleteObjectAsync(deleteRequest);
-
-            if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent ||
-                deleteResponse.HttpStatusCode == HttpStatusCode.NotFound)
-            {
-                return true;
-            }
-            return false;
+            return (deleteResponse.HttpStatusCode == HttpStatusCode.OK ||
+                   deleteResponse.HttpStatusCode == HttpStatusCode.NoContent);
         }
 
         public async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)
         {
             GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
-
             return await _s3Client.GetPreSignedURLAsync(request);
         }
 
-        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName, 
+        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName,
             string objectKey, double duration)
         {
             return new GetPreSignedUrlRequest
@@ -51,7 +42,7 @@ namespace CourseContent.Core.Helpers
             };
         }
 
-        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName, 
+        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName,
             string objectName)
         {
             return new DeleteObjectRequest
@@ -61,7 +52,7 @@ namespace CourseContent.Core.Helpers
             };
         }
 
-        private static PutObjectRequest CreatePutObjectRequest(string bucketName, 
+        private static PutObjectRequest CreatePutObjectRequest(string bucketName,
             string objectName, IFormFile file)
         {
             return new PutObjectRequest

@@ -1,6 +1,5 @@
 ﻿using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Interfaces.Base;
-using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Interfaces
 {

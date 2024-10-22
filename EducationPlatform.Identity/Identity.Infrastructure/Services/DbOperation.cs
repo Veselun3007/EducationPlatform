@@ -34,7 +34,7 @@ namespace Identity.Infrastructure.Services
         }
 
         public async Task<User?> GetByIdAsync(string id)
-        {       
+        {
             return await _dbSet.FindAsync(id);
         }
 

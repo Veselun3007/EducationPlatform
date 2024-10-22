@@ -1,5 +1,4 @@
 ﻿using Amazon.S3;
-using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Context;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,7 +21,7 @@ namespace CourseContent.Tests.Base
             var dataSetup = new DataSetup(_dbContext);
             dataSetup.AddBaseData();
         }
-       
+
         public void Dispose()
         {
             _scope?.Dispose();

@@ -1,5 +1,4 @@
 ﻿using Identity.Core.DTO.Requests;
-using Identity.Core.DTO.User;
 using Identity.Core.Services;
 using Identity.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;

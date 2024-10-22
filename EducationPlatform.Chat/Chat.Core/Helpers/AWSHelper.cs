@@ -5,43 +5,34 @@ using System.Net;
 
 namespace EPChat.Core.Helpers
 {
-    internal class AwsHelper
+    public class AwsHelper(IAmazonS3 s3Client)
     {
-        public static async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
+        private readonly IAmazonS3 _s3Client = s3Client;
+
+        public async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
         {
-            using var client = new AmazonS3Client();
             PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
-
-            var response = await client.PutObjectAsync(request);
-
+            var response = await _s3Client.PutObjectAsync(request);
             return (response.HttpStatusCode == HttpStatusCode.OK ||
                     response.HttpStatusCode == HttpStatusCode.NoContent);
         }
 
-        public static async Task<bool> DeleteObjectAsync(string bucketName, string objectName)
+        public async Task<bool> DeleteObjectAsync(string bucketName, string objectName)
         {
-            using var client = new AmazonS3Client();
             DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
-
-            var deleteResponse = await client.DeleteObjectAsync(deleteRequest);
-
-            if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent ||
-                deleteResponse.HttpStatusCode == HttpStatusCode.NotFound)
-            {
-                return true;
-            }
-            return false;
+            var deleteResponse = await _s3Client.DeleteObjectAsync(deleteRequest);
+            return (deleteResponse.HttpStatusCode == HttpStatusCode.OK ||
+                   deleteResponse.HttpStatusCode == HttpStatusCode.NoContent);
         }
 
-        public static async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)
+        public async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)
         {
-            using var client = new AmazonS3Client();
             GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
-
-            return await client.GetPreSignedURLAsync(request);
+            return await _s3Client.GetPreSignedURLAsync(request);
         }
 
-        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName, string objectKey, double duration)
+        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName,
+            string objectKey, double duration)
         {
             return new GetPreSignedUrlRequest
             {
@@ -51,7 +42,8 @@ namespace EPChat.Core.Helpers
             };
         }
 
-        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName, string objectName)
+        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName,
+            string objectName)
         {
             return new DeleteObjectRequest
             {
@@ -60,7 +52,8 @@ namespace EPChat.Core.Helpers
             };
         }
 
-        private static PutObjectRequest CreatePutObjectRequest(string bucketName, string objectName, IFormFile file)
+        private static PutObjectRequest CreatePutObjectRequest(string bucketName,
+            string objectName, IFormFile file)
         {
             return new PutObjectRequest
             {

@@ -21,7 +21,7 @@ namespace CourseContent.Tests.Base
         private readonly LocalStackContainer _localStack;
         public int Port { get; }
         public string LocalstackUri => $"http://localhost:{Port}";
-      
+
         public TestWebApplicationFactory()
         {
             Port = Random.Shared.Next(4000, 5000);
@@ -44,7 +44,7 @@ namespace CourseContent.Tests.Base
                     .UntilHttpRequestIsSucceeded(request => request
                     .ForPath("/_localstack/health")
                     .ForPort(Setup.LocalStackPort)))
-                .WithBindMount(Setup.ToAbsolute("./localstack/aws-seed-data"), 
+                .WithBindMount(Setup.ToAbsolute("./localstack/aws-seed-data"),
                     "/etc/localstack/init/ready.d", AccessMode.ReadOnly)
                 .WithBindMount(Setup.ToAbsolute("./localstack/aws-seed-data/scripts"),
                     "/scripts", AccessMode.ReadOnly)

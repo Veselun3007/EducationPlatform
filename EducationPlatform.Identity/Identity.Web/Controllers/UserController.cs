@@ -3,7 +3,6 @@ using Identity.Core.Services;
 using Identity.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace Identity.Web.Controllers
 {

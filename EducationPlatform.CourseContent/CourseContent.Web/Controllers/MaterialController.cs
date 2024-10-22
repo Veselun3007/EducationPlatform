@@ -8,7 +8,7 @@ using CourseContent.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EducationPlatform.CourseContent.Controllers
+namespace CourseContent.Web.Controllers
 {
     [Route("api/material")]
     [ApiController]

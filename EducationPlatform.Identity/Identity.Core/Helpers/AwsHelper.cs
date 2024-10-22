@@ -5,74 +5,34 @@ using System.Net;
 
 namespace Identity.Core.Helpers
 {
-    public class AwsHelper
+    internal class AwsHelper(IAmazonS3 s3Client)
     {
-        public static async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
+        private readonly IAmazonS3 _s3Client = s3Client;
+
+        public async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
         {
-            try
-            {
-                using var client = new AmazonS3Client();
-                PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
-
-                var response = await client.PutObjectAsync(request);
-
-                return (response.HttpStatusCode == HttpStatusCode.OK ||
-                        response.HttpStatusCode == HttpStatusCode.NoContent);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
+            var response = await _s3Client.PutObjectAsync(request);
+            return (response.HttpStatusCode == HttpStatusCode.OK ||
+                    response.HttpStatusCode == HttpStatusCode.NoContent);
         }
 
-        public static async Task<bool> DeleteObjectAsync(string bucketName, string objectName)
+        public async Task<bool> DeleteObjectAsync(string bucketName, string objectName)
         {
-            try
-            {
-                using var client = new AmazonS3Client();
-                DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
-
-                var deleteResponse = await client.DeleteObjectAsync(deleteRequest);
-
-                if (deleteResponse.HttpStatusCode == HttpStatusCode.NoContent ||
-                    deleteResponse.HttpStatusCode == HttpStatusCode.NotFound)
-                {
-                    return true;
-                }
-
-                return false;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
+            var deleteResponse = await _s3Client.DeleteObjectAsync(deleteRequest);
+            return (deleteResponse.HttpStatusCode == HttpStatusCode.OK ||
+                   deleteResponse.HttpStatusCode == HttpStatusCode.NoContent);
         }
 
-        /// <summary>
-        /// Generates a temporary link to view a file from an AWS S3 storage
-        /// </summary>
-        /// <param name="accessKey">Vault access key</param>
-        /// <param name="secretKey">Vault secret key</param>
-        /// <param name="bucketName">Storage name (AWS S3 bucket`s name)</param>
-        /// <param name="objectKey">Name of the desired file</param>
-        /// <param name="duration">Duration of the temporary link (in hours)</param>
-        /// <returns>A string value presigned URL</returns>
-        public static async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)
+        public async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)
         {
-            try
-            {
-                using var client = new AmazonS3Client();
-                GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
-
-                return await client.GetPreSignedURLAsync(request);
-            }
-            catch
-            {
-                return "Fail generate operation";
-            }
+            GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
+            return await _s3Client.GetPreSignedURLAsync(request);
         }
 
-        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName, string objectKey, double duration)
+        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName,
+            string objectKey, double duration)
         {
             return new GetPreSignedUrlRequest
             {
@@ -82,7 +42,8 @@ namespace Identity.Core.Helpers
             };
         }
 
-        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName, string objectName)
+        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName,
+            string objectName)
         {
             return new DeleteObjectRequest
             {
@@ -91,7 +52,8 @@ namespace Identity.Core.Helpers
             };
         }
 
-        private static PutObjectRequest CreatePutObjectRequest(string bucketName, string objectName, IFormFile file)
+        private static PutObjectRequest CreatePutObjectRequest(string bucketName,
+            string objectName, IFormFile file)
         {
             return new PutObjectRequest
             {

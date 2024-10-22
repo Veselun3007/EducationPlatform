@@ -2,7 +2,7 @@
 using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
-namespace CourseContent.Core.DTO.Requests.AssignmentDTO
+namespace CourseContent.Core.DTO.Requests
 {
     public class AssignmentDTO
     {

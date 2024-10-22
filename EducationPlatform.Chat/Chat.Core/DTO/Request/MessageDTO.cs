@@ -1,6 +1,5 @@
 ﻿using EPChat.Core.Models.HelperModel;
 using EPChat.Domain.Entities;
-using Microsoft.AspNetCore.Http;
 
 namespace EPChat.Core.DTO.Request
 {
