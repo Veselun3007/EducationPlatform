@@ -101,21 +101,21 @@ Set-Content -Path file-name.sh -Encoding UTF8 -Value (Get-Content file-name.sh)
 
 <div align=center>   
     
-   <img alt="index" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/427f1f30-0b13-4fa1-9be6-e1f7f89b9684" 
+   <img alt="index" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/c429b2bc-54a7-429f-9de2-f6d5cf9edfea" 
       height=24% width="47.5%"></img> <span><img width=2% /></span>
-   <img alt="sign-in" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/db7568bd-6aca-4357-ae7a-e9323351e444" 
+   <img alt="sign-in" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/89100e23-f3aa-4180-9211-f8a0eefb442f" 
       height=24% width="47.5%"></img>
-    
-   <img alt="main-course" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/03fa957c-6cb0-42ff-a0ee-92dd43995df3" 
+
+   <img alt="main-course" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/11430263-4499-4b2a-84d1-f0bbed543d5c" 
       height=24% width="47.5%"></img> <span><img width=2% /></span>
-   <img alt="main-in-course" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/f459e929-3261-4699-9fc4-32ac77e486eb" 
+   <img alt="main-in-course" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/fbb65e37-1300-4af4-aeab-69b1775a821d" 
       height=24% width="47.5%"></img>
-      
-   <img alt="form" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/c52c0358-6333-48d1-9a2d-f5614d23d5a9" 
+
+   <img alt="form" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/cad22622-18d3-4cf9-83dc-7b3ea45a5f48" 
       height=24% width="47.5%"></img> <span><img width=2% /></span>
-   <img alt="chat" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/6139a20a-6932-49bc-95da-d495be3d0406" 
+   <img alt="chat" src="https://github.com/Veselun3007/Education_Platform/assets/70714177/356057e9-cbab-4115-98df-a23d4cdaa1c9" 
       height=24% width="47.5%"></img>
-      
+
 </div>
 
 ## Licence
