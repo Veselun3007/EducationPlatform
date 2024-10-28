@@ -65,7 +65,7 @@ The following tools are additionally required to run the tests:
 Project consists of several main parts:
 - `EducationPlatform.Identity` is designed to process user data, 
 registration, authentication and authorization.
-- `CourseService` is intended for the implementation of the main ones operations with courses.
+- `EducationPlatform.CourseService` is intended for the implementation of the main ones operations with courses.
 - `EducationPlatform.CourseContent` is intended for the implementation of the main ones operations with course content.
 - `EducationPlatform.Chat` is intended to ensure communication between chat participants in real time.
 - `EducationPlatform.StudentResult` is designed to record the success of the participants course
