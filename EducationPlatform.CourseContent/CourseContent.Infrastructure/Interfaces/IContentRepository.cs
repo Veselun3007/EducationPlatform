@@ -1,14 +1,15 @@
 ﻿using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Interfaces.Base;
+using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Interfaces
 {
-    public interface IContentRepository<T> : IRepository<T> where T : IAggregateRoot
+    public interface IContentRepository<T, TKey> : IEntityRepository<T, TKey> where T : IAggregateRoot<TKey> 
     {
-        Task RemoveRange(List<int> entities);
+        Task RemoveRange(List<TKey> entities);
 
-        void AddFile(T entity, string file);
+        Task<T?> UpdateAsync(TKey id, T entity);
 
-        void AddLink(T entity, string link);
+        Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter);
     }
 }

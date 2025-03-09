@@ -14,7 +14,9 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
 
         public string? MaterialDescription { get; set; }
 
-        public DateTime MaterialDatePublication { get; set; } = DateTime.UtcNow;
+        public bool IsEdited { get; set; } = true;
+
+        public DateTime EditedTime { get; set; } = DateTime.UtcNow;
 
         public static Material FromMaterialUpdateDto(MaterialUpdateDTO materialDto)
         {
@@ -25,7 +27,8 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
                 TopicId = materialDto.TopicId,
                 MaterialName = materialDto.MaterialName,
                 MaterialDescription = materialDto.MaterialDescription,
-                MaterialDatePublication = materialDto.MaterialDatePublication
+                IsEdited = materialDto.IsEdited,
+                EditedTime = materialDto.EditedTime
             };
         }
     }

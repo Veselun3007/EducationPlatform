@@ -20,9 +20,13 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
 
         public bool IsRequired { get; set; }
 
-        public DateTime AssignmentDatePublication { get; set; } = DateTime.UtcNow;
+        public DateTime AssignmentDatePublication { get; set; } 
 
         public DateTime AssignmentDeadline { get; set; }
+
+        public bool IsEdited { get; set; } = true;
+
+        public DateTime EditedTime { get; set; } = DateTime.UtcNow;
 
         public static Assignment FromAssignmentUpdateDto(AssignmentUpdateDTO assignmentDto)
         {
@@ -37,7 +41,9 @@ namespace CourseContent.Core.DTO.Requests.UpdateDTO
                 MinMark = assignmentDto.MinMark,
                 IsRequired = assignmentDto.IsRequired,
                 AssignmentDatePublication = assignmentDto.AssignmentDatePublication,
-                AssignmentDeadline = assignmentDto.AssignmentDeadline
+                AssignmentDeadline = assignmentDto.AssignmentDeadline,
+                IsEdited = assignmentDto.IsEdited,
+                EditedTime = assignmentDto.EditedTime
             };
         }
     }

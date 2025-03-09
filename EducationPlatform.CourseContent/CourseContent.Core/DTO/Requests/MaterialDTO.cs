@@ -16,16 +16,8 @@ namespace CourseContent.Core.DTO.Requests
 
         public DateTime MaterialDatePublication { get; set; } = DateTime.UtcNow;
 
-        [ValidateFile([".png",
-            ".jpg",
-            ".jpeg",
-            ".doc",
-            ".pdf",
-            ".docx",
-            ".pptx",
-            ".ppt",
-            ".xls",
-            ".xlsx"],
+        [ValidateFile([".png", ".jpg", ".jpeg", ".doc", 
+            ".pdf", ".docx", ".pptx", ".ppt", ".xls", ".xlsx"],
             ErrorMessage = "Файл має непідтримуване розширення")]
         public List<IFormFile>? MaterialFiles { get; set; }
 

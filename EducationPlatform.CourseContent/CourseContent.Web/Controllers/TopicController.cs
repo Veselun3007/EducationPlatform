@@ -2,8 +2,6 @@
 using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
-using CourseContent.Core.Models.ErrorModels;
-using CourseContent.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,42 +10,55 @@ namespace CourseContent.Web.Controllers
     [Route("api/topic")]
     [ApiController]
     [Authorize]
-    public class TopicController(IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO> operation) : BaseController
+    public class TopicController : Controller
     {
-        private readonly IBaseOperation<TopicOutDTO, Error, TopicDTO, TopicUpdateDTO> _operation = operation;
+        private readonly IContentServices<TopicDTO, TopicOutDTO, TopicUpdateDTO> _contentServices;
+
+        public TopicController(IContentServices<TopicDTO, TopicOutDTO, TopicUpdateDTO> contentServices)
+        {
+            _contentServices = contentServices;
+        }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateTopic([FromForm] TopicDTO topic)
+        public async Task<IActionResult> CreateTopic([FromForm] TopicDTO Topic)
         {
-            var result = await _operation.CreateAsync(topic);
-            return FromResult(result);
+            var result = await _contentServices.CreateAsync(Topic);
+            return Ok(result);
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateTopic([FromBody] TopicUpdateDTO topic)
+        public async Task<IActionResult> UpdateTopic([FromForm] TopicUpdateDTO Topic)
         {
-            var result = await _operation.UpdateAsync(topic, topic.Id);
-            return FromResult(result);
+            var result = await _contentServices.UpdateAsync(Topic, Topic.Id);
+            return Ok(result);
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteTopic(int id)
         {
-            var result = await _operation.DeleteAsync(id);
-            return FromResult(result);
+            await _contentServices.DeleteAsync(id);
+            return Ok();
         }
 
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdTopic(int id)
         {
-            var result = await _operation.GetByIdAsync(id);
-            return FromResult(result);
+            var result = await _contentServices.GetByIdAsync(id);
+            return Ok(result);
         }
 
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<TopicOutDTO>> GetAllTopic(int id)
         {
-            return await _operation.GetAllByCourseAsync(id);
+            var result = await _contentServices.GetAllByCourseAsync(id);
+            return (IEnumerable<TopicOutDTO>)Ok(result);
+        }
+
+        [HttpDelete("removeList")]
+        public async Task<IActionResult> RemoveTopics([FromBody] List<int> entities)
+        {
+            await _contentServices.RemoveRangeAsync(entities);
+            return Ok();
         }
     }
 }

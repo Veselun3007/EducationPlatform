@@ -1,30 +1,31 @@
 ﻿using CourseContent.Domain.Interfaces;
 
-namespace CourseContent.Domain.Entities;
-
-public class Material : IAggregateRoot
+namespace CourseContent.Domain.Entities
 {
-    public int Id { get; set; }
+    public class Material : IAggregateRoot<int>
+    {
+        public int Id { get; set; }
 
-    public int CourseId { get; set; }
+        public int CourseId { get; set; }
 
-    public int? TopicId { get; set; }
+        public int? TopicId { get; set; }
 
-    public required string MaterialName { get; set; }
+        public required string MaterialName { get; set; }
 
-    public string? MaterialDescription { get; set; }
+        public string? MaterialDescription { get; set; }
 
-    public required DateTime MaterialDatePublication { get; set; }
+        public DateTime? MaterialDatePublication { get; set; }
 
-    public bool IsEdited { get; set; } = false;
+        public bool IsEdited { get; set; } = false;
 
-    public DateTime? EditedTime { get; set; }
+        public DateTime? EditedTime { get; set; }
 
-    public virtual Course Course { get; set; } = null!;
+        public virtual Course Course { get; set; } = null!;
 
-    public virtual Topic? Topic { get; set; }
+        public virtual Topic? Topic { get; set; }
 
-    public virtual ICollection<Materialfile> Materialfiles { get; set; } = [];
+        public virtual ICollection<Materialfile> Materialfiles { get; set; } = [];
 
-    public virtual ICollection<Materiallink> Materiallinks { get; set; } = [];
+        public virtual ICollection<Materiallink> Materiallinks { get; set; } = [];
+    }
 }

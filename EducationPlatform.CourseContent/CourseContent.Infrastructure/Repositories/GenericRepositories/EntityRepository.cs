@@ -6,18 +6,12 @@ using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
-    public class EntityRepository<T> : IEntityRepository<T> where T : class, IAggregateRoot
+    public abstract class EntityRepository<T, TKey> : MinRepository<T, TKey>, IEntityRepository<T, TKey>  
+        where T : class, IAggregateRoot<TKey>
     {
-        private readonly EducationPlatformContext _dbContext;
-        private readonly DbSet<T> _dbSet;
+        protected EntityRepository(EducationPlatformContext dbContext) : base(dbContext) { }
 
-        public EntityRepository(EducationPlatformContext dbContext)
-        {
-            _dbContext = dbContext;
-            _dbSet = _dbContext.Set<T>();
-        }
-
-        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[] includes)
+        public Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[] includes)
         {
             var query = _dbSet.AsQueryable();
             if (includes is not null)
@@ -28,22 +22,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
                 }
             }
 
-            return query.FirstOrDefaultAsync(x => x.Id == id);
-        }
-
-        public virtual async Task<T> AddAsync(T entity)
-        {
-            await _dbSet.AddAsync(entity);
-            return entity;
-        }
-
-        public virtual async Task DeleteAsync(int id)
-        {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity is not null)
-            {
-                _dbSet.Remove(entity);
-            }
+            return query.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
     }
 }

@@ -2,9 +2,6 @@
 using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
-using CourseContent.Core.Models.ErrorModels;
-using CourseContent.Domain.Entities;
-using CourseContent.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,84 +10,96 @@ namespace CourseContent.Web.Controllers
     [Route("api/material")]
     [ApiController]
     [Authorize]
-    public class MaterialController(IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink> operation) : BaseController
+    public class MaterialController : Controller
     {
-        private readonly IOperation<MaterialOutDTO, Error, MaterialDTO, MaterialfileOutDTO, MaterialUpdateDTO, Materiallink> _operation = operation;
+        private readonly IContentServices<MaterialDTO, MaterialOutDTO, MaterialUpdateDTO> _contentServices;
+        private readonly IFileServices<MaterialfileOutDTO> _fileServices;
+        private readonly ILinkServices<MateriallinkOutDTO> _linkServices;
+
+        public MaterialController(IContentServices<MaterialDTO, MaterialOutDTO, MaterialUpdateDTO> contentServices,
+            IFileServices<MaterialfileOutDTO> fileServices,
+            ILinkServices<MateriallinkOutDTO> linkServices)
+        {
+            _contentServices = contentServices;
+            _fileServices = fileServices;
+            _linkServices = linkServices;
+        }
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateMaterial([FromForm] MaterialDTO material)
+        public async Task<IActionResult> CreateMaterial([FromForm] MaterialDTO Material)
         {
-            var result = await _operation.CreateAsync(material);
-            return FromResult(result);
+            var result = await _contentServices.CreateAsync(Material);
+            return Ok(result);
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateMaterial([FromForm] MaterialUpdateDTO material)
+        public async Task<IActionResult> UpdateMaterial([FromForm] MaterialUpdateDTO Material)
         {
-            var result = await _operation.UpdateAsync(material, material.Id);
-            return FromResult(result);
+            var result = await _contentServices.UpdateAsync(Material, Material.Id);
+            return Ok(result);
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteMaterial(int id)
         {
-            var result = await _operation.DeleteAsync(id);
-            return FromResult(result);
+            await _contentServices.DeleteAsync(id);
+            return Ok();
         }
 
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdMaterial(int id)
         {
-            var result = await _operation.GetByIdAsync(id);
-            return FromResult(result);
+            var result = await _contentServices.GetByIdAsync(id);
+            return Ok(result);
         }
 
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<MaterialOutDTO>> GetAllMaterial(int id)
         {
-            return await _operation.GetAllByCourseAsync(id);
+            var result = await _contentServices.GetAllByCourseAsync(id);
+            return (IEnumerable<MaterialOutDTO>)Ok(result);
         }
 
         [HttpDelete("removeList")]
         public async Task<IActionResult> RemoveMaterials([FromBody] List<int> entities)
         {
-            var result = await _operation.RemoveRangeAsync(entities);
-            return FromResult(result);
+            await _contentServices.RemoveRangeAsync(entities);
+            return Ok();
         }
 
         [HttpGet("getFileById/{fileId}")]
         public async Task<IActionResult> GetMaterialFileById(int fileId)
         {
-            var result = await _operation.GetFileByIdAsync(fileId);
-            return FromResult(result);
+            var result = await _fileServices.GetFileByIdAsync(fileId);
+            return Ok(result);
         }
 
         [HttpDelete("deleteFileById/{fileId}")]
         public async Task<IActionResult> DeleteMaterialFileById(int fileId)
         {
-            var result = await _operation.DeleteFileAsync(fileId);
-            return FromResult(result);
+            await _fileServices.DeleteFileAsync(fileId);
+            return Ok();
         }
 
         [HttpPost("addFile/{id}")]
         public async Task<IActionResult> AddMaterialFile([FromForm] IFormFile file, int id)
         {
-            var result = await _operation.AddFileAsync(file, id);
-            return FromResult(result);
+            var result = await _fileServices.AddFileAsync(file, id);
+            return Ok(result);
         }
 
         [HttpPost("addLink/{id}")]
         public async Task<IActionResult> AddMaterialLink([FromBody] string link, int id)
         {
-            var result = await _operation.AddLinkAsync(link, id);
-            return FromResult(result);
+            var result = await _linkServices.AddLinkAsync(link, id);
+            return Ok(result);
         }
 
-        [HttpDelete("deleteLinkById/{fileId}")]
-        public async Task<IActionResult> DeleteMaterialLinkById(int fileId)
+        [HttpDelete("deleteLinkById/{linkId}")]
+        public async Task<IActionResult> DeleteMaterialLinkById(int linkId)
         {
-            var result = await _operation.DeleteLinkAsync(fileId);
-            return FromResult(result);
+            await _linkServices.DeleteLinkAsync(linkId);
+            return Ok();
         }
     }
 }

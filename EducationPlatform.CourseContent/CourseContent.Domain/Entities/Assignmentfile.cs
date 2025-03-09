@@ -1,14 +1,15 @@
 ﻿using CourseContent.Domain.Interfaces;
 
-namespace CourseContent.Domain.Entities;
-
-public class Assignmentfile : IAggregateRoot
+namespace CourseContent.Domain.Entities
 {
-    public int Id { get; set; }
+    public class Assignmentfile : IAggregateRoot<int>
+    {
+        public int Id { get; set; }
 
-    public int AssignmentId { get; set; }
+        public int AssignmentId { get; set; }
 
-    public string? AssignmentFile { get; set; }
+        public string? AssignmentFile { get; set; }
 
-    public virtual Assignment Assignment { get; set; } = null!;
+        public virtual Assignment Assignment { get; set; } = null!;
+    }
 }

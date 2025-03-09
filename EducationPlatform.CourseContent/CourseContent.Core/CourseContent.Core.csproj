@@ -14,13 +14,12 @@
 
   <ItemGroup>
     <Folder Include="Models\Config\" />
-    <Folder Include="Models\ErrorModels\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.405" />
     <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
   </ItemGroup>
 
 </Project>

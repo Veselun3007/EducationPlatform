@@ -10,7 +10,7 @@ namespace CourseContent.Core.DTO.Responses
 
         public required string Title { get; set; }
 
-        public static TopicOutDTO FromTopic(Topic topic)
+        public static TopicOutDTO FromTopic(Topic? topic)
         {
             return new TopicOutDTO
             {

@@ -1,7 +1,7 @@
 ﻿namespace CourseContent.Domain.Interfaces
 {
-    public interface IAggregateRoot
+    public interface IAggregateRoot<TKey>
     {
-        public int Id { get; set; }
+        public TKey Id { get; set; }
     }
 }

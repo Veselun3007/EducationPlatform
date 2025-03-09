@@ -5,10 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
-    public class MinRepository<T> : IMinRepository<T> where T : class, IAggregateRoot
+    public abstract class MinRepository<T, TKey> : IMinRepository<T, TKey> 
+        where T : class, IAggregateRoot<TKey>
     {
-        private readonly EducationPlatformContext _dbContext;
-        private readonly DbSet<T> _dbSet;
+        protected readonly EducationPlatformContext _dbContext;
+        protected readonly DbSet<T> _dbSet;
 
         public MinRepository(EducationPlatformContext dbContext)
         {
@@ -22,7 +23,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return entity;
         }
 
-        public virtual async Task DeleteAsync(int id)
+        public virtual async Task DeleteAsync(TKey id)
         {
             var entity = await _dbSet.FindAsync(id);
             if (entity is not null)

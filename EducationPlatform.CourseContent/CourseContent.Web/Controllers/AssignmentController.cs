@@ -2,9 +2,6 @@
 using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
-using CourseContent.Core.Models.ErrorModels;
-using CourseContent.Domain.Entities;
-using CourseContent.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,86 +10,96 @@ namespace CourseContent.Web.Controllers
     [Route("api/assignment")]
     [ApiController]
     [Authorize]
-    public class AssignmentController(IOperation<AssignmentOutDTO, Error, AssignmentDTO,
-        AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> operation) : BaseController
+    public class AssignmentController : Controller
     {
-        private readonly IOperation<AssignmentOutDTO, Error, AssignmentDTO,
-            AssignmentfileOutDTO, AssignmentUpdateDTO, Assignmentlink> _operation = operation;
+        private readonly IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO> _contentServices;
+        private readonly IFileServices<AssignmentfileOutDTO> _fileServices;
+        private readonly ILinkServices<AssignmentlinkOutDTO> _linkServices;
+
+        public AssignmentController(IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO> contentServices,
+            IFileServices<AssignmentfileOutDTO> fileServices,
+            ILinkServices<AssignmentlinkOutDTO> linkServices)
+        {
+            _contentServices = contentServices;
+            _fileServices = fileServices;
+            _linkServices = linkServices;
+        }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
         {
-            var result = await _operation.CreateAsync(assignment);
-            return FromResult(result);
+            var result = await _contentServices.CreateAsync(assignment);
+            return Ok(result);
         }
 
         [HttpPut("update")]
         public async Task<IActionResult> UpdateAssignment([FromForm] AssignmentUpdateDTO assignment)
         {
-            var result = await _operation.UpdateAsync(assignment, assignment.Id);
-            return FromResult(result);
+            var result = await _contentServices.UpdateAsync(assignment, assignment.Id);
+            return Ok(result);
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteAssignment(int id)
         {
-            var result = await _operation.DeleteAsync(id);
-            return FromResult(result);
+            await _contentServices.DeleteAsync(id);
+            return Ok();
         }
 
         [HttpGet("getById/{id}")]
         public async Task<IActionResult> GetByIdAssignment(int id)
         {
-            var result = await _operation.GetByIdAsync(id);
-            return FromResult(result);
+            var result = await _contentServices.GetByIdAsync(id);
+            return Ok(result);
         }
 
         [HttpGet("getAll/{id}")]
         public async Task<IEnumerable<AssignmentOutDTO>> GetAllAssignment(int id)
         {
-            return await _operation.GetAllByCourseAsync(id);
+            var result = await _contentServices.GetAllByCourseAsync(id);
+            return (IEnumerable<AssignmentOutDTO>)Ok(result);
         }
 
         [HttpDelete("removeList")]
         public async Task<IActionResult> RemoveAssignments([FromBody] List<int> entities)
         {
-            var result = await _operation.RemoveRangeAsync(entities);
-            return FromResult(result);
+            await _contentServices.RemoveRangeAsync(entities);
+            return Ok();
         }
 
         [HttpGet("getFileById/{fileId}")]
         public async Task<IActionResult> GetAssignmentFileById(int fileId)
         {
-            var result = await _operation.GetFileByIdAsync(fileId);
-            return FromResult(result);
+            var result = await _fileServices.GetFileByIdAsync(fileId);
+            return Ok(result);
         }
 
         [HttpDelete("deleteFileById/{fileId}")]
         public async Task<IActionResult> DeleteAssignmentFileById(int fileId)
         {
-            var result = await _operation.DeleteFileAsync(fileId);
-            return FromResult(result);
+            await _fileServices.DeleteFileAsync(fileId);
+            return Ok();
         }
 
         [HttpPost("addFile/{id}")]
         public async Task<IActionResult> AddAssignmentFile([FromForm] IFormFile file, int id)
         {
-            var result = await _operation.AddFileAsync(file, id);
-            return FromResult(result);
+            var result = await _fileServices.AddFileAsync(file, id);
+            return Ok(result);
         }
 
         [HttpPost("addLink/{id}")]
         public async Task<IActionResult> AddAssignmentLink([FromBody] string link, int id)
         {
-            var result = await _operation.AddLinkAsync(link, id);
-            return FromResult(result);
+            var result = await _linkServices.AddLinkAsync(link, id);
+            return Ok(result);
         }
 
         [HttpDelete("deleteLinkById/{linkId}")]
         public async Task<IActionResult> DeleteAssignmentLinkById(int linkId)
         {
-            var result = await _operation.DeleteLinkAsync(linkId);
-            return FromResult(result);
+            await _linkServices.DeleteLinkAsync(linkId);
+            return Ok();
         }
     }
 }

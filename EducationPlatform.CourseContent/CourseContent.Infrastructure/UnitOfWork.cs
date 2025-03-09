@@ -2,7 +2,7 @@
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces;
 using CourseContent.Infrastructure.Interfaces.Base;
-using CourseContent.Infrastructure.Repositories.GenericRepositories;
+using CourseContent.Infrastructure.Repositories;
 
 namespace CourseContent.Infrastructure
 {
@@ -14,24 +14,24 @@ namespace CourseContent.Infrastructure
         {
             _dbContext = dbContext;
 
-            AssignmentRepository = new ContentRepository<Assignment>(_dbContext);
-            AssignmentfileRepository = new EntityRepository<Assignmentfile>(_dbContext);
-            AssignmentlinkRepository = new MinRepository<Assignmentlink>(_dbContext);
+            AssignmentRepository = new AssignmentRepository(_dbContext);
+            AssignmentfileRepository = new AssignmentfileRepository(_dbContext);
+            AssignmentlinkRepository = new AssignmentlinkRepository(_dbContext);
 
-            MaterialRepository = new ContentRepository<Material>(_dbContext);
-            MaterialfileRepository = new EntityRepository<Materialfile>(_dbContext);
-            MateriallinkRepository = new MinRepository<Materiallink>(_dbContext);
+            MaterialRepository = new MaterialRepository(_dbContext);
+            MaterialfileRepository = new MaterialfileRepository(_dbContext);
+            MateriallinkRepository = new MateriallinkRepository(_dbContext);
 
-            TopicRepository = new Repository<Topic>(_dbContext);
+            TopicRepository = new TopicRepository(_dbContext);
         }
 
-        public IContentRepository<Assignment> AssignmentRepository { get; private set; }
-        public IContentRepository<Material> MaterialRepository { get; private set; }
-        public IEntityRepository<Assignmentfile> AssignmentfileRepository { get; private set; }
-        public IEntityRepository<Materialfile> MaterialfileRepository { get; private set; }
-        public IMinRepository<Assignmentlink> AssignmentlinkRepository { get; private set; }
-        public IMinRepository<Materiallink> MateriallinkRepository { get; private set; }
-        public IRepository<Topic> TopicRepository { get; private set; }
+        public IContentRepository<Assignment, int> AssignmentRepository { get; private set; }
+        public IContentRepository<Material, int> MaterialRepository { get; private set; }
+        public IEntityRepository<Assignmentfile, int> AssignmentfileRepository { get; private set; }
+        public IEntityRepository<Materialfile, int> MaterialfileRepository { get; private set; }
+        public IMinRepository<Assignmentlink, int> AssignmentlinkRepository { get; private set; }
+        public IMinRepository<Materiallink, int> MateriallinkRepository { get; private set; }
+        public IRepository<Topic, int> TopicRepository { get; private set; }
 
         public async Task<int> CommitAsync()
         {

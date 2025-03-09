@@ -1,5 +1,4 @@
-﻿using CourseContent.Domain.Entities;
-using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Interfaces;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -7,117 +6,30 @@ using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
-    public class ContentRepository<T> : IContentRepository<T> where T : class, IAggregateRoot
+    public abstract class ContentRepository<T, TKey> : EntityRepository<T, TKey>, IContentRepository<T, TKey> 
+        where T : class, IAggregateRoot<TKey> 
     {
-        private readonly EducationPlatformContext _dbContext;
-        private readonly DbSet<T> _dbSet;
-
-        public ContentRepository(EducationPlatformContext dbContext)
+        protected ContentRepository(EducationPlatformContext dbContext) : base(dbContext) { }
+     
+        public virtual async Task RemoveRange(List<TKey> entities)
         {
-            _dbContext = dbContext;
-            _dbSet = _dbContext.Set<T>();
+            var items = await _dbSet.Where(x => entities.Contains(x.Id)).ToListAsync();
+            _dbSet.RemoveRange(items);
         }
 
-        public virtual async Task<T> AddAsync(T entity)
-        {
-            await _dbSet.AddAsync(entity);
-            return entity;
-        }
-
-        public virtual async Task<T?> UpdateAsync(int id, T entity)
+        public virtual async Task<T?> UpdateAsync(TKey id, T entity)
         {
             var existingEntity = await _dbSet.FindAsync(id);
-
-            if (existingEntity is not null)
+            if(existingEntity is not null)
             {
                 _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
             }
-
             return existingEntity;
         }
 
         public async Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter)
         {
             return await _dbSet.Where(filter).ToListAsync();
-        }
-
-        public virtual async Task DeleteAsync(int id)
-        {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity is not null)
-            {
-                _dbSet.Remove(entity);
-            }
-        }
-
-        public virtual async Task RemoveRange(List<int> entities)
-        {
-            foreach (var entity in entities)
-            {
-                await DeleteAsync(entity);
-            }
-        }
-
-        public virtual void AddFile(T entity, string file)
-        {
-            if (entity is Material materialEntity)
-            {
-                var materialFile = new Materialfile
-                {
-                    MaterialId = materialEntity.Id,
-                    MaterialFile = file
-                };
-
-                _dbContext.Set<Materialfile>().Add(materialFile);
-            }
-            else if (entity is Assignment assignmentEntity)
-            {
-                var assignmentFile = new Assignmentfile
-                {
-                    AssignmentId = assignmentEntity.Id,
-                    AssignmentFile = file
-                };
-
-                _dbContext.Set<Assignmentfile>().Add(assignmentFile);
-            }
-        }
-
-        public virtual void AddLink(T entity, string link)
-        {
-            if (entity is Material materialEntity)
-            {
-                var materialLink = new Materiallink
-                {
-                    MaterialId = materialEntity.Id,
-                    MaterialLink = link
-                };
-
-                _dbContext.Set<Materiallink>().Add(materialLink);
-            }
-            else if (entity is Assignment assignmentEntity)
-            {
-                var assignmentLink = new Assignmentlink
-                {
-                    AssignmentId = assignmentEntity.Id,
-                    AssignmentLink = link
-                };
-
-                _dbContext.Set<Assignmentlink>().Add(assignmentLink);
-            }
-        }
-
-        public Task<T?> GetByIdAsync(int id, params Expression<Func<T, object>>[]? includes)
-        {
-            var query = _dbSet.AsQueryable();
-            if (includes is not null)
-            {
-                foreach (var include in includes)
-                {
-                    query = query.Include(include);
-                }
-            }
-
-            return query.FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

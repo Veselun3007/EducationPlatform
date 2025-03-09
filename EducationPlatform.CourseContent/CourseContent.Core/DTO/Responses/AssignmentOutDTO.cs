@@ -30,7 +30,7 @@ namespace CourseContent.Core.DTO.Responses
 
         public ICollection<AssignmentlinkOutDTO>? Assignmentlinks { get; set; }
 
-        public static AssignmentOutDTO FromAssignment(Assignment assignment)
+        public static AssignmentOutDTO FromAssignment(Assignment? assignment)
         {
             return new AssignmentOutDTO
             {

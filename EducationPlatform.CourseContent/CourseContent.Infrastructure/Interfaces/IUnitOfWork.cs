@@ -5,19 +5,19 @@ namespace CourseContent.Infrastructure.Interfaces
 {
     public interface IUnitOfWork
     {
-        IContentRepository<Assignment> AssignmentRepository { get; }
+        IContentRepository<Assignment, int> AssignmentRepository { get; }
 
-        IContentRepository<Material> MaterialRepository { get; }
+        IContentRepository<Material, int> MaterialRepository { get; }
 
-        IEntityRepository<Assignmentfile> AssignmentfileRepository { get; }
+        IEntityRepository<Assignmentfile, int> AssignmentfileRepository { get; }
 
-        IEntityRepository<Materialfile> MaterialfileRepository { get; }
+        IEntityRepository<Materialfile, int> MaterialfileRepository { get; }
 
-        IMinRepository<Assignmentlink> AssignmentlinkRepository { get; }
+        IMinRepository<Assignmentlink, int> AssignmentlinkRepository { get; }
 
-        IMinRepository<Materiallink> MateriallinkRepository { get; }
+        IMinRepository<Materiallink, int> MateriallinkRepository { get; }
 
-        IRepository<Topic> TopicRepository { get; }
+        IContentRepository<Topic, int> TopicRepository { get; }
 
         Task<int> CommitAsync();
     }
