@@ -5,6 +5,7 @@ using Identity.Domain.Entities;
 using Identity.Infrastructure.Context;
 using Identity.Infrastructure.Interfaces;
 using Identity.Infrastructure.Services;
+using Identity.Web.Middlewares;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.Web
@@ -33,6 +34,7 @@ namespace Identity.Web
             builder.Services.AddScoped<IdentityService>();
 
             builder.Services.AddControllers();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
             builder.Services.AddSwaggerGen();
 

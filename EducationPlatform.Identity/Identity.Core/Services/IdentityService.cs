@@ -1,10 +1,10 @@
 ﻿using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
-using CSharpFunctionalExtensions;
 using Identity.Core.DTO.Responses;
-using Identity.Core.Models;
 using Identity.Domain.Config;
 using Microsoft.Extensions.Options;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Identity.Core.Services
 {
@@ -13,31 +13,35 @@ namespace Identity.Core.Services
         private readonly IAmazonCognitoIdentityProvider _cognitoService = cognitoService;
         private readonly AwsOptions _options = option.Value;
 
-        public async Task<Result<string, Error>> SignUpAsync(string email, string password)
+        private string CreatSecretHash(string username)
+        {
+            var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(_options.ClientSecret));
+            var inputBytes = Encoding.UTF8.GetBytes(username + _options.ClientId);
+            var hashBytes = hmac.ComputeHash(inputBytes);
+            return Convert.ToBase64String(hashBytes);
+        }
+
+        public async Task<string> SignUpAsync(string email, string password)
         {
             var signUpRequest = new SignUpRequest()
             {
                 ClientId = _options.ClientId,
+                SecretHash = CreatSecretHash(email),
                 Username = email,
                 Password = password
             };
-            try
-            {
-                var signUpResponse = await _cognitoService.SignUpAsync(signUpRequest);
-                return Result.Success<string, Error>(signUpResponse.UserSub);
-            }
-            catch (UsernameExistsException)
-            {
-                return Result.Failure<string, Error>(Errors.Identity.UsernameExist(email));
-            }
+
+            var signUpResponse = await _cognitoService.SignUpAsync(signUpRequest);
+            return signUpResponse.UserSub;
         }
 
-        public async Task<Result<TokenResponseModel, Error>> SignInAsync(string email, string password)
+        public async Task<TokenResponse> SignInAsync(string email, string password)
         {
             Dictionary<string, string> authParams = new()
             {
                 {"USERNAME", email},
-                {"PASSWORD", password}
+                {"PASSWORD", password},
+                {"SECRET_HASH", CreatSecretHash(email)}
             };
 
             InitiateAuthRequest request = new()
@@ -46,146 +50,87 @@ namespace Identity.Core.Services
                 AuthParameters = authParams,
                 AuthFlow = AuthFlowType.USER_PASSWORD_AUTH,
             };
-            try
-            {
-                var response = await _cognitoService.InitiateAuthAsync(request);
-                return Result.Success<TokenResponseModel, Error>(CreateResponse(
-                    response.AuthenticationResult.AccessToken,
-                    response.AuthenticationResult.RefreshToken));
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<TokenResponseModel, Error>(Errors.General.NotFound());
-            }
+
+            var response = await _cognitoService.InitiateAuthAsync(request);
+            return CreateResponse(response.AuthenticationResult.AccessToken, response.AuthenticationResult.RefreshToken);
         }
 
-        public async Task<Result<string, Error>> ComfirmUserAsync(string email, string code)
+        public async Task ComfirmUserAsync(string email, string code)
         {
             var comfirmationRequest = new ConfirmSignUpRequest()
             {
                 Username = email,
                 ConfirmationCode = code,
+                SecretHash = CreatSecretHash(email),
                 ClientId = _options.ClientId,
             };
-            try
-            {
-                await _cognitoService.ConfirmSignUpAsync(comfirmationRequest);
-                return Result.Success<string, Error>("Email confirmed");
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
-            catch (CodeMismatchException)
-            {
-                return Result.Failure<string, Error>(Errors.Identity.CodeMismatch());
-            }
-            catch (ExpiredCodeException)
-            {
-                return Result.Failure<string, Error>(Errors.Identity.ExpiredCode());
-            }
+
+            await _cognitoService.ConfirmSignUpAsync(comfirmationRequest);
         }
 
-        public async Task<Result<string, Error>> RefreshTokensAsync(string refreshToken)
+        public async Task<string> RefreshTokensAsync(string refreshToken, string email)
         {
             var request = new AdminInitiateAuthRequest
             {
                 UserPoolId = _options.UserPoolId,
                 ClientId = _options.ClientId,
-                AuthFlow = AuthFlowType.REFRESH_TOKEN_AUTH
+                AuthFlow = AuthFlowType.REFRESH_TOKEN_AUTH,
             };
 
             request.AuthParameters.Add("REFRESH_TOKEN", refreshToken);
-            try
-            {
-                var response = await _cognitoService.AdminInitiateAuthAsync(request);
-                return Result.Success<string, Error>(response.AuthenticationResult.AccessToken);
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
+            request.AuthParameters.Add("SECRET_HASH", CreatSecretHash(email));
+            var response = await _cognitoService.AdminInitiateAuthAsync(request);
+            return response.AuthenticationResult.AccessToken;
         }
 
-        public async Task<Result<string, Error>> SendPasswordResetEmail(string email)
+        public async Task SendPasswordResetEmail(string email)
         {
             var forgotRequest = new ForgotPasswordRequest()
             {
                 Username = email,
+                SecretHash = CreatSecretHash(email),
                 ClientId = _options.ClientId,
             };
-            try
-            {
-                await _cognitoService.ForgotPasswordAsync(forgotRequest);
-                return Result.Success<string, Error>("A request for a password reset code has been sent");
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
+
+            await _cognitoService.ForgotPasswordAsync(forgotRequest);
         }
 
-        public async Task<Result<string, Error>> ResetPassword(string email, string code, string password)
+        public async Task ResetPassword(string email, string code, string password)
         {
             var forgotRequest = new ConfirmForgotPasswordRequest()
             {
                 Username = email,
                 ConfirmationCode = code,
                 Password = password,
+                SecretHash = CreatSecretHash(email),
                 ClientId = _options.ClientId,
             };
-            try
-            {
-                await _cognitoService.ConfirmForgotPasswordAsync(forgotRequest);
-                return Result.Success<string, Error>("Password change successful");
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
+
+            await _cognitoService.ConfirmForgotPasswordAsync(forgotRequest);
         }
 
-
-
-        public async Task<Result<string, Error>> SignOutAsync(string accessToken)
+        public async Task SignOutAsync(string accessToken)
         {
-            try
+            var request = new GlobalSignOutRequest
             {
-                var request = new GlobalSignOutRequest
-                {
-                    AccessToken = accessToken
-                };
-                await _cognitoService.GlobalSignOutAsync(request);
-                return Result.Success<string, Error>("User successfully signed out");
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
+                AccessToken = accessToken
+            };
+            await _cognitoService.GlobalSignOutAsync(request);
         }
 
-        public async Task<Result<string, Error>> DeleteAsync(string id)
+        public async Task DeleteAsync(string id)
         {
-            try
+            var request = new AdminDeleteUserRequest
             {
-                var request = new AdminDeleteUserRequest
-                {
-                    UserPoolId = _options.UserPoolId,
-                    Username = id
-                };
-                var response = await _cognitoService.AdminDeleteUserAsync(request);
-                return Result.Success<string, Error>("User successfully deleted");
-            }
-            catch (NotAuthorizedException)
-            {
-                return Result.Failure<string, Error>(Errors.General.NotFound());
-            }
+                UserPoolId = _options.UserPoolId,
+                Username = id
+            };
+            await _cognitoService.AdminDeleteUserAsync(request);
         }
 
-        private static TokenResponseModel CreateResponse(string accessToken,
-            string refreshToken)
+        private static TokenResponse CreateResponse(string accessToken, string refreshToken)
         {
-            return new TokenResponseModel()
+            return new TokenResponse()
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken,
