@@ -1,6 +1,5 @@
 ﻿using Identity.Core.DTO.Requests;
 using Identity.Core.Services;
-using Identity.Web.Controllers.Base;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,17 +7,17 @@ namespace Identity.Web.Controllers
 {
     [ApiController]
     [Route("api/userManagement")]
-    public class UserController(UserService operation) : BaseController
+    public class UserController(UserService userService) : Controller
     {
-        private readonly UserService _operation = operation;
+        private readonly UserService _userService = userService;
 
         [Authorize]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateUserAsync(UserUpdateDTO entity)
         {
             var id = User.FindFirst("username")!.Value;
-            var result = await _operation.UpdateAsync(entity, id);
-            return FromResult(result);
+            var result = await _userService.UpdateAsync(entity, id);
+            return Ok(result);
         }
 
         [Authorize]
@@ -26,8 +25,8 @@ namespace Identity.Web.Controllers
         public async Task<IActionResult> DeleteUserAsync()
         {
             var id = User.FindFirst("username")!.Value;
-            var result = await _operation.DeleteAsync(id);
-            return FromResult(result);
+            await _userService.DeleteAsync(id);
+            return Ok();
         }
 
         [Authorize]
@@ -35,8 +34,8 @@ namespace Identity.Web.Controllers
         public async Task<IActionResult> GetUserByIdAsync()
         {
             var id = User.FindFirst("username")!.Value;
-            var result = await _operation.GetByIdAsync(id);
-            return FromResult(result);
+            var result = await _userService.GetByIdAsync(id);
+            return Ok(result);
         }
     }
 }
