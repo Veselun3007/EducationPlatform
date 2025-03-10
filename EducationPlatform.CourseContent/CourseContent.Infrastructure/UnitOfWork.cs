@@ -31,7 +31,7 @@ namespace CourseContent.Infrastructure
         public IEntityRepository<Materialfile, int> MaterialfileRepository { get; private set; }
         public IMinRepository<Assignmentlink, int> AssignmentlinkRepository { get; private set; }
         public IMinRepository<Materiallink, int> MateriallinkRepository { get; private set; }
-        public IRepository<Topic, int> TopicRepository { get; private set; }
+        public IContentRepository<Topic, int> TopicRepository { get; private set; }
 
         public async Task<int> CommitAsync()
         {
