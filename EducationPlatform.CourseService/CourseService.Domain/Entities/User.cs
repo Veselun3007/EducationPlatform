@@ -1,16 +1,17 @@
-﻿using CourseService.Domain.Interfaces;
+﻿using CourseService.Domain.Base;
 using System.Text.Json.Serialization;
 
-namespace CourseService.Domain.Entities;
-public partial class User : IAggregateRoot {
-    public string UserId { get; set; } = null!;
+namespace CourseService.Domain.Entities
+{
+    public class User : AggregateRoot<string>
+    {
+        public string? UserName { get; set; }
 
-    public string UserName { get; set; } = null!;
+        public string? UserEmail { get; set; }
 
-    public string UserEmail { get; set; } = null!;
+        public string? UserImage { get; set; }
 
-    public string? UserImage { get; set; }
-
-    [JsonIgnore]
-    public virtual ICollection<Courseuser> Courseusers { get; set; } = new List<Courseuser>();
+        [JsonIgnore]
+        public virtual ICollection<Courseuser> Courseusers { get; set; } = new List<Courseuser>();
+    }
 }

@@ -1,10 +1,9 @@
 ﻿using CourseService.Domain.Enums;
 
-namespace CourseService.Application.DTOs
+namespace CourseService.Application.DTO.Response
 {
-    public class CourseUserInfo
+    public class CourseuserOutDTO
     {
-
         public int CourseuserId { get; set; }
 
         public Roles Role { get; set; }

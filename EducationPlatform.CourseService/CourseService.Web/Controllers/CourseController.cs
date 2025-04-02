@@ -1,81 +1,74 @@
-﻿using CourseService.Application.Abstractions;
-using CourseService.Application.Courses.Commands.CreateCourse;
-using CourseService.Application.Courses.Commands.DeleteCourse;
-using CourseService.Application.Courses.Commands.UpdateCourse;
-using CourseService.Application.Courses.Queries.GetAllCourses;
-using CourseService.Application.Courseusers.Commands.CreateCourseuser.CreateTeacher;
-using CourseService.Application.DTOs;
-using CourseService.Application.DTOs.Courses.Queries;
-using MediatR;
+﻿using CourseService.Application.DTO.Request;
+using CourseService.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CourseService.Web.Controllers {
+namespace CourseService.Web.Controllers
+{
     [ApiController]
     [Route("api/[controller]")]
-    public class CourseController : ControllerResult {
-        private readonly IMediator _mediator;
-        public CourseController(IMediator mediator) {
-            _mediator = mediator;
+    public class CourseController : Controller
+    {
+        private readonly CoursesService _courseService;
+        private readonly CourseuserService _courseuserService;
+        public CourseController(CoursesService courseService, CourseuserService courseuserService)
+        {
+            _courseService = courseService;
+            _courseuserService = courseuserService;
         }
 
         // вертає CourseInfo
         [Authorize]
         [HttpGet("get_course")]
-        public async Task<IActionResult> Get(int courseId) {
-            GetCourseQuery request = new GetCourseQuery(courseId, HttpContext.User.FindFirst("username")?.Value);
-            //GetCourseQuery request = new GetCourseQuery(courseId, "24d83448-e0c1-7036-9254-932db352e7e4");
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+        public async Task<IActionResult> GetById(int courseId)
+        {
+            string? userId = HttpContext.User.FindFirst("username")?.Value;
+            var result = await _courseService.GetCourseAsync(userId, courseId);
+            return Ok(result);
         }
 
         // вертає List CourseInfo
         [Authorize]
         [HttpGet("get_all_course")]
-        public async Task<IActionResult> GetAll() {
-            GetAllCoursesQuery request = new GetAllCoursesQuery(HttpContext.User.FindFirst("username")?.Value);
-            //GetAllCoursesQuery request = new GetAllCoursesQuery("24d83448-e0c1-7036-9254-932db352e7e4");
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+        public async Task<IActionResult> GetAll()
+        {
+            string? userId = HttpContext.User.FindFirst("username")?.Value;
+            var result = await _courseService.GetAllCourseAsync(userId);
+            return Ok(result);
         }
 
         // повинно вертати CourseInfo
         // але вертає NewCourseInfo
         [Authorize]
         [HttpPost("create_course")]
-        public async Task<IActionResult> Post(CreateCourseCommand course_command) {
-            string user_id = HttpContext.User.FindFirst("username")?.Value;
-            //string user_id = "24d83448-e0c1-7036-9254-932db352e7e4";
-
-            var result_course = await _mediator.Send(course_command, new CancellationToken());
-            if (!result_course.IsSuccess) return ReturnResult(result_course);
-
-            var courseuser_command = new CreateAdminCommand(new NewCourseInfo(result_course.Value), user_id);
-            var result_courseuser = await _mediator.Send(courseuser_command, new CancellationToken());
-
-            if (!result_courseuser.IsSuccess) return ReturnResult(result_courseuser);
-
-            return ReturnResult(result_courseuser);
+        public async Task<IActionResult> CreateCourse(CourseDTO course)
+        {
+            string? userId = HttpContext.User.FindFirst("username")?.Value;
+            var result_course = await _courseService.CreateCourseAsync(course);
+            AdminDTO admin = new();
+            admin.Course = result_course;
+            var result_courseuser = await _courseuserService.CreateAdminAsync(admin);
+            return Ok(result_courseuser);
         }
 
         // повинно вертати CourseInfo
         [Authorize]
         [HttpPut("update_course")]
-        public async Task<IActionResult> Put(UpdateCourseCommand request) {
-            //request.UserId = "24d83448-e0c1-7036-9254-932db352e7e4";
+        public async Task<IActionResult> UpdateCourse(UpdateCourseDTO request)
+        {
             request.UserId = HttpContext.User.FindFirst("username")?.Value;
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+            var result = await _courseService.UpdateCourseAsync(request);
+            return Ok(result);
         }
 
         // нічого не вертає
         [Authorize]
-        [HttpDelete("delete_course")]
-        public async Task<IActionResult> Delete(DeleteCourseCommand request) {
-            //request.UserId = "24d83448-e0c1-7036-9254-932db352e7e4";
-            request.UserId = HttpContext.User.FindFirst("username")?.Value;
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+        [HttpDelete("delete_course/{courseId}")]
+        public async Task<IActionResult> DeleteCourse(int courseId)
+        {
+            string? userId = HttpContext.User.FindFirst("username")?.Value;
+            await _courseService.DeleteCourseAsync(userId, courseId);
+            return Ok();
         }
     }
 }

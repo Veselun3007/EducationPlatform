@@ -1,58 +1,57 @@
-﻿using CourseService.Application.Courseusers.Commands.CreateCourseuser.CreateStudent;
-using CourseService.Application.Courseusers.Commands.DeleteCourseuser;
-using CourseService.Application.Courseusers.Commands.UpdateCourseuser;
-using CourseService.Application.Courseusers.Queries.GetCourseusersByCourse;
-using CourseService.Infrastructure.Context;
-using MediatR;
+﻿using CourseService.Application.DTO.Request;
+using CourseService.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CourseService.Web.Controllers {
+namespace CourseService.Web.Controllers
+{
     [ApiController]
     [Route("api/[controller]")]
-    public class CourseUserController : ControllerResult {
-        private readonly IMediator _mediator;
+    public class CourseUserController : Controller
+    {
+        private readonly CourseuserService _courseuserService;
 
-        public CourseUserController(IMediator mediator, EducationPlatformContext context) {
-            _mediator = mediator;
+        public CourseUserController(CourseuserService courseuserService)
+        {
+            _courseuserService = courseuserService;
         }
 
         // вертає List CourseUserInfo
         [Authorize]
         [HttpGet("get_courseusers_course")]
-        public async Task<IActionResult> GetByIdCourse(int courseId) {
-            GetCourseusersByCourseQuery request = new GetCourseusersByCourseQuery(courseId);
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+        public async Task<IActionResult> GetByIdCourse(int courseId)
+        {
+            var result = await _courseuserService.GetAllByCourseAsync(courseId);
+            return Ok(result);
         }
 
         // нічого не повертати, крім статус кода
         [Authorize]
         [HttpPost("create_courseuser")]
-        public async Task<IActionResult> PostStudent(CreateStudentCommand request) {
+        public async Task<IActionResult> PostStudent(StudentDTO request)
+        {
             request.UserId = HttpContext.User.FindFirst("username")?.Value;
-            //request.UserId = "945864e8-30e1-7010-6377-79d39e0c3261";
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+            await _courseuserService.CreateStudentAsync(request);
+            return Ok();
         }
 
         //повинно вертати CourseUserInfo
         [Authorize]
         [HttpPut("update_courseuser")]
-        public async Task<IActionResult> Put(UpdateCourseuserCommand request) {
+        public async Task<IActionResult> Put(UpdateCourseuserDTO request)
+        {
             request.UserId = HttpContext.User.FindFirst("username")?.Value;
-            //request.UserId = "945864e8-30e1-7010-6377-79d39e0c3261";
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+            var result = await _courseuserService.UpdateCourseuserAsync(request);
+            return Ok(result);
         }
 
         [Authorize]
-        [HttpDelete("delete_courseuser")]
-        public async Task<IActionResult> Delete(DeleteCourseuserCommand request) {
-            request.UserId = HttpContext.User.FindFirst("username")?.Value;
-            //request.UserId = "945864e8-30e1-7010-6377-79d39e0c3261";
-            var result = await _mediator.Send(request, new CancellationToken());
-            return ReturnResult(result);
+        [HttpDelete("delete_courseuser/{courseuserId}")]
+        public async Task<IActionResult> Delete(int courseuserId)
+        {
+            string? userId = HttpContext.User.FindFirst("username")?.Value;
+            await _courseuserService.DeleteCourseuserAsync(userId, courseuserId);
+            return Ok();
         }
     }
 }

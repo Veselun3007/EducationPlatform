@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CourseService.Domain.Entities;
+using CourseService.Infrastructure.Interfaces.Base;
 
-namespace CourseService.Infrastructure.Interfaces {
-    public interface IUnitOfWork<out TContext> : IUnitOfWork where TContext : DbContext {
-        TContext DbContext { get; }    
-    }
+namespace CourseService.Infrastructure.Interfaces
+{
+    public interface IUnitOfWork
+    {
+        IMinRepository<string, User> UserRepository { get; }
 
-    public interface IUnitOfWork : IDisposable {
-        int SaveChanges();
-        Task<int> SaveChangesAsync();
-        IRepository<TEntity> GetRepository<TEntity>(bool hasCustomRepository = true) where TEntity : class;
+        IExtendedRepository<int, Courseuser> CourseuserRepository { get; }
+
+        IRepository<int, Course> CourseRepository { get; }
+
+        Task<int> CommitAsync();
     }
 }

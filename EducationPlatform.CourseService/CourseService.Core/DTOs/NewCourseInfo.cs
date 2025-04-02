@@ -1,11 +1,15 @@
 ﻿using CourseService.Domain.Entities;
 
-namespace CourseService.Application.DTOs {
-    public class NewCourseInfo {
-        public NewCourseInfo() {
+namespace CourseService.Application.DTOs
+{
+    public class NewCourseInfo
+    {
+        public NewCourseInfo()
+        {
             AdminInfo = new AdminInfo();
         }
-        public NewCourseInfo(Course course) {
+        public NewCourseInfo(Course course)
+        {
             Course = course;
             AdminInfo = new AdminInfo();
         }
