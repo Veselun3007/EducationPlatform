@@ -24,7 +24,7 @@ namespace CourseContent.Core.Services.ContentServices
         public async Task<IEnumerable<AssignmentOutDTO>?> GetAllByCourseAsync(int courseId)
         {
             var assignments = await _unitOfWork.AssignmentRepository
-                .GetAllByCourseAsync(m => m.CourseId == courseId);
+                .FindAllByAsync(m => m.CourseId == courseId);
             return assignments.Select(AssignmentOutDTO.FromAssignment).ToList();
         }
 

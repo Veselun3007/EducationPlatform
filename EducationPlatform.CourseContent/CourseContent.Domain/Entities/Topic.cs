@@ -1,11 +1,9 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Base;
 
 namespace CourseContent.Domain.Entities
 {
-    public class Topic : IAggregateRoot<int>
+    public class Topic : AggregateRoot<int>
     {
-        public int Id { get; set; }
-
         public int CourseId { get; set; }
 
         public required string Title { get; set; }

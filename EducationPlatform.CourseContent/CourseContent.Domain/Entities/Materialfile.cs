@@ -1,11 +1,9 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Base;
 
 namespace CourseContent.Domain.Entities
 {
-    public class Materialfile : IAggregateRoot<int>
+    public class Materialfile : AggregateRoot<int>
     {
-        public int Id { get; set; }
-
         public int MaterialId { get; set; }
 
         public string? MaterialFile { get; set; }

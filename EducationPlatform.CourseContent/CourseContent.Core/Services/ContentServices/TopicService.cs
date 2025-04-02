@@ -1,5 +1,4 @@
-﻿using CourseContent.Core.DTO.Requests.UpdateDTO;
-using CourseContent.Core.DTO.Requests;
+﻿using CourseContent.Core.DTO.Requests;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
 using CourseContent.Infrastructure.Interfaces;
@@ -25,7 +24,7 @@ namespace CourseContent.Core.Services.ContentServices
         public async Task<IEnumerable<TopicOutDTO>?> GetAllByCourseAsync(int courseId)
         {
             var topics = await _unitOfWork.TopicRepository
-                .GetAllByCourseAsync(m => m.CourseId == courseId);
+                .FindAllByAsync(m => m.CourseId == courseId);
             return topics.Select(TopicOutDTO.FromTopic).ToList();
         }
 

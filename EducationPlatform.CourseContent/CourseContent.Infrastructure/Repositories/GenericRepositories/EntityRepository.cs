@@ -1,4 +1,4 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Base;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
     public abstract class EntityRepository<T, TKey> : MinRepository<T, TKey>, IEntityRepository<T, TKey>  
-        where T : class, IAggregateRoot<TKey>
+        where T : AggregateRoot<TKey>
     {
         protected EntityRepository(EducationPlatformContext dbContext) : base(dbContext) { }
 

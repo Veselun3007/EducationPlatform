@@ -1,4 +1,4 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Base;
 using CourseContent.Infrastructure.Context;
 using CourseContent.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
     public abstract class ContentRepository<T, TKey> : EntityRepository<T, TKey>, IContentRepository<T, TKey> 
-        where T : class, IAggregateRoot<TKey> 
+        where T : AggregateRoot<TKey> 
     {
         protected ContentRepository(EducationPlatformContext dbContext) : base(dbContext) { }
      
@@ -27,7 +27,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
             return existingEntity;
         }
 
-        public async Task<IEnumerable<T>> GetAllByCourseAsync(Expression<Func<T, bool>> filter)
+        public async Task<IEnumerable<T>> FindAllByAsync(Expression<Func<T, bool>> filter)
         {
             return await _dbSet.Where(filter).ToListAsync();
         }

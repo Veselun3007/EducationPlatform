@@ -1,11 +1,9 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Base;
 
 namespace CourseContent.Domain.Entities
 {
-    public class Materiallink : IAggregateRoot<int>
+    public class Materiallink : AggregateRoot<int>
     {
-        public int Id { get; set; }
-
         public int MaterialId { get; set; }
 
         public string? MaterialLink { get; set; }

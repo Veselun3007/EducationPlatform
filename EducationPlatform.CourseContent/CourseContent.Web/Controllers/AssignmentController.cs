@@ -54,10 +54,10 @@ namespace CourseContent.Web.Controllers
         }
 
         [HttpGet("getAll/{id}")]
-        public async Task<IEnumerable<AssignmentOutDTO>> GetAllAssignment(int id)
+        public async Task<IActionResult> GetAllAssignment(int id)
         {
             var result = await _contentServices.GetAllByCourseAsync(id);
-            return (IEnumerable<AssignmentOutDTO>)Ok(result);
+            return Ok(result);
         }
 
         [HttpDelete("removeList")]

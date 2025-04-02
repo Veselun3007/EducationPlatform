@@ -1,11 +1,9 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Base;
 
 namespace CourseContent.Domain.Entities
 {
-    public class Assignmentfile : IAggregateRoot<int>
+    public class Assignmentfile : AggregateRoot<int>
     {
-        public int Id { get; set; }
-
         public int AssignmentId { get; set; }
 
         public string? AssignmentFile { get; set; }

@@ -1,5 +1,5 @@
 ﻿using Amazon.S3;
-using CourseContent.Core.Models.Config;
+using CourseContent.Domain.Config;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 

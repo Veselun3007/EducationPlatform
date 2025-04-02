@@ -1,6 +1,6 @@
 ﻿using CourseContent.Domain.Entities;
 
-namespace CourseContent.Core.DTO.Requests.UpdateDTO
+namespace CourseContent.Core.DTO.Requests
 {
     public class TopicUpdateDTO
     {

@@ -1,11 +1,9 @@
-﻿using CourseContent.Domain.Interfaces;
+﻿using CourseContent.Domain.Base;
 
 namespace CourseContent.Domain.Entities
 {
-    public class Assignmentlink : IAggregateRoot<int>
+    public class Assignmentlink : AggregateRoot<int>
     {
-        public int Id { get; set; }
-
         public int AssignmentId { get; set; }
 
         public string? AssignmentLink { get; set; }

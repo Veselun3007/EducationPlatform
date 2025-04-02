@@ -1,9 +1,7 @@
 using CourseContent.Core.DTO.Requests;
-using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
-using CourseContent.Core.Models.Config;
 using CourseContent.Core.Services.ContentServices;
 using CourseContent.Infrastructure;
 using CourseContent.Infrastructure.Context;
@@ -12,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using CourseContent.Core.Services.FileServices;
 using CourseContent.Core.Services.LinkServices;
 using CourseContent.Web.Middlewares;
+using CourseContent.Domain.Config;
 
 namespace CourseContent.Web
 {
