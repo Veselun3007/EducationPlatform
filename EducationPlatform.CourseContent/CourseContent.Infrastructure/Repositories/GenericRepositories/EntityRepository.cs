@@ -11,7 +11,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
     {
         protected EntityRepository(EducationPlatformContext dbContext) : base(dbContext) { }
 
-        public Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[] includes)
+        public async Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[] includes)
         {
             var query = _dbSet.AsQueryable();
             if (includes is not null)
@@ -22,7 +22,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
                 }
             }
 
-            return query.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            return await query.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
     }
 }

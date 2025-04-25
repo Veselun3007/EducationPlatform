@@ -43,11 +43,9 @@ namespace CourseService.Web.Controllers
         [HttpPost("create_course")]
         public async Task<IActionResult> CreateCourse(CourseDTO course)
         {
-            string? userId = HttpContext.User.FindFirst("username")?.Value;
             var result_course = await _courseService.CreateCourseAsync(course);
-            AdminDTO admin = new();
-            admin.Course = result_course;
-            var result_courseuser = await _courseuserService.CreateAdminAsync(admin);
+            result_course.UserId = HttpContext.User.FindFirst("username")?.Value;          
+            var result_courseuser = await _courseuserService.CreateAdminAsync(result_course);
             return Ok(result_courseuser);
         }
 

@@ -12,7 +12,7 @@ namespace CourseService.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly FileHelper _fileHelper;
 
-        public CoursesService(IUnitOfWork unitOfWork, FileHelper fileHelper, CourseuserService service)
+        public CoursesService(IUnitOfWork unitOfWork, FileHelper fileHelper)
         {
             _unitOfWork = unitOfWork;
             _fileHelper = fileHelper;
@@ -29,11 +29,9 @@ namespace CourseService.Application.Services
 
             foreach(var course in courses)
             {
-                var courseuser = course.Courseusers.FirstOrDefault(cu => cu.UserId == userId);
-                var admin_courseuser = course.Courseusers.FirstOrDefault(cu => cu.Role == Roles.Admin);
-                var admin = await _unitOfWork.UserRepository.GetByIdAsync(admin_courseuser.UserId);
-                CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
+                (Courseuser? courseuser, User? admin) = await GetAdminInfo(userId, course);
 
+                CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
                 response.Add(courseInfo);
             }
             return response;
@@ -46,10 +44,61 @@ namespace CourseService.Application.Services
                 .FindAnyAsync(c => c.Id == courseId && c.Courseusers
                 .Any(cu => cu.UserId == userId));
 
+            (Courseuser? courseuser, User? admin) = await GetAdminInfo(userId, course);
+            CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
 
+            return courseInfo;
+        }
+
+        private async Task<(Courseuser? courseuser, User? admin)> GetAdminInfo(string userId, Course course)
+        {
             var courseuser = course.Courseusers.FirstOrDefault(cu => cu.UserId == userId);
-            var admin = await _unitOfWork.UserRepository
-                .GetByIdAsync(course.Courseusers.FirstOrDefault(cu => cu.Role == Roles.Admin).UserId);
+            var admin_courseuser = course.Courseusers.FirstOrDefault(cu => cu.Role == Roles.Admin);
+            var admin = await _unitOfWork.UserRepository.GetByIdAsync(admin_courseuser.UserId);
+            return (courseuser, admin);
+        }
+
+        public async Task DeleteCourseAsync(string userId, int courseId)
+        {
+            var course = await _unitOfWork.CourseRepository.FindAnyAsync(
+                c => c.Id == courseId,
+                c => c.Courseusers
+            );
+            var courseuser = course?.Courseusers.FirstOrDefault(cu => cu.UserId == userId);
+
+            if(courseuser.Role == Roles.Admin)
+            {
+                await _unitOfWork.CourseRepository.DeleteAsync(course.Id);
+                await _unitOfWork.CommitAsync();
+            }
+        }
+
+        public async Task<AdminDTO> CreateCourseAsync(CourseDTO request)
+        {
+            string courseLink = $"{request.CourseName[..Math.Min(30, request.CourseName.Length)]}-{Guid.NewGuid()}";
+
+            var course = FromCourseDTO(request, courseLink);
+            course = await _unitOfWork.CourseRepository.AddAsync(course);
+            await _unitOfWork.CommitAsync();
+
+            return new AdminDTO { Course = course };
+        }
+
+        public async Task<CourseInfo> UpdateCourseAsync(UpdateCourseDTO request)
+        {
+            var course = await _unitOfWork.CourseRepository.FindAnyAsync(
+                c => c.Id == request.CourseId,
+                c => c.Courseusers
+            );
+            (Courseuser? courseuser, User? admin) = await GetAdminInfo(request.UserId, course);
+
+            if(admin != null && courseuser != null && admin.Id == request.UserId)
+            {
+                course.CourseName = request.CourseName;
+                course.CourseDescription = request.CourseDescription;
+                course = await _unitOfWork.CourseRepository.UpdateAsync(course.Id, course);
+                await _unitOfWork.CommitAsync();
+            }
 
             CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
 
@@ -74,51 +123,14 @@ namespace CourseService.Application.Services
             return courseInfo;
         }
 
-        public async Task DeleteCourseAsync(string userId, int courseId)
+        public static Course FromCourseDTO(CourseDTO courseDto, string link)
         {
-            var course = await _unitOfWork.CourseRepository.FindAnyAsync(
-                c => c.Id == courseId,
-                c => c.Courseusers
-            );
-            var courseuser = course?.Courseusers.FirstOrDefault(cu => cu.UserId == userId);
-
-            if(courseuser.Role == Roles.Admin)
+            return new Course
             {
-                await _unitOfWork.CourseRepository.DeleteAsync(course.Id);
-                await _unitOfWork.CommitAsync();
-            }
-        }
-
-        public async Task<CourseInfo> UpdateCourseAsync(UpdateCourseDTO request)
-        {
-            var course = await _unitOfWork.CourseRepository.FindAnyAsync(
-                c => c.Id == request.CourseId,
-                c => c.Courseusers
-            );
-            var admin = await _unitOfWork.UserRepository
-                .GetByIdAsync(course.Courseusers.FirstOrDefault(cu => cu.Role == Roles.Admin).UserId);
-            var courseuser = course.Courseusers.FirstOrDefault(cu => cu.UserId == request.UserId);
-
-            if(admin != null && courseuser != null && admin.Id == request.UserId)
-            {
-                course.CourseName = request.CourseName;
-                course.CourseDescription = request.CourseDescription;
-                course = await _unitOfWork.CourseRepository.UpdateAsync(course.Id, course);
-                await _unitOfWork.CommitAsync();
-            }
-
-            CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
-
-            return courseInfo;
-        }
-
-        public async Task<Course> CreateCourseAsync(CourseDTO request)
-        {
-            string courseLink = $"{request.CourseName[..30]}" + Guid.NewGuid().ToString();
-            var course = new Course(request.CourseName, request.CourseDescription, courseLink);
-            course = await _unitOfWork.CourseRepository.AddAsync(course);
-            await _unitOfWork.CommitAsync();
-            return course;
+                CourseName = courseDto.CourseName,
+                CourseDescription = courseDto.CourseDescription,
+                CourseLink = link
+            };
         }
     }
 }

@@ -40,28 +40,28 @@ namespace CourseService.Infrastructure.Repositories.Generic
             Expression<Func<TEntity, bool>> filter,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            IQueryable<TEntity> query = _dbSet.AsNoTracking().Where(filter);
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             foreach(var include in includes)
             {
                 query = query.Include(include);
             }
 
-            return await query.ToListAsync();
+            return await query.Where(filter).ToListAsync();
         }
 
         public virtual async Task<TEntity?> FindAnyAsync(
             Expression<Func<TEntity, bool>> filter,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            IQueryable<TEntity> query = _dbSet.AsNoTracking().Where(filter);
+            IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             foreach(var include in includes)
             {
                 query = query.Include(include);
             }
 
-            return await query.FirstOrDefaultAsync();
+            return await query.FirstOrDefaultAsync(filter);
         }
     }
 }

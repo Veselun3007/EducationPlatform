@@ -5,9 +5,14 @@ using System.Net;
 
 namespace CourseService.Application.Helpers
 {
-    internal class AwsHelper(IAmazonS3 s3Client)
+    internal class AwsHelper
     {
-        private readonly IAmazonS3 _s3Client = s3Client;
+        private readonly IAmazonS3 _s3Client;
+
+        internal AwsHelper(IAmazonS3 s3Client)
+        {
+            _s3Client = s3Client;
+        }
 
         public async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
         {
@@ -31,8 +36,7 @@ namespace CourseService.Application.Helpers
             return await _s3Client.GetPreSignedURLAsync(request);
         }
 
-        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName,
-            string objectKey, double duration)
+        private static GetPreSignedUrlRequest CreateGetPreSignedUrlRequest(string bucketName, string objectKey, double duration)
         {
             return new GetPreSignedUrlRequest
             {
@@ -42,8 +46,7 @@ namespace CourseService.Application.Helpers
             };
         }
 
-        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName,
-            string objectName)
+        private static DeleteObjectRequest CreateDeleteObjectRequest(string bucketName, string objectName)
         {
             return new DeleteObjectRequest
             {
@@ -52,8 +55,7 @@ namespace CourseService.Application.Helpers
             };
         }
 
-        private static PutObjectRequest CreatePutObjectRequest(string bucketName,
-            string objectName, IFormFile file)
+        private static PutObjectRequest CreatePutObjectRequest(string bucketName, string objectName, IFormFile file)
         {
             return new PutObjectRequest
             {

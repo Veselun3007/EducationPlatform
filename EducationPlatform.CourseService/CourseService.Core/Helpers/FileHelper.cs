@@ -5,10 +5,16 @@ using Microsoft.Extensions.Options;
 
 namespace CourseService.Application.Helpers
 {
-    public class FileHelper(IOptions<AwsOptions> options, IAmazonS3 s3Client)
+    public class FileHelper
     {
-        private readonly AwsOptions _options = options.Value;
-        private readonly AwsHelper _awsHelper = new(s3Client);
+        private readonly AwsOptions _options;
+        private readonly AwsHelper _awsHelper;
+
+        public FileHelper(IOptions<AwsOptions> options, IAmazonS3 s3Client)
+        {
+            _options = options.Value;
+            _awsHelper = new(s3Client);
+        }
 
         public async Task<string> AddFileAsync(IFormFile file)
         {

@@ -57,7 +57,8 @@ namespace CourseService.Application.Services
                 (cu.UserId == request.UserId) &&
                 (cu.Role == Roles.Admin) &&
                 (cu.CourseId == courseuser.CourseId) &&
-                (cu.UserId != courseuser.UserId)) ?? throw new UnauthorizedAccessException("You do not have permission to update this user.");
+                (cu.UserId != courseuser.UserId)) ?? 
+                throw new UnauthorizedAccessException("You do not have permission to update this user.");
 
             courseuser.Role = request.Role;
             courseuser = await _unitOfWork.CourseuserRepository.UpdateAsync(courseuser.Id, courseuser);
@@ -71,7 +72,8 @@ namespace CourseService.Application.Services
             var issuer = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu =>
                 (cu.CourseId == userToDelete.CourseId) && (cu.UserId == userId));
 
-            if((issuer.Id == userToDelete.Id && userToDelete.Role != Roles.Admin) || (issuer.Role == Roles.Admin && userToDelete.Role != Roles.Admin))
+            if((issuer.Id == userToDelete.Id && userToDelete.Role != Roles.Admin) || 
+               (issuer.Role == Roles.Admin && userToDelete.Role != Roles.Admin))
             {
                 await _unitOfWork.CourseuserRepository.DeleteAsync(id);
                 await _unitOfWork.CommitAsync();
@@ -111,7 +113,5 @@ namespace CourseService.Application.Services
                 UserImage = await _fileHelper.GetFileLink(courseuser.User.UserImage)
             };
         }
-
-
     }
 }

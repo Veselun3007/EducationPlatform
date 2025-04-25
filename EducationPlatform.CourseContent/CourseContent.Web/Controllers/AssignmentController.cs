@@ -1,5 +1,4 @@
 ﻿using CourseContent.Core.DTO.Requests;
-using CourseContent.Core.DTO.Requests.UpdateDTO;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;

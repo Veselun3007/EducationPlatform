@@ -1,4 +1,3 @@
-using CourseService.Application;
 using CourseService.Application.Services;
 using CourseService.Domain.Config;
 using CourseService.Infrastructure.Context;
@@ -6,7 +5,6 @@ using CourseService.Infrastructure.Interfaces;
 using CourseService.Infrastructure.Repositories;
 using CourseService.Web.Middlewares;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace CourseService.Web
 {
@@ -23,10 +21,6 @@ namespace CourseService.Web
                 .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
 
             var (awsOptions, dbOptions) = ServiceExtensions.AddVariables(_configuration);
-
-            builder.Services.AddApplication();
-
-            //builder.Services.AddS3();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
