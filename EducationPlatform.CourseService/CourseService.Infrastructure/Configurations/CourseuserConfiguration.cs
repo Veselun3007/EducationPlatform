@@ -9,7 +9,7 @@ namespace CourseService.Infrastructure.Configurations
         public void Configure(EntityTypeBuilder<Courseuser> builder)
         {
             builder.HasKey(e => e.Id).HasName("course_users_pkey");
-            builder.ToTable("course_users");
+            builder.ToTable("course_user");
 
             builder.Property(e => e.Id).HasColumnName("course_user_id");
             builder.Property(e => e.CourseId).ValueGeneratedOnAdd().HasColumnName("course_id");

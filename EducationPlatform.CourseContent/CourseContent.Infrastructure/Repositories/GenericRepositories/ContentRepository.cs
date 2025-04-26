@@ -1,16 +1,16 @@
-﻿using CourseContent.Domain.Base;
+﻿using CourseContent.Core.Interfaces;
+using CourseContent.Domain.Base;
 using CourseContent.Infrastructure.Context;
-using CourseContent.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
-    public abstract class ContentRepository<T, TKey> : EntityRepository<T, TKey>, IContentRepository<T, TKey> 
-        where T : AggregateRoot<TKey> 
+    public abstract class ContentRepository<T, TKey> : EntityRepository<T, TKey>, IContentRepository<T, TKey>
+        where T : AggregateRoot<TKey>
     {
         protected ContentRepository(EducationPlatformContext dbContext) : base(dbContext) { }
-     
+
         public virtual async Task RemoveRange(List<TKey> entities)
         {
             var items = await _dbSet.Where(x => entities.Contains(x.Id)).ToListAsync();
@@ -29,7 +29,14 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 
         public async Task<IEnumerable<T>> FindAllByAsync(Expression<Func<T, bool>> filter)
         {
-            return await _dbSet.Where(filter).ToListAsync();
+            IQueryable<T> query = _dbSet.AsNoTracking();
+
+            if(filter != null)
+            {
+                query = query.Where(filter);
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

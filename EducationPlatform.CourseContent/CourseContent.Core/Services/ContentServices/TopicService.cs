@@ -1,8 +1,7 @@
 ﻿using CourseContent.Core.DTO.Requests;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
-using CourseContent.Infrastructure.Interfaces;
-using CSharpFunctionalExtensions;
+using CourseContent.Core.Mappings;
 
 namespace CourseContent.Core.Services.ContentServices
 {
@@ -18,32 +17,32 @@ namespace CourseContent.Core.Services.ContentServices
         public async Task<TopicOutDTO?> GetByIdAsync(int id)
         {
             var entity = await _unitOfWork.TopicRepository.GetByIdAsync(id);
-            return TopicOutDTO.FromTopic(entity);
+            return NativeMapper.FromTopic(entity);
         }
 
         public async Task<IEnumerable<TopicOutDTO>?> GetAllByCourseAsync(int courseId)
         {
             var topics = await _unitOfWork.TopicRepository
                 .FindAllByAsync(m => m.CourseId == courseId);
-            return topics.Select(TopicOutDTO.FromTopic).ToList();
+            return topics.Select(NativeMapper.FromTopic).ToList();
         }
 
         public async Task<TopicOutDTO?> CreateAsync(TopicDTO entity)
         {
-            var topic = TopicDTO.FromTopicDto(entity);
+            var topic = NativeMapper.ToTopic(entity);
             await _unitOfWork.TopicRepository.AddAsync(topic);
             await _unitOfWork.CommitAsync();
 
-            return TopicOutDTO.FromTopic(topic);
+            return NativeMapper.FromTopic(topic);
         }
 
         public async Task<TopicOutDTO?> UpdateAsync(TopicUpdateDTO entity, int id)
         {
-            var topic = TopicUpdateDTO.FromTopicUpdateDto(entity);
+            var topic = NativeMapper.ToTopic(entity);
             await _unitOfWork.TopicRepository.UpdateAsync(id, topic);
             await _unitOfWork.CommitAsync();
 
-            return TopicOutDTO.FromTopic(topic);
+            return NativeMapper.FromTopic(topic);
         }
 
         public async Task DeleteAsync(int id)

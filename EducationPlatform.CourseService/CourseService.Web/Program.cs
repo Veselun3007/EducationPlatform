@@ -1,10 +1,6 @@
-using CourseService.Application.Services;
-using CourseService.Domain.Config;
-using CourseService.Infrastructure.Context;
-using CourseService.Infrastructure.Interfaces;
-using CourseService.Infrastructure.Repositories;
+using CourseService.Application;
+using CourseService.Infrastructure;
 using CourseService.Web.Middlewares;
-using Microsoft.EntityFrameworkCore;
 
 namespace CourseService.Web
 {
@@ -15,24 +11,14 @@ namespace CourseService.Web
             var builder = WebApplication.CreateBuilder(args);
             var _configuration = builder.Configuration;
 
-            builder.Services.AddAWS(_configuration);
-            builder.Services
-                .Configure<AwsOptions>(_configuration.GetSection(nameof(AwsOptions)))
-                .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
-
-            var (awsOptions, dbOptions) = ServiceExtensions.AddVariables(_configuration);
+            builder.AddCoreServices();
+            var awsOptions = builder.AddInfrastructure(_configuration);
+            ServiceExtensions.AddJwtValidation(builder, awsOptions);
 
             builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
             builder.Services.AddSwaggerGen();
-
-            builder.Services.AddScoped<GlobalExceptionHandler>();
-
-            builder.Services.AddDbContext<EducationPlatformContext>(opt => opt.UseNpgsql(dbOptions.ConnectionString));
-            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-            builder.Services.AddScoped<CoursesService>();
-            builder.Services.AddScoped<CourseuserService>();
-            //builder.Services.AddScoped<AmazonS3>(); //delete
 
             builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
@@ -41,8 +27,6 @@ namespace CourseService.Web
                        .AllowAnyHeader();
             }));
 
-
-
             var app = builder.Build();
             app.UseCors("AllowAll");
             if(app.Environment.IsDevelopment())
@@ -50,11 +34,11 @@ namespace CourseService.Web
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseHttpsRedirection();
+            app.UseExceptionHandler();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseMiddleware<GlobalExceptionHandler>();
-            app.MapControllers();
+
+            app.MapDefaultControllerRoute();
             app.Run();
         }
     }

@@ -24,7 +24,7 @@ namespace CourseContent.Domain.Entities
 
         public bool IsEdited { get; set; } = false;
 
-        public DateTime EditedTime { get; set; }
+        public DateTime? EditedTime { get; set; }
 
         public virtual ICollection<Assignmentfile> Assignmentfiles { get; set; } = [];
 

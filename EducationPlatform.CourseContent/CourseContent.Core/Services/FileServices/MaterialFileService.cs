@@ -1,8 +1,7 @@
 ﻿using CourseContent.Core.DTO.Responses;
-using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Mappings;
 using CourseContent.Domain.Entities;
-using CourseContent.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services.FileServices
@@ -10,22 +9,22 @@ namespace CourseContent.Core.Services.FileServices
     public class MaterialFileService : IFileServices<MaterialfileOutDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly FileHelper _fileHelper;
+        private readonly IAwsFileService _fileService;
 
-        public MaterialFileService(IUnitOfWork unitOfWork, FileHelper fileHelper)
+        public MaterialFileService(IUnitOfWork unitOfWork, IAwsFileService fileService)
         {
             _unitOfWork = unitOfWork;
-            _fileHelper = fileHelper;
+            _fileService = fileService;
         }
 
         public async Task<MaterialfileOutDTO> AddFileAsync(IFormFile formFile, int id)
         {
-            var fileLink = await _fileHelper.AddFileAsync(formFile);
-            Materialfile MaterialFile = MappingHelpers.CreateMaterialFile(id, fileLink);
+            var fileLink = await _fileService.AddFileAsync(formFile);
+            Materialfile MaterialFile = NativeMapper.ToMaterialFile(id, fileLink);
             var addedFile = await _unitOfWork.MaterialfileRepository.AddAsync(MaterialFile);
             await _unitOfWork.CommitAsync();
 
-            return MaterialfileOutDTO.FromMaterialFile(addedFile);
+            return NativeMapper.FromMaterialFile(addedFile);
         }
 
         public async Task DeleteFileAsync(int fileId)
@@ -33,7 +32,7 @@ namespace CourseContent.Core.Services.FileServices
             var MaterialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(fileId);
             if(MaterialFile is not null && MaterialFile.MaterialFile is not null)
             {
-                await _fileHelper.DeleteFileAsync(MaterialFile.MaterialFile);
+                await _fileService.DeleteFileAsync(MaterialFile.MaterialFile);
             }
             await _unitOfWork.MaterialfileRepository.DeleteAsync(fileId);
         }
@@ -41,7 +40,7 @@ namespace CourseContent.Core.Services.FileServices
         public async Task<string?> GetFileByIdAsync(int fileId)
         {
             var MaterialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(fileId);
-            return await _fileHelper.GetFileLink(MaterialFile.MaterialFile);
+            return await _fileService.GetFileLink(MaterialFile.MaterialFile);
         }
     }
 }

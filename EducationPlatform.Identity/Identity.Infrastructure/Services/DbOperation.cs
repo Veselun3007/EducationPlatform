@@ -1,6 +1,6 @@
-﻿using Identity.Domain.Entities;
+﻿using Identity.Core.Interfaces;
+using Identity.Domain.Entities;
 using Identity.Infrastructure.Context;
-using Identity.Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Identity.Infrastructure.Services

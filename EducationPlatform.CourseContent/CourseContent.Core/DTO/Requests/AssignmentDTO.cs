@@ -1,5 +1,4 @@
 ﻿using CourseContent.Core.DTO.CommonValidation;
-using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.DTO.Requests
@@ -30,21 +29,5 @@ namespace CourseContent.Core.DTO.Requests
         public List<IFormFile>? AssignmentFiles { get; set; }
 
         public List<string>? AssignmentLinks { get; set; }
-
-        public static Assignment FromAssignmentDto(AssignmentDTO assignmentDto)
-        {
-            return new Assignment
-            {
-                CourseId = assignmentDto.CourseId,
-                TopicId = assignmentDto.TopicId,
-                AssignmentName = assignmentDto.AssignmentName,
-                AssignmentDescription = assignmentDto.AssignmentDescription,
-                MaxMark = assignmentDto.MaxMark,
-                MinMark = assignmentDto.MinMark,
-                IsRequired = assignmentDto.IsRequired,
-                AssignmentDatePublication = assignmentDto.AssignmentDatePublication,
-                AssignmentDeadline = assignmentDto.AssignmentDeadline
-            };
-        }
     }
 }

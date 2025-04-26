@@ -18,7 +18,7 @@ namespace CourseService.Web.Controllers
 
         // вертає List CourseUserInfo
         [Authorize]
-        [HttpGet("get_courseusers_course")]
+        [HttpGet("getCourseusersCourse")]
         public async Task<IActionResult> GetByIdCourse(int courseId)
         {
             var result = await _courseuserService.GetAllByCourseAsync(courseId);
@@ -27,7 +27,7 @@ namespace CourseService.Web.Controllers
 
         // нічого не повертати, крім статус кода
         [Authorize]
-        [HttpPost("create_courseuser")]
+        [HttpPost("createCourseuser")]
         public async Task<IActionResult> PostStudent(StudentDTO request)
         {
             request.UserId = HttpContext.User.FindFirst("username")?.Value;
@@ -37,7 +37,7 @@ namespace CourseService.Web.Controllers
 
         //повинно вертати CourseUserInfo
         [Authorize]
-        [HttpPut("update_courseuser")]
+        [HttpPut("updateCourseuser")]
         public async Task<IActionResult> Put(UpdateCourseuserDTO request)
         {
             request.UserId = HttpContext.User.FindFirst("username")?.Value;
@@ -46,7 +46,7 @@ namespace CourseService.Web.Controllers
         }
 
         [Authorize]
-        [HttpDelete("delete_courseuser/{courseuserId}")]
+        [HttpDelete("deleteCourseuser/{courseuserId}")]
         public async Task<IActionResult> Delete(int courseuserId)
         {
             string? userId = HttpContext.User.FindFirst("username")?.Value;

@@ -5,13 +5,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Identity.Web.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/userManagement")]
-    public class UserController(UserService userService) : Controller
+    public class UserController : Controller
     {
-        private readonly UserService _userService = userService;
+        private readonly UserService _userService;
 
-        [Authorize]
+        public UserController(UserService userService)
+        {
+            _userService = userService;
+        }
+
         [HttpPut("update")]
         public async Task<IActionResult> UpdateUserAsync(UserUpdateDTO entity)
         {
@@ -20,7 +25,6 @@ namespace Identity.Web.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpDelete("delete")]
         public async Task<IActionResult> DeleteUserAsync()
         {
@@ -29,7 +33,6 @@ namespace Identity.Web.Controllers
             return Ok();
         }
 
-        [Authorize]
         [HttpGet("get")]
         public async Task<IActionResult> GetUserByIdAsync()
         {

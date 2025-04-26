@@ -1,4 +1,5 @@
 ﻿using Identity.Core.DTO.Requests;
+using Identity.Core.Interfaces;
 using Identity.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,50 +8,64 @@ namespace Identity.Web.Controllers
 {
     [ApiController]
     [Route("api/account")]
-    public class AuthController(UserService userOperation, IdentityService identityOperation) : Controller
+    public class AuthController : Controller
     {
-        private readonly UserService _userOperation = userOperation;
-        private readonly IdentityService _identityOperation = identityOperation;
+        private readonly UserService _userService;
+        private readonly IIdentityService _identityService;
+
+        public AuthController(UserService userService, IIdentityService identityService)
+        {
+            _userService = userService;
+            _identityService = identityService;
+        }
 
         [HttpPost("sign-up")]
         public async Task<IActionResult> SignUpAsync([FromForm] UserDTO model)
         {
-            var result = await _identityOperation.SignUpAsync(model.Email, model.Password);
-            return Ok(result);
+            var userSub = await _identityService.SignUpAsync(model.Email, model.Password);
+            if(userSub is not null)
+            {
+                var user = await _userService.AddAsync(model, userSub);
+                if(user is null)
+                {
+                    return BadRequest();
+                }
+            }
+            return Ok();
         }
 
         [HttpPost("confirm")]
         public async Task<IActionResult> ComfirmUserAsync([FromForm] ConfirmEmailRequest model)
         {
-            await _identityOperation.ComfirmUserAsync(model.Email, model.ConfirmCode);
+            await _identityService.ComfirmUserAsync(model.Email, model.ConfirmCode);
             return Ok();
         }
 
         [HttpPost("sign-in")]
         public async Task<IActionResult> SignInAsync([FromForm] LoginRequest model)
         {
-            var result = await _identityOperation.SignInAsync(model.Email, model.Password);
+            var result = await _identityService.SignInAsync(model.Email, model.Password);
             return Ok(result);
         }
 
         [HttpPost("reset-password-request")]
         public async Task<IActionResult> SendPasswordResetEmail([FromBody] ConfirmResetPasswordRequest model)
         {
-            await _identityOperation.SendPasswordResetEmail(model.Email);
+            await _identityService.SendPasswordResetEmail(model.Email);
             return Ok();
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromForm] ResetPasswordRequest model)
         {
-            await _identityOperation.ResetPassword(model.Email, model.ConfirmCode, model.Password);
+            await _identityService.ResetPassword(model.Email, model.ConfirmCode, model.Password);
             return Ok();
         }
 
         [HttpPost("refresh")]
         public async Task<IActionResult> RefreshTokenAsync([FromBody] TokenRequestModel model)
         {
-            var result = await _identityOperation.RefreshTokensAsync(model.RefreshToken, model.Email);
+            var result = await _identityService.RefreshTokensAsync(model.RefreshToken, model.Email);
             return Ok(result);
         }
 
@@ -58,7 +73,7 @@ namespace Identity.Web.Controllers
         [HttpPost("sign-out")]
         public async Task<IActionResult> SignOutAsync([FromBody] SignOutRequest model)
         {
-            await _identityOperation.SignOutAsync(model.AccessToken);
+            await _identityService.SignOutAsync(model.AccessToken);
             return Ok();
         }
     }

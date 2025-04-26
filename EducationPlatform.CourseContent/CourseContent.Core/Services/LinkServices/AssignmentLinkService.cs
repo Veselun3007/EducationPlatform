@@ -1,8 +1,7 @@
 ﻿using CourseContent.Core.DTO.Responses;
-using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Mappings;
 using CourseContent.Domain.Entities;
-using CourseContent.Infrastructure.Interfaces;
 
 namespace CourseContent.Core.Services.LinkServices
 {
@@ -10,18 +9,18 @@ namespace CourseContent.Core.Services.LinkServices
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public AssignmentLinkService(IUnitOfWork unitOfWork) 
+        public AssignmentLinkService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
         public async Task<AssignmentlinkOutDTO> AddLinkAsync(string link, int id)
         {
-            Assignmentlink assignmentLink = MappingHelpers.CreateAssignmentLink(link, id);
+            Assignmentlink assignmentLink = NativeMapper.ToAssignmentLink(link, id);
             var addedLink = await _unitOfWork.AssignmentlinkRepository.AddAsync(assignmentLink);
             await _unitOfWork.CommitAsync();
 
-            return AssignmentlinkOutDTO.FromAssignmentLink(addedLink);
+            return NativeMapper.FromAssignmentLink(addedLink);
         }
 
         public async Task DeleteLinkAsync(int linkId)

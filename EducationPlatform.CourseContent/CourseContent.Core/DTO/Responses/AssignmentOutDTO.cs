@@ -1,6 +1,4 @@
-﻿using CourseContent.Domain.Entities;
-
-namespace CourseContent.Core.DTO.Responses
+﻿namespace CourseContent.Core.DTO.Responses
 {
     public class AssignmentOutDTO
     {
@@ -29,30 +27,5 @@ namespace CourseContent.Core.DTO.Responses
         public ICollection<AssignmentfileOutDTO>? Assignmentfiles { get; set; }
 
         public ICollection<AssignmentlinkOutDTO>? Assignmentlinks { get; set; }
-
-        public static AssignmentOutDTO FromAssignment(Assignment? assignment)
-        {
-            return new AssignmentOutDTO
-            {
-                Id = assignment.Id,
-                TopicId = assignment.TopicId,
-                AssignmentName = assignment.AssignmentName,
-                AssignmentDescription = assignment.AssignmentDescription,
-                AssignmentDatePublication = assignment.AssignmentDatePublication,
-                AssignmentDeadline = assignment.AssignmentDeadline,
-                MaxMark = assignment.MaxMark,
-                MinMark = assignment.MinMark,
-                IsRequired = assignment.IsRequired,
-                IsEdited = assignment.IsEdited,
-                EditedTime = assignment.EditedTime,
-                Assignmentfiles = assignment
-                    .Assignmentfiles.Select(af => AssignmentfileOutDTO
-                    .FromAssignmentFile(af)).ToList(),
-                Assignmentlinks = assignment
-                    .Assignmentlinks.Select(al => AssignmentlinkOutDTO
-                    .FromAssignmentLink(al)).ToList()
-            };
-        }
-
     }
 }

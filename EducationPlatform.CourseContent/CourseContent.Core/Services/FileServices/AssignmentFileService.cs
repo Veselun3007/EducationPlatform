@@ -1,8 +1,7 @@
 ﻿using CourseContent.Core.DTO.Responses;
-using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Mappings;
 using CourseContent.Domain.Entities;
-using CourseContent.Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services.FileServices
@@ -10,22 +9,22 @@ namespace CourseContent.Core.Services.FileServices
     public class AssignmentFileService : IFileServices<AssignmentfileOutDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly FileHelper _fileHelper;
+        private readonly IAwsFileService _fileService;
 
-        public AssignmentFileService(IUnitOfWork unitOfWork, FileHelper fileHelper)
+        public AssignmentFileService(IUnitOfWork unitOfWork, IAwsFileService fileService)
         {
             _unitOfWork = unitOfWork;
-            _fileHelper = fileHelper;
+            _fileService = fileService;
         }
 
         public async Task<AssignmentfileOutDTO> AddFileAsync(IFormFile formFile, int id)
         {
-            var fileLink = await _fileHelper.AddFileAsync(formFile);
-            Assignmentfile assignmentFile = MappingHelpers.CreateAssignmentFile(id, fileLink);
+            var fileLink = await _fileService.AddFileAsync(formFile);
+            Assignmentfile assignmentFile = NativeMapper.ToAssignmentFile(id, fileLink);
             var addedFile = await _unitOfWork.AssignmentfileRepository.AddAsync(assignmentFile);
             await _unitOfWork.CommitAsync();
 
-            return AssignmentfileOutDTO.FromAssignmentFile(addedFile);
+            return NativeMapper.FromAssignmentFile(addedFile);
         }
 
         public async Task DeleteFileAsync(int fileId)
@@ -33,7 +32,7 @@ namespace CourseContent.Core.Services.FileServices
             var assignmentFile = await _unitOfWork.AssignmentfileRepository.GetByIdAsync(fileId);
             if(assignmentFile is not null && assignmentFile.AssignmentFile is not null)
             {
-                await _fileHelper.DeleteFileAsync(assignmentFile.AssignmentFile);
+                await _fileService.DeleteFileAsync(assignmentFile.AssignmentFile);
             }
             await _unitOfWork.AssignmentfileRepository.DeleteAsync(fileId);
         }
@@ -41,7 +40,7 @@ namespace CourseContent.Core.Services.FileServices
         public async Task<string?> GetFileByIdAsync(int fileId)
         {
             var assignmentFile = await _unitOfWork.AssignmentfileRepository.GetByIdAsync(fileId);
-            return await _fileHelper.GetFileLink(assignmentFile.AssignmentFile);
+            return await _fileService.GetFileLink(assignmentFile.AssignmentFile);
         }
     }
 }

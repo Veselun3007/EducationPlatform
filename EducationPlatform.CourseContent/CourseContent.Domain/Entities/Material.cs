@@ -12,7 +12,7 @@ namespace CourseContent.Domain.Entities
 
         public string? MaterialDescription { get; set; }
 
-        public DateTime? MaterialDatePublication { get; set; }
+        public DateTime MaterialDatePublication { get; set; }
 
         public bool IsEdited { get; set; } = false;
 

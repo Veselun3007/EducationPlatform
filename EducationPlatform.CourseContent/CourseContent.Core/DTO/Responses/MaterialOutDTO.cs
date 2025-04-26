@@ -1,6 +1,4 @@
-﻿using CourseContent.Domain.Entities;
-
-namespace CourseContent.Core.DTO.Responses
+﻿namespace CourseContent.Core.DTO.Responses
 {
     public class MaterialOutDTO
     {
@@ -19,25 +17,5 @@ namespace CourseContent.Core.DTO.Responses
         public ICollection<MaterialfileOutDTO>? Materialfiles { get; set; }
 
         public ICollection<MateriallinkOutDTO>? Materiallinks { get; set; }
-
-        public static MaterialOutDTO FromMaterial(Material material)
-        {
-            return new MaterialOutDTO
-            {
-                Id = material.Id,
-                TopicId = material.TopicId,
-                MaterialName = material.MaterialName,
-                MaterialDescription = material.MaterialDescription,
-                MaterialDatePublication = material.MaterialDatePublication,
-                IsEdited = material.IsEdited,
-                EditedTime = material.EditedTime,
-                Materialfiles = material.Materialfiles
-                    .Select(mf => MaterialfileOutDTO
-                    .FromMaterialFile(mf)).ToList(),
-                Materiallinks = material.Materiallinks
-                    .Select(ml => MateriallinkOutDTO
-                    .FromMaterialLink(ml)).ToList()
-            };
-        }
     }
 }

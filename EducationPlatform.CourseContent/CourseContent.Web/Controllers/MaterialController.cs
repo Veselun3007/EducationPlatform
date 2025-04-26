@@ -15,7 +15,8 @@ namespace CourseContent.Web.Controllers
         private readonly IFileServices<MaterialfileOutDTO> _fileServices;
         private readonly ILinkServices<MateriallinkOutDTO> _linkServices;
 
-        public MaterialController(IContentServices<MaterialDTO, MaterialOutDTO, MaterialUpdateDTO> contentServices,
+        public MaterialController(
+            IContentServices<MaterialDTO, MaterialOutDTO, MaterialUpdateDTO> contentServices,
             IFileServices<MaterialfileOutDTO> fileServices,
             ILinkServices<MateriallinkOutDTO> linkServices)
         {

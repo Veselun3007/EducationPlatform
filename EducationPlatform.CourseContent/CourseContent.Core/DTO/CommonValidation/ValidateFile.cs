@@ -10,9 +10,9 @@ namespace CourseContent.Core.DTO.CommonValidation
 
         public override bool IsValid(object? value)
         {
-            if (value is not null && value is List<IFormFile> formFiles && formFiles is not null)
+            if(value is not null && value is List<IFormFile> formFiles && formFiles is not null)
             {
-                foreach (var formFile in formFiles)
+                foreach(var formFile in formFiles)
                 {
                     return _fileExtensions.Contains(Path.GetExtension(formFile.FileName));
                 }

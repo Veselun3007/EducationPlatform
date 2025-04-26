@@ -1,51 +1,51 @@
 ﻿using CourseService.Application.DTO.Request;
-using CourseService.Application.DTOs;
-using CourseService.Application.Helpers;
+using CourseService.Application.DTO.Response;
+using CourseService.Application.Interfaces;
+using CourseService.Application.Mappings;
 using CourseService.Domain.Entities;
 using CourseService.Domain.Enums;
-using CourseService.Infrastructure.Interfaces;
 
 namespace CourseService.Application.Services
 {
     public class CoursesService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly FileHelper _fileHelper;
-
-        public CoursesService(IUnitOfWork unitOfWork, FileHelper fileHelper)
+        private readonly SpecificMapper _mapper;
+        public CoursesService(IUnitOfWork unitOfWork, SpecificMapper mapper)
         {
             _unitOfWork = unitOfWork;
-            _fileHelper = fileHelper;
+            _mapper = mapper;
         }
 
-        public async Task<List<CourseInfo?>> GetAllCourseAsync(string userId)
+        public async Task<List<CourseInfoOutDTO?>> GetAllCourseAsync(string userId)
         {
             var courses = await _unitOfWork.CourseRepository.FindAllAsync(
                 c => c.Courseusers.Any(u => u.UserId == userId),
                 c => c.Courseusers
             );
 
-            List<CourseInfo> response = new List<CourseInfo>();
+            List<CourseInfoOutDTO> response = new List<CourseInfoOutDTO>();
 
             foreach(var course in courses)
             {
                 (Courseuser? courseuser, User? admin) = await GetAdminInfo(userId, course);
 
-                CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
+                CourseInfoOutDTO courseInfo = await _mapper.From(course, courseuser, admin);
                 response.Add(courseInfo);
             }
             return response;
         }
 
-        public async Task<CourseInfo?> GetCourseAsync(string userId, int courseId)
+        public async Task<CourseInfoOutDTO?> GetCourseAsync(string userId, int courseId)
         {
 
             var course = await _unitOfWork.CourseRepository
                 .FindAnyAsync(c => c.Id == courseId && c.Courseusers
-                .Any(cu => cu.UserId == userId));
+                .Any(cu => cu.UserId == userId),
+                c => c.Courseusers);
 
             (Courseuser? courseuser, User? admin) = await GetAdminInfo(userId, course);
-            CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
+            CourseInfoOutDTO courseInfo = await _mapper.From(course, courseuser, admin);
 
             return courseInfo;
         }
@@ -77,14 +77,14 @@ namespace CourseService.Application.Services
         {
             string courseLink = $"{request.CourseName[..Math.Min(30, request.CourseName.Length)]}-{Guid.NewGuid()}";
 
-            var course = FromCourseDTO(request, courseLink);
+            var course = NativeMapper.ToCourse(request, courseLink);
             course = await _unitOfWork.CourseRepository.AddAsync(course);
             await _unitOfWork.CommitAsync();
 
             return new AdminDTO { Course = course };
         }
 
-        public async Task<CourseInfo> UpdateCourseAsync(UpdateCourseDTO request)
+        public async Task<CourseInfoOutDTO> UpdateCourseAsync(UpdateCourseDTO request)
         {
             var course = await _unitOfWork.CourseRepository.FindAnyAsync(
                 c => c.Id == request.CourseId,
@@ -100,37 +100,9 @@ namespace CourseService.Application.Services
                 await _unitOfWork.CommitAsync();
             }
 
-            CourseInfo courseInfo = await SetAdminInfo(course, courseuser, admin);
+            CourseInfoOutDTO courseInfo = await _mapper.From(course, courseuser, admin);
 
             return courseInfo;
-        }
-
-        private async Task<CourseInfo> SetAdminInfo(Course course, Courseuser? courseuser, User? admin)
-        {
-            CourseInfo courseInfo = new CourseInfo(course, courseuser);
-
-            courseInfo.AdminInfo.AdminName = admin.UserName;
-            if(admin.UserImage != null)
-            {
-
-                courseInfo.AdminInfo.ImageLink = await _fileHelper.GetFileLink(admin.UserImage);
-            }
-            else
-            {
-                courseInfo.AdminInfo.ImageLink = String.Empty;
-            }
-
-            return courseInfo;
-        }
-
-        public static Course FromCourseDTO(CourseDTO courseDto, string link)
-        {
-            return new Course
-            {
-                CourseName = courseDto.CourseName,
-                CourseDescription = courseDto.CourseDescription,
-                CourseLink = link
-            };
         }
     }
 }

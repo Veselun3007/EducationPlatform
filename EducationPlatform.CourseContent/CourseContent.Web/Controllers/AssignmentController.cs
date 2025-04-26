@@ -15,7 +15,8 @@ namespace CourseContent.Web.Controllers
         private readonly IFileServices<AssignmentfileOutDTO> _fileServices;
         private readonly ILinkServices<AssignmentlinkOutDTO> _linkServices;
 
-        public AssignmentController(IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO> contentServices,
+        public AssignmentController(
+            IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO> contentServices,
             IFileServices<AssignmentfileOutDTO> fileServices,
             ILinkServices<AssignmentlinkOutDTO> linkServices)
         {

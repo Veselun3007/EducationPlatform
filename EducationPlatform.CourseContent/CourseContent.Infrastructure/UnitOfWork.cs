@@ -1,7 +1,7 @@
-﻿using CourseContent.Domain.Entities;
+﻿using CourseContent.Core.Interfaces;
+using CourseContent.Core.Interfaces.Base;
+using CourseContent.Domain.Entities;
 using CourseContent.Infrastructure.Context;
-using CourseContent.Infrastructure.Interfaces;
-using CourseContent.Infrastructure.Interfaces.Base;
 using CourseContent.Infrastructure.Repositories;
 
 namespace CourseContent.Infrastructure

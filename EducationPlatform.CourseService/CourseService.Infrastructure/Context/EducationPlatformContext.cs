@@ -12,7 +12,7 @@ public partial class EducationPlatformContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Course> Courses { get; set; }
     public virtual DbSet<Courseuser> Courseusers { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         new UserConfiguration().Configure(modelBuilder.Entity<User>());

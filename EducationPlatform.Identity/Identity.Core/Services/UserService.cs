@@ -1,29 +1,34 @@
 ﻿using Identity.Core.DTO.Requests;
 using Identity.Core.DTO.Responses;
-using Identity.Core.Helpers;
+using Identity.Core.Interfaces;
 using Identity.Domain.Entities;
-using Identity.Infrastructure.Interfaces;
 
 namespace Identity.Core.Services
 {
-    public class UserService(IBaseDbOperation<User> dbOperation, IdentityService identityOperation, FileHelper filesHelper)
+    public class UserService
     {
-        private readonly IBaseDbOperation<User> _dbOperation = dbOperation;
-        private readonly IdentityService _identityOperation = identityOperation;
-        private readonly FileHelper _filesHelper = filesHelper;
+        private readonly IBaseDbOperation<User> _dbOperation;
+        private readonly IIdentityService _identityService;
+        private readonly IFileService _filesHelper;
 
+        public UserService(IBaseDbOperation<User> dbOperation, IIdentityService identityService, IFileService filesHelper)
+        {
+            _dbOperation = dbOperation;
+            _identityService = identityService;
+            _filesHelper = filesHelper;
+        }
 
         public async Task<UserOutDTO?> AddAsync(UserDTO entity, string id)
         {
             try
             {
-                User userEntity = await FromUserDtoToUserAsync(entity, id);
+                User userEntity = await ToUserAsync(entity, id);
                 await _dbOperation.AddAsync(userEntity);
                 return await FromUser(userEntity);
             }
             catch
             {
-                await _identityOperation.DeleteAsync(id);
+                await _identityService.DeleteAsync(id);
                 return null;
             }
         }
@@ -31,13 +36,13 @@ namespace Identity.Core.Services
         public async Task DeleteAsync(string id)
         {
             var dbDeleteTask = _dbOperation.DeleteAsync(id);
-            var identityDeleteTask = _identityOperation.DeleteAsync(id);
+            var identityDeleteTask = _identityService.DeleteAsync(id);
             await Task.WhenAll(dbDeleteTask, identityDeleteTask);
         }
 
         public async Task<UserOutDTO> UpdateAsync(UserUpdateDTO entity, string id)
         {
-            var userEntity = await FromUserUpdateDtoToUserAsync(entity, id);
+            var userEntity = await ToUserAsync(entity, id);
             await _dbOperation.UpdateAsync(userEntity, id);
             return await FromUser(userEntity);
         }
@@ -59,7 +64,7 @@ namespace Identity.Core.Services
             };
         }
 
-        private async Task<User> FromUserDtoToUserAsync(UserDTO entity, string id)
+        private async Task<User> ToUserAsync(UserDTO entity, string id)
         {
             return new User
             {
@@ -71,7 +76,7 @@ namespace Identity.Core.Services
             };
         }
 
-        private async Task<User> FromUserUpdateDtoToUserAsync(UserUpdateDTO entity, string id)
+        private async Task<User> ToUserAsync(UserUpdateDTO entity, string id)
         {
             return new User
             {

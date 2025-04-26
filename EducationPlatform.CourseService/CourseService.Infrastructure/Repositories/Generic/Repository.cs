@@ -1,6 +1,6 @@
-﻿using CourseService.Domain.Base;
+﻿using CourseService.Application.Interfaces.Base;
+using CourseService.Domain.Base;
 using CourseService.Infrastructure.Context;
-using CourseService.Infrastructure.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

@@ -1,8 +1,7 @@
 ﻿using CourseContent.Core.DTO.Responses;
-using CourseContent.Core.Helpers;
 using CourseContent.Core.Interfaces;
+using CourseContent.Core.Mappings;
 using CourseContent.Domain.Entities;
-using CourseContent.Infrastructure.Interfaces;
 
 namespace CourseContent.Core.Services.LinkServices
 {
@@ -17,11 +16,11 @@ namespace CourseContent.Core.Services.LinkServices
 
         public async Task<MateriallinkOutDTO> AddLinkAsync(string link, int id)
         {
-            Materiallink MaterialLink = MappingHelpers.CreateMaterialLink(link, id);
+            Materiallink MaterialLink = NativeMapper.ToMaterialLink(link, id);
             var addedLink = await _unitOfWork.MateriallinkRepository.AddAsync(MaterialLink);
             await _unitOfWork.CommitAsync();
 
-            return MateriallinkOutDTO.FromMaterialLink(addedLink);
+            return NativeMapper.FromMaterialLink(addedLink);
         }
 
         public async Task DeleteLinkAsync(int linkId)

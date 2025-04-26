@@ -1,11 +1,11 @@
-﻿using CourseContent.Domain.Base;
+﻿using CourseContent.Core.Interfaces.Base;
+using CourseContent.Domain.Base;
 using CourseContent.Infrastructure.Context;
-using CourseContent.Infrastructure.Interfaces.Base;
 using Microsoft.EntityFrameworkCore;
 
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
-    public abstract class MinRepository<T, TKey> : IMinRepository<T, TKey> 
+    public abstract class MinRepository<T, TKey> : IMinRepository<T, TKey>
         where T : AggregateRoot<TKey>
     {
         protected readonly EducationPlatformContext _dbContext;
@@ -26,7 +26,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
         public virtual async Task DeleteAsync(TKey id)
         {
             var entity = await _dbSet.FindAsync(id);
-            if (entity is not null)
+            if(entity is not null)
             {
                 _dbSet.Remove(entity);
             }

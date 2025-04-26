@@ -1,6 +1,4 @@
-﻿using CourseContent.Domain.Entities;
-
-namespace CourseContent.Core.DTO.Requests
+﻿namespace CourseContent.Core.DTO.Requests
 {
     public class MaterialUpdateDTO
     {
@@ -17,19 +15,5 @@ namespace CourseContent.Core.DTO.Requests
         public bool IsEdited { get; set; } = true;
 
         public DateTime EditedTime { get; set; } = DateTime.UtcNow;
-
-        public static Material FromMaterialUpdateDto(MaterialUpdateDTO materialDto)
-        {
-            return new Material
-            {
-                Id = materialDto.Id,
-                CourseId = materialDto.CourseId,
-                TopicId = materialDto.TopicId,
-                MaterialName = materialDto.MaterialName,
-                MaterialDescription = materialDto.MaterialDescription,
-                IsEdited = materialDto.IsEdited,
-                EditedTime = materialDto.EditedTime
-            };
-        }
     }
 }

@@ -9,13 +9,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CourseContent.Domain\CourseContent.Domain.csproj" />
-    <ProjectReference Include="..\CourseContent.Infrastructure\CourseContent.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.405" />
-    <PackageReference Include="CSharpFunctionalExtensions" Version="2.42.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
   </ItemGroup>
 
 </Project>

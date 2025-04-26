@@ -1,12 +1,6 @@
-using Identity.Core.Helpers;
-using Identity.Core.Services;
-using Identity.Domain.Config;
-using Identity.Domain.Entities;
-using Identity.Infrastructure.Context;
-using Identity.Infrastructure.Interfaces;
-using Identity.Infrastructure.Services;
+using Identity.Core;
+using Identity.Infrastructure;
 using Identity.Web.Middlewares;
-using Microsoft.EntityFrameworkCore;
 
 namespace Identity.Web
 {
@@ -17,22 +11,9 @@ namespace Identity.Web
             var builder = WebApplication.CreateBuilder(args);
             var _configuration = builder.Configuration;
 
-            builder.Services.AddAWS(_configuration);
-            builder.Services.Configure<AwsOptions>(_configuration.GetSection(nameof(AwsOptions)))
-                            .Configure<DbOptions>(_configuration.GetSection(nameof(DbOptions)));
-
-            var (awsOptions, dbOptions) = ServiceExtensions.AddVariables(_configuration);
-
-            builder.Services.AddDbContext<EducationPlatformContext>(options =>
-            {
-                options.UseNpgsql(dbOptions.ConnectionString);
-            });
-
-            builder.Services.AddScoped<IBaseDbOperation<User>, DbOperation>();
-            builder.Services.AddScoped<FileHelper>();
-            builder.Services.AddScoped<UserService>();
-            builder.Services.AddScoped<IdentityService>();
-
+            builder.AddCoreServices();
+            var awsOptions = builder.AddInfrastructure(_configuration);
+            ServiceExtensions.AddJwtValidation(builder, awsOptions);
             builder.Services.AddControllers();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
@@ -49,7 +30,7 @@ namespace Identity.Web
 
             app.UseCors("AllowAll");
 
-            if (app.Environment.IsDevelopment())
+            if(app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();

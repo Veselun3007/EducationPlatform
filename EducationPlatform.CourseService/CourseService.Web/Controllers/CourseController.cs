@@ -17,9 +17,8 @@ namespace CourseService.Web.Controllers
             _courseuserService = courseuserService;
         }
 
-        // вертає CourseInfo
         [Authorize]
-        [HttpGet("get_course")]
+        [HttpGet("getCourse")]
         public async Task<IActionResult> GetById(int courseId)
         {
             string? userId = HttpContext.User.FindFirst("username")?.Value;
@@ -27,9 +26,8 @@ namespace CourseService.Web.Controllers
             return Ok(result);
         }
 
-        // вертає List CourseInfo
         [Authorize]
-        [HttpGet("get_all_course")]
+        [HttpGet("getAllCourse")]
         public async Task<IActionResult> GetAll()
         {
             string? userId = HttpContext.User.FindFirst("username")?.Value;
@@ -37,21 +35,18 @@ namespace CourseService.Web.Controllers
             return Ok(result);
         }
 
-        // повинно вертати CourseInfo
-        // але вертає NewCourseInfo
         [Authorize]
-        [HttpPost("create_course")]
+        [HttpPost("createCourse")]
         public async Task<IActionResult> CreateCourse(CourseDTO course)
         {
-            var result_course = await _courseService.CreateCourseAsync(course);
-            result_course.UserId = HttpContext.User.FindFirst("username")?.Value;          
-            var result_courseuser = await _courseuserService.CreateAdminAsync(result_course);
-            return Ok(result_courseuser);
+            var resultCourse = await _courseService.CreateCourseAsync(course);
+            resultCourse.UserId = HttpContext.User.FindFirst("username")?.Value;
+            var resultCourseuser = await _courseuserService.CreateAdminAsync(resultCourse);
+            return Ok(resultCourseuser);
         }
 
-        // повинно вертати CourseInfo
         [Authorize]
-        [HttpPut("update_course")]
+        [HttpPut("updateCourse")]
         public async Task<IActionResult> UpdateCourse(UpdateCourseDTO request)
         {
             request.UserId = HttpContext.User.FindFirst("username")?.Value;
@@ -59,9 +54,8 @@ namespace CourseService.Web.Controllers
             return Ok(result);
         }
 
-        // нічого не вертає
         [Authorize]
-        [HttpDelete("delete_course/{courseId}")]
+        [HttpDelete("deleteCourse/{courseId}")]
         public async Task<IActionResult> DeleteCourse(int courseId)
         {
             string? userId = HttpContext.User.FindFirst("username")?.Value;

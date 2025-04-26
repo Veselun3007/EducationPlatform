@@ -5,16 +5,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Identity.Web.Middlewares
 {
-    internal class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
+    internal class GlobalExceptionHandler : IExceptionHandler
     {
-        private readonly ILogger<GlobalExceptionHandler> _logger = logger;
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
 
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
             var problemDetails = BuildProblemDetails(exception);
 
-            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+            httpContext.Response.StatusCode = problemDetails.Status
+                                              ?? StatusCodes.Status500InternalServerError;
             httpContext.Response.ContentType = "application/json";
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 

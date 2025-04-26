@@ -1,6 +1,6 @@
 ﻿namespace CourseContent.Core.Interfaces
-{  
-    public interface IContentServices<TInDTO, TOutDTO, TUpdateDTO> 
+{
+    public interface IContentServices<TInDTO, TOutDTO, TUpdateDTO>
     {
         Task<IEnumerable<TOutDTO>?> GetAllByCourseAsync(int courseId);
 

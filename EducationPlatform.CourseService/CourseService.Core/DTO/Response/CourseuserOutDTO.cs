@@ -2,18 +2,13 @@
 
 namespace CourseService.Application.DTO.Response
 {
-    public class CourseuserOutDTO
+    public class CourseUserOutDTO
     {
-        public int CourseuserId { get; set; }
-
+        public int CourseUserId { get; set; }
         public Roles Role { get; set; }
-
-        public string UserId { get; set; } = null!;
-
-        public string UserName { get; set; } = null!;
-
-        public string UserEmail { get; set; } = null!;
-
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+        public string UserEmail { get; set; }
         public string? UserImage { get; set; }
     }
 }
