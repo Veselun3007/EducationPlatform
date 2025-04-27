@@ -5,7 +5,7 @@ using CourseContent.Domain.Entities;
 
 namespace CourseContent.Core.Services.LinkServices
 {
-    public class AssignmentLinkService : ILinkServices<AssignmentlinkOutDTO>
+    public class AssignmentLinkService : ILinkService<AssignmentlinkOutDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
 

@@ -13,15 +13,15 @@ namespace CourseContent.Core
     {
         public static void AddCoreServices(this IHostApplicationBuilder builder)
         {
-            builder.Services.AddScoped<IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO>, AssignmentService>();
-            builder.Services.AddScoped<IContentServices<MaterialDTO, MaterialOutDTO, MaterialUpdateDTO>, MaterialService>();
-            builder.Services.AddScoped<IContentServices<TopicDTO, TopicOutDTO, TopicUpdateDTO>, TopicService>();
+            builder.Services.AddScoped<IContentService<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO>, AssignmentService>();
+            builder.Services.AddScoped<IContentService<MaterialDTO, MaterialOutDTO, MaterialUpdateDTO>, MaterialService>();
+            builder.Services.AddScoped<IContentService<TopicDTO, TopicOutDTO, TopicUpdateDTO>, TopicService>();
 
-            builder.Services.AddScoped<IFileServices<AssignmentfileOutDTO>, AssignmentFileService>();
-            builder.Services.AddScoped<IFileServices<MaterialfileOutDTO>, MaterialFileService>();
+            builder.Services.AddScoped<IFileService<AssignmentfileOutDTO>, AssignmentFileService>();
+            builder.Services.AddScoped<IFileService<MaterialfileOutDTO>, MaterialFileService>();
 
-            builder.Services.AddScoped<ILinkServices<AssignmentlinkOutDTO>, AssignmentLinkService>();
-            builder.Services.AddScoped<ILinkServices<MateriallinkOutDTO>, MaterialLinkService>();
+            builder.Services.AddScoped<ILinkService<AssignmentlinkOutDTO>, AssignmentLinkService>();
+            builder.Services.AddScoped<ILinkService<MateriallinkOutDTO>, MaterialLinkService>();
         }
     }
 }

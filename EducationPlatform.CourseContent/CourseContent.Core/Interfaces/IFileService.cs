@@ -2,7 +2,7 @@
 
 namespace CourseContent.Core.Interfaces
 {
-    public interface IFileServices<FOutDTO>
+    public interface IFileService<FOutDTO>
     {
         Task<string?> GetFileByIdAsync(int fileId);
 

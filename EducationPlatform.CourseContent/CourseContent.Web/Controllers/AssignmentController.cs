@@ -1,72 +1,25 @@
 ﻿using CourseContent.Core.DTO.Requests;
 using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using CourseContent.Web.Controllers.Base;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseContent.Web.Controllers
 {
-    [Route("api/assignment")]
-    [ApiController]
-    [Authorize]
-    public class AssignmentController : Controller
-    {
-        private readonly IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO> _contentServices;
-        private readonly IFileServices<AssignmentfileOutDTO> _fileServices;
-        private readonly ILinkServices<AssignmentlinkOutDTO> _linkServices;
+    public class AssignmentController : ContentController<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO>
+    {      
+        private readonly IFileService<AssignmentfileOutDTO> _fileServices;
+        private readonly ILinkService<AssignmentlinkOutDTO> _linkServices;
 
         public AssignmentController(
-            IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO> contentServices,
-            IFileServices<AssignmentfileOutDTO> fileServices,
-            ILinkServices<AssignmentlinkOutDTO> linkServices)
+            IContentService<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO> service,
+            IFileService<AssignmentfileOutDTO> fileServices,
+            ILinkService<AssignmentlinkOutDTO> linkServices) : base(service)
         {
-            _contentServices = contentServices;
             _fileServices = fileServices;
             _linkServices = linkServices;
         }
-
-        [HttpPost("create")]
-        public async Task<IActionResult> CreateAssignment([FromForm] AssignmentDTO assignment)
-        {
-            var result = await _contentServices.CreateAsync(assignment);
-            return Ok(result);
-        }
-
-        [HttpPut("update")]
-        public async Task<IActionResult> UpdateAssignment([FromForm] AssignmentUpdateDTO assignment)
-        {
-            var result = await _contentServices.UpdateAsync(assignment, assignment.Id);
-            return Ok(result);
-        }
-
-        [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> DeleteAssignment(int id)
-        {
-            await _contentServices.DeleteAsync(id);
-            return Ok();
-        }
-
-        [HttpGet("getById/{id}")]
-        public async Task<IActionResult> GetByIdAssignment(int id)
-        {
-            var result = await _contentServices.GetByIdAsync(id);
-            return Ok(result);
-        }
-
-        [HttpGet("getAll/{id}")]
-        public async Task<IActionResult> GetAllAssignment(int id)
-        {
-            var result = await _contentServices.GetAllByCourseAsync(id);
-            return Ok(result);
-        }
-
-        [HttpDelete("removeList")]
-        public async Task<IActionResult> RemoveAssignments([FromBody] List<int> entities)
-        {
-            await _contentServices.RemoveRangeAsync(entities);
-            return Ok();
-        }
-
+    
         [HttpGet("getFileById/{fileId}")]
         public async Task<IActionResult> GetAssignmentFileById(int fileId)
         {

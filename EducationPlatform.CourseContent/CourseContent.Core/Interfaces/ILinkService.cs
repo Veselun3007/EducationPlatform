@@ -1,6 +1,6 @@
 ﻿namespace CourseContent.Core.Interfaces
 {
-    public interface ILinkServices<LOutDTO>
+    public interface ILinkService<LOutDTO>
     {
         Task<LOutDTO> AddLinkAsync(string link, int id);
         Task DeleteLinkAsync(int linkId);

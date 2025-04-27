@@ -1,9 +1,7 @@
 ﻿namespace CourseContent.Core.DTO.Requests
 {
-    public class AssignmentUpdateDTO
+    public class AssignmentUpdateDTO : BaseUpdateDTO
     {
-        public int Id { get; set; }
-
         public int CourseId { get; set; }
 
         public int? TopicId { get; set; }

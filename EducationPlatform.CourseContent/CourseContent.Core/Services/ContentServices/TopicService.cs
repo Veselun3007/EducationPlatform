@@ -5,7 +5,7 @@ using CourseContent.Core.Mappings;
 
 namespace CourseContent.Core.Services.ContentServices
 {
-    public class TopicService : IContentServices<TopicDTO, TopicOutDTO, TopicUpdateDTO>
+    public class TopicService : IContentService<TopicDTO, TopicOutDTO, TopicUpdateDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
 

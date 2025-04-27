@@ -5,7 +5,7 @@ using CourseContent.Domain.Entities;
 
 namespace CourseContent.Core.Services.LinkServices
 {
-    public class MaterialLinkService : ILinkServices<MateriallinkOutDTO>
+    public class MaterialLinkService : ILinkService<MateriallinkOutDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
 

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services.ContentServices
 {
-    public class AssignmentService : IContentServices<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO>
+    public class AssignmentService : IContentService<AssignmentDTO, AssignmentOutDTO, AssignmentUpdateDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAwsFileService _fileService;

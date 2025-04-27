@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services.FileServices
 {
-    public class MaterialFileService : IFileServices<MaterialfileOutDTO>
+    public class MaterialFileService : IFileService<MaterialfileOutDTO>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IAwsFileService _fileService;
