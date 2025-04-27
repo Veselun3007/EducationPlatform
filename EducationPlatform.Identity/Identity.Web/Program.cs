@@ -1,6 +1,8 @@
 using Identity.Core;
 using Identity.Infrastructure;
 using Identity.Web.Middlewares;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace Identity.Web
 {
@@ -17,7 +19,20 @@ namespace Identity.Web
             builder.Services.AddControllers();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.OperationFilter<SecurityRequirementsOperationFilter>(true, "Bearer");
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Authentication Token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JsonWebToken",
+                    Scheme = "Bearer"
+                });
+            });
 
             builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {

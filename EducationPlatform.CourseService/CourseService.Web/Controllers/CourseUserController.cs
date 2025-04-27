@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CourseService.Web.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CourseUserController : Controller
@@ -17,7 +18,6 @@ namespace CourseService.Web.Controllers
         }
 
         // вертає List CourseUserInfo
-        [Authorize]
         [HttpGet("getCourseusersCourse")]
         public async Task<IActionResult> GetByIdCourse(int courseId)
         {
@@ -26,7 +26,6 @@ namespace CourseService.Web.Controllers
         }
 
         // нічого не повертати, крім статус кода
-        [Authorize]
         [HttpPost("createCourseuser")]
         public async Task<IActionResult> PostStudent(StudentDTO request)
         {
@@ -36,7 +35,6 @@ namespace CourseService.Web.Controllers
         }
 
         //повинно вертати CourseUserInfo
-        [Authorize]
         [HttpPut("updateCourseuser")]
         public async Task<IActionResult> Put(UpdateCourseuserDTO request)
         {
@@ -45,7 +43,6 @@ namespace CourseService.Web.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpDelete("deleteCourseuser/{courseuserId}")]
         public async Task<IActionResult> Delete(int courseuserId)
         {

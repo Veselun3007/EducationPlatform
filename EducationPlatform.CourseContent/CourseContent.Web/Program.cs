@@ -1,6 +1,8 @@
 using CourseContent.Core;
 using CourseContent.Infrastructure;
 using CourseContent.Web.Middlewares;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace CourseContent.Web
 {
@@ -18,7 +20,20 @@ namespace CourseContent.Web
             builder.Services.AddControllers();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.OperationFilter<SecurityRequirementsOperationFilter>(true, "Bearer");
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Authentication Token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JsonWebToken",
+                    Scheme = "Bearer"
+                });
+            });
             builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
                 builder.AllowAnyOrigin()
@@ -33,10 +48,7 @@ namespace CourseContent.Web
             if(app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
-                {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CourseContent");
-                });
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

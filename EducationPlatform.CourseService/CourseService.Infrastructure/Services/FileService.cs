@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using CourseService.Application.Interfaces;
+using CourseService.Infrastructure.Helpers;
 using CourseService.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;

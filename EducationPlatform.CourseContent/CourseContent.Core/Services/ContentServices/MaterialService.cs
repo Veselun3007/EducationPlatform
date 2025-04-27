@@ -22,7 +22,7 @@ namespace CourseContent.Core.Services.ContentServices
         {
             var Materials = await _unitOfWork.MaterialRepository
                 .FindAllByAsync(m => m.CourseId == courseId);
-            return Materials.Select(NativeMapper.FromMaterial).ToList();
+            return Materials.Select(NativeMapper.FromMaterial);
         }
 
         public async Task<MaterialOutDTO?> GetByIdAsync(int id)

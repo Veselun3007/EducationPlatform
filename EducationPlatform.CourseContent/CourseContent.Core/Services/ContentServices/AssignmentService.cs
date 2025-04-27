@@ -22,7 +22,7 @@ namespace CourseContent.Core.Services.ContentServices
         {
             var assignments = await _unitOfWork.AssignmentRepository
                 .FindAllByAsync(m => m.CourseId == courseId);
-            return assignments.Select(NativeMapper.FromAssignment).ToList();
+            return assignments.Select(NativeMapper.FromAssignment);
         }
 
         public async Task<AssignmentOutDTO?> GetByIdAsync(int id)

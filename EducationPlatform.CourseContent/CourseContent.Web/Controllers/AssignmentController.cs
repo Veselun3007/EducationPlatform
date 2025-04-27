@@ -82,6 +82,7 @@ namespace CourseContent.Web.Controllers
         }
 
         [HttpPost("addFile/{id}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> AddAssignmentFile([FromForm] IFormFile file, int id)
         {
             var result = await _fileServices.AddFileAsync(file, id);
@@ -89,6 +90,7 @@ namespace CourseContent.Web.Controllers
         }
 
         [HttpPost("addLink/{id}")]
+        [ApiExplorerSettings(IgnoreApi = true)]
         public async Task<IActionResult> AddAssignmentLink([FromBody] string link, int id)
         {
             var result = await _linkServices.AddLinkAsync(link, id);

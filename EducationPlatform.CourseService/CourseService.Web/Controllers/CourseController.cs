@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CourseService.Web.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class CourseController : Controller
@@ -17,7 +18,6 @@ namespace CourseService.Web.Controllers
             _courseuserService = courseuserService;
         }
 
-        [Authorize]
         [HttpGet("getCourse")]
         public async Task<IActionResult> GetById(int courseId)
         {
@@ -26,7 +26,6 @@ namespace CourseService.Web.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpGet("getAllCourse")]
         public async Task<IActionResult> GetAll()
         {
@@ -35,7 +34,6 @@ namespace CourseService.Web.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpPost("createCourse")]
         public async Task<IActionResult> CreateCourse(CourseDTO course)
         {
@@ -45,7 +43,6 @@ namespace CourseService.Web.Controllers
             return Ok(resultCourseuser);
         }
 
-        [Authorize]
         [HttpPut("updateCourse")]
         public async Task<IActionResult> UpdateCourse(UpdateCourseDTO request)
         {
@@ -54,7 +51,6 @@ namespace CourseService.Web.Controllers
             return Ok(result);
         }
 
-        [Authorize]
         [HttpDelete("deleteCourse/{courseId}")]
         public async Task<IActionResult> DeleteCourse(int courseId)
         {
