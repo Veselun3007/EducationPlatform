@@ -1,5 +1,5 @@
 ﻿using Chat.Core.Interfaces.Infrastructure;
-using Chat.Domain.Interfaces;
+using Chat.Domain.Entities.Base;
 using Chat.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;

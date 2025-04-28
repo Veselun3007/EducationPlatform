@@ -1,4 +1,4 @@
-﻿namespace Chat.Domain.Interfaces
+﻿namespace Chat.Domain.Entities.Base
 {
     public abstract class BaseEntity<TKey>
     {

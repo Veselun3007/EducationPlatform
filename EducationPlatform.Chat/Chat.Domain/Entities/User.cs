@@ -1,4 +1,4 @@
-﻿using Chat.Domain.Interfaces;
+﻿using Chat.Domain.Entities.Base;
 
 namespace Chat.Domain.Entities
 {

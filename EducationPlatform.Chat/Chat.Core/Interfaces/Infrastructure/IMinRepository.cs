@@ -1,4 +1,4 @@
-﻿using Chat.Domain.Interfaces;
+﻿using Chat.Domain.Entities.Base;
 using System.Linq.Expressions;
 
 namespace Chat.Core.Interfaces.Infrastructure
