@@ -13,7 +13,7 @@ namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 
         public async Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[] includes)
         {
-            var query = _dbSet.AsQueryable();
+            IQueryable<T> query = _dbSet.AsNoTracking();
             if(includes is not null)
             {
                 foreach(var include in includes)

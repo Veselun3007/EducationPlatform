@@ -1,11 +1,9 @@
-﻿using EPChat.Domain.Interfaces;
+﻿using Chat.Domain.Interfaces;
 
-namespace EPChat.Domain.Entities
+namespace Chat.Domain.Entities
 {
-    public class Message : IEntity
+    public class Message : BaseEntity<int>
     {
-        public int Id { get; set; }
-
         public int CourseId { get; set; }
 
         public string? MessageText { get; set; }

@@ -1,6 +1,6 @@
-﻿using EPChat.Domain.Entities;
+﻿using Chat.Domain.Entities;
 
-namespace EPChat.Core.DTO.Response
+namespace Chat.Core.DTO.Response
 {
     public class MessageOutDTO
     {
@@ -19,22 +19,5 @@ namespace EPChat.Core.DTO.Response
         public DateTime? EditedIn { get; set; }
 
         public ICollection<MessageMediaOutDTO>? AttachedFiles { get; set; }
-
-        public static MessageOutDTO FromMessage(Message message)
-        {
-            return new MessageOutDTO
-            {
-                Id = message.Id,
-                CourseId = message.CourseId,
-                MessageText = message.MessageText,
-                CreatorId = message.CreatorId,
-                CreatedIn = message.CreatedIn,
-                IsEdit = message.IsEdit,
-                EditedIn = message.EditedIn,
-                AttachedFiles = message
-                    .AttachedMedias.Select(m => MessageMediaOutDTO
-                    .FromMessageMedia(m)).ToList(),
-            };
-        }
     }
 }

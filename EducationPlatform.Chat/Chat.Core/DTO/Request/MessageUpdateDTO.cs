@@ -1,6 +1,4 @@
-﻿using EPChat.Domain.Entities;
-
-namespace EPChat.Core.DTO.Request
+﻿namespace Chat.Core.DTO.Request
 {
     public class MessageUpdateDTO
     {
@@ -13,17 +11,5 @@ namespace EPChat.Core.DTO.Request
         public int CreatorId { get; set; }
 
         public DateTime CreatedIn { get; set; }
-
-        public static Message FromMessageUpdateDTO(MessageUpdateDTO messageDTO)
-        {
-            return new Message
-            {
-                Id = messageDTO.Id,
-                CourseId = messageDTO.CourseId,
-                MessageText = messageDTO.MessageText,
-                CreatorId = messageDTO.CreatorId,
-                CreatedIn = messageDTO.CreatedIn
-            };
-        }
     }
 }

@@ -1,41 +1,25 @@
-﻿using EPChat.Core.Models.ErrorModels;
-
-namespace EPChat.Web.Models
+﻿namespace Chat.Web.Models
 {
-    public class MessageWrapper<T>
+    internal class MessageWrapper<T>
     {
-        public T Result { get; }
         public string? ErrorMessage { get; }
-        public DateTime TimeGenerated { get; }
         public int StatusCode { get; }
 
-        protected internal MessageWrapper(T result, string? errorMessage, int statusCode = 200)
+        private MessageWrapper(string? errorMessage, int statusCode)
         {
-            Result = result;
             ErrorMessage = errorMessage;
-            TimeGenerated = DateTime.UtcNow;
             StatusCode = statusCode;
         }
-    }
 
-    public sealed class MessageWrapper : MessageWrapper<string?>
-    {
-        private MessageWrapper(string errorMessage, int statusCode = 200) : base(null, errorMessage, statusCode) { }
-
-        public static MessageWrapper<T?> Ok<T>(T result, int statusCode = 200)
+        public static MessageWrapper<string?> Error(Error error)
         {
-            return new MessageWrapper<T?>(result, null, statusCode);
-        }
-
-        public static MessageWrapper Error(Error error, int statusCode = 400)
-        {
-            return error.Code switch
+            var statusCode = error.Code switch
             {
-                "record.not.found" => new MessageWrapper(error.Message, 404),
-                "record.not.exist" => new MessageWrapper(error.Message, 400),
-                "unpredictable" => new MessageWrapper(error.Message, 500),
-                _ => new MessageWrapper(error.Message, statusCode),
+                ErrorCodes.NotFound => 404,
+                ErrorCodes.NotExist or ErrorCodes.ValidationFailed => 400,
+                ErrorCodes.Unpredictable or _ => 500,
             };
+            return new MessageWrapper<string?>(error.Message, statusCode);
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿using EPChat.Domain.Interfaces;
+﻿using Chat.Domain.Interfaces;
 
-namespace EPChat.Domain.Entities
+namespace Chat.Domain.Entities
 {
-    public class MessageMedia : IEntity
+    public class MessageMedia : BaseEntity<int>
     {
-        public int Id { get; set; }
-
         public int MessageId { get; set; }
 
         public string? MediaLink { get; set; }

@@ -1,11 +1,9 @@
-﻿using EPChat.Domain.Interfaces;
+﻿using Chat.Domain.Interfaces;
 
-namespace EPChat.Domain.Entities
+namespace Chat.Domain.Entities
 {
-    public class Course : IEntity
+    public class Course : BaseEntity<int>
     {
-        public int Id { get; set; }
-
         public string CourseName { get; set; } = null!;
 
         public string? CourseDescription { get; set; }
@@ -15,6 +13,5 @@ namespace EPChat.Domain.Entities
         public virtual ICollection<CourseUser> CourseUsers { get; set; } = [];
 
         public virtual ICollection<Message> Messages { get; set; } = [];
-
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-
-namespace EPChat.Core.Helpers
+namespace Chat.Core.Helpers
 {
     public static class FileConvertHelper
     {

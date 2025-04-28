@@ -1,9 +1,9 @@
-﻿namespace EPChat.Domain.Entities
-{
-    public class User
-    {
-        public string Id { get; set; } = null!;
+﻿using Chat.Domain.Interfaces;
 
+namespace Chat.Domain.Entities
+{
+    public class User : BaseEntity<string>
+    {
         public string UserName { get; set; } = null!;
 
         public string UserEmail { get; set; } = null!;

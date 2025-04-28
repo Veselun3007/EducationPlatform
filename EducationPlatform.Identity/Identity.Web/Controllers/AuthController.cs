@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Identity.Web.Controllers
 {
     [ApiController]
-    [Route("api/account")]
+    [Route("api/[Controller]")]
     public class AuthController : Controller
     {
         private readonly UserService _userService;

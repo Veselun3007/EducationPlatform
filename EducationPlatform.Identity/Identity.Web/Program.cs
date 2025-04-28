@@ -22,6 +22,7 @@ namespace Identity.Web
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Identity", Version = "v2" });
                 options.OperationFilter<SecurityRequirementsOperationFilter>(true, "Bearer");
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

@@ -1,7 +1,6 @@
-﻿using EPChat.Core.Models.HelperModel;
-using EPChat.Domain.Entities;
+﻿using Chat.Domain.Entities;
 
-namespace EPChat.Core.DTO.Request
+namespace Chat.Core.DTO.Request
 {
     public class MessageDTO
     {
@@ -13,17 +12,6 @@ namespace EPChat.Core.DTO.Request
 
         public DateTime CreatedIn { get; set; } = DateTime.UtcNow;
 
-        public List<MediaMessage>? AttachedFiles { get; set; }
-
-        public static Message FromMessageDTO(MessageDTO messageDTO)
-        {
-            return new Message
-            {
-                CourseId = messageDTO.CourseId,
-                MessageText = messageDTO.MessageText,
-                CreatorId = messageDTO.CreatorId,
-                CreatedIn = messageDTO.CreatedIn,
-            };
-        }
+        public List<MessageMediaDTO>? AttachedFiles { get; set; }
     }
 }

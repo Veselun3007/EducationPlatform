@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPChat.Core", "Chat.Core\EPChat.Core.csproj", "{E129A820-30EA-4BB8-AD71-B1D5E01DE8B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat.Core", "Chat.Core\Chat.Core.csproj", "{E129A820-30EA-4BB8-AD71-B1D5E01DE8B4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPChat.Domain", "Chat.Domain\EPChat.Domain.csproj", "{E939CD40-26CA-4685-B85E-FAD7756BB4D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat.Domain", "Chat.Domain\Chat.Domain.csproj", "{E939CD40-26CA-4685-B85E-FAD7756BB4D8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPChat.Infrastructure", "Chat.Infrastructure\EPChat.Infrastructure.csproj", "{DC855A8A-DBFD-4150-AC45-378005D4FBEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat.Infrastructure", "Chat.Infrastructure\Chat.Infrastructure.csproj", "{DC855A8A-DBFD-4150-AC45-378005D4FBEA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EPChat.Web", "EPChat.Web\EPChat.Web.csproj", "{5B377A23-656E-4055-94FF-5318CAFA2B98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chat.Web", "EPChat.Web\Chat.Web.csproj", "{5B377A23-656E-4055-94FF-5318CAFA2B98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

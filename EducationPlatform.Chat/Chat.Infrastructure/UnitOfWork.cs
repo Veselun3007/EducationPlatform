@@ -1,9 +1,9 @@
-﻿using EPChat.Domain.Entities;
-using EPChat.Infrastructure.Contexts;
-using EPChat.Infrastructure.Interfaces;
-using EPChat.Infrastructure.Repositories;
+﻿using Chat.Core.Interfaces.Infrastructure;
+using Chat.Domain.Entities;
+using Chat.Infrastructure.Contexts;
+using Chat.Infrastructure.Repositories;
 
-namespace EPChat.Infrastructure
+namespace Chat.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -13,12 +13,12 @@ namespace EPChat.Infrastructure
         {
             _context = context;
 
-            MessageRepository = new Repository<Message>(_context);
-            MessageMediaRepository = new RepositoryMin<MessageMedia>(_context);
+            MessageRepository = new MessageRepository(_context);
+            MessageMediaRepository = new MessageMediaRepository(_context);
         }
 
-        public IRepository<Message> MessageRepository { get; private set; }
-        public IMinRepository<MessageMedia> MessageMediaRepository { get; private set; }
+        public IRepository<Message, int> MessageRepository { get; private set; }
+        public IMinRepository<MessageMedia, int> MessageMediaRepository { get; private set; }
 
         public async Task<int> CommitAsync()
         {

@@ -13,7 +13,7 @@ namespace CourseContent.Infrastructure.Configurations
 
             builder.Property(e => e.Id).HasColumnName("course_id");
             builder.Property(e => e.CourseDescription).HasMaxLength(255).HasColumnName("course_description");
-            builder.Property(e => e.CourseLink).HasMaxLength(64).HasColumnName("course_link");
+            builder.Property(e => e.CourseLink).HasMaxLength(170).HasColumnName("course_link");
 
             builder.Property(e => e.CourseName).HasMaxLength(128).HasColumnName("course_name");
         }

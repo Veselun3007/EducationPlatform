@@ -1,34 +1,34 @@
-﻿using EPChat.Domain.Interfaces;
-using EPChat.Infrastructure.Contexts;
-using EPChat.Infrastructure.Interfaces;
+﻿using Chat.Core.Interfaces.Infrastructure;
+using Chat.Domain.Interfaces;
+using Chat.Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace EPChat.Infrastructure.Repositories
+namespace Chat.Infrastructure.Repositories
 {
-    internal class RepositoryMin<T> : IMinRepository<T> where T : class, IEntity
+    public abstract class RepositoryMin<T, TKey> : IMinRepository<T, TKey> where T : BaseEntity<TKey>
     {
-        private readonly EducationPlatformContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly EducationPlatformContext _context;
+        protected readonly DbSet<T> _dbSet;
 
-        internal RepositoryMin(EducationPlatformContext context)
+        public RepositoryMin(EducationPlatformContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();
         }
 
-        public Task<T?> GetById(int id, params Expression<Func<T, object>>[]? includes)
+        public Task<T?> GetByIdAsync(TKey id, params Expression<Func<T, object>>[]? includes)
         {
-            var query = _dbSet.AsQueryable();
-            if (includes is not null)
+            IQueryable<T> query = _dbSet.AsNoTracking();
+            if(includes is not null)
             {
-                foreach (var include in includes)
+                foreach(var include in includes)
                 {
                     query = query.Include(include);
                 }
             }
 
-            return query.FirstOrDefaultAsync(x => x.Id == id);
+            return query.FirstOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public async Task<T> AddAsync(T entity)
@@ -37,10 +37,10 @@ namespace EPChat.Infrastructure.Repositories
             return entity;
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(TKey id)
         {
             var entity = await _dbSet.FindAsync(id);
-            if (entity is not null)
+            if(entity is not null)
             {
                 _dbSet.Remove(entity);
             }

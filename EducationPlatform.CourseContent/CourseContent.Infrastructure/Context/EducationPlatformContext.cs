@@ -6,7 +6,6 @@ namespace CourseContent.Infrastructure.Context;
 
 public partial class EducationPlatformContext : DbContext
 {
-    public EducationPlatformContext() { }
     public EducationPlatformContext(DbContextOptions<EducationPlatformContext> options) : base(options) { }
 
     public virtual DbSet<Topic> Topics { get; set; }

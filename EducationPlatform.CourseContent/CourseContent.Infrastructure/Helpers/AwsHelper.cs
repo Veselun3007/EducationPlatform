@@ -5,9 +5,14 @@ using System.Net;
 
 namespace CourseContent.Infrastructure.Helpers
 {
-    internal class AwsHelper(IAmazonS3 s3Client)
+    internal class AwsHelper
     {
-        private readonly IAmazonS3 _s3Client = s3Client;
+        private readonly IAmazonS3 _s3Client;
+
+        public AwsHelper(IAmazonS3 s3Client)
+        {
+            _s3Client = s3Client;
+        }
 
         public async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
         {

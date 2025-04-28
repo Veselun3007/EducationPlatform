@@ -3,26 +3,31 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using System.Net;
 
-namespace EPChat.Core.Helpers
+namespace Chat.Infrastructure.Helpers
 {
-    public class AwsHelper(IAmazonS3 s3Client)
+    public class AwsHelper
     {
-        private readonly IAmazonS3 _s3Client = s3Client;
+        private readonly IAmazonS3 _s3Client;
+
+        public AwsHelper(IAmazonS3 s3Client)
+        {
+            _s3Client = s3Client;
+        }
 
         public async Task<bool> PostObjectAsync(string bucketName, string objectName, IFormFile file)
         {
             PutObjectRequest request = CreatePutObjectRequest(bucketName, objectName, file);
             var response = await _s3Client.PutObjectAsync(request);
-            return (response.HttpStatusCode == HttpStatusCode.OK ||
-                    response.HttpStatusCode == HttpStatusCode.NoContent);
+            return response.HttpStatusCode == HttpStatusCode.OK ||
+                    response.HttpStatusCode == HttpStatusCode.NoContent;
         }
 
         public async Task<bool> DeleteObjectAsync(string bucketName, string objectName)
         {
             DeleteObjectRequest deleteRequest = CreateDeleteObjectRequest(bucketName, objectName);
             var deleteResponse = await _s3Client.DeleteObjectAsync(deleteRequest);
-            return (deleteResponse.HttpStatusCode == HttpStatusCode.OK ||
-                   deleteResponse.HttpStatusCode == HttpStatusCode.NoContent);
+            return deleteResponse.HttpStatusCode == HttpStatusCode.OK ||
+                   deleteResponse.HttpStatusCode == HttpStatusCode.NoContent;
         }
 
         public async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)

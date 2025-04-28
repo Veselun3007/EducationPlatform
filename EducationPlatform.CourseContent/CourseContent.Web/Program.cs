@@ -23,6 +23,7 @@ namespace CourseContent.Web
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
             {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "CourseContent", Version = "v2" });
                 options.OperationFilter<SecurityRequirementsOperationFilter>(true, "Bearer");
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

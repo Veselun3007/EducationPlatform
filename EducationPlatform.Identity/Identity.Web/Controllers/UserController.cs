@@ -7,7 +7,7 @@ namespace Identity.Web.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/userManagement")]
+    [Route("api/[Controller]")]
     public class UserController : Controller
     {
         private readonly UserService _userService;

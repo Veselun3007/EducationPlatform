@@ -1,8 +1,8 @@
-﻿namespace EPChat.Domain.Enums
+﻿namespace Chat.Domain.Enums
 {
     public enum DeleteOptionsEnum
     {
-        DeleteForMe,
-        DeleteForEveryone
+        DeleteForMe = 0,
+        DeleteForEveryone = 1
     }
 }
