@@ -2,10 +2,10 @@
 {
     internal class Error
     {
-        public string Code { get; }
+        public int Code { get; }
         public string Message { get; }
 
-        internal Error(string code, string message)
+        internal Error(int code, string message)
         {
             Code = code;
             Message = message;
@@ -14,32 +14,33 @@
 
     internal static class Errors
     {
-        public static Error ValidationFailed(string? details = null)
+        public static Error ValidationFailed()
         {
-            return new(ErrorCodes.ValidationFailed, details ?? "Validation failed. One or more fields are invalid.");
+            return new(ErrorCodes.ValidationFailed, "Validation failed. One or more fields are invalid.");
         }
 
-        public static Error NotFound(string? details = null)
+        public static Error NotFound()
         {
-            return new(ErrorCodes.NotFound, details ?? "The requested record was not found.");
+            return new(ErrorCodes.NotFound, "The requested record was not found.");
         }
 
-        public static Error NotExist(string? details = null)
+        public static Error NotExist()
         {
-            return new(ErrorCodes.NotExist, details ?? "No records were provided for removal.");
+            return new(ErrorCodes.NotExist, "No records were provided for removal.");
         }
 
-        public static Error Unpredictable(string? details = null)
+        public static Error Unpredictable()
         {
-            return new(ErrorCodes.Unpredictable, details ?? "An unexpected error occurred. Please try again later.");
+            return new(ErrorCodes.Unpredictable, "Something went wrong, contact support team to resolve the problem.");
         }
     }
 
+
     internal static class ErrorCodes
     {
-        public const string ValidationFailed = "validation.failed";
-        public const string NotFound = "record.not.found";
-        public const string NotExist = "record.not.exist";
-        public const string Unpredictable = "unpredictable";
+        public const int ValidationFailed = 400;
+        public const int NotFound = 404;
+        public const int NotExist = 400;
+        public const int Unpredictable = 500;
     }
 }

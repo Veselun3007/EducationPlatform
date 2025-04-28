@@ -22,10 +22,8 @@ namespace Chat.Web.Filters
             catch(Exception ex)
             {
                 _logger.LogError(ex, "Exception in hub method {MethodName}", context.HubMethodName);
-                var hub = context.Hub;
-                var sendMethod = "ReceiveError";
-                var errorWrapper = MessageWrapper<string>.Error(ReturnError(ex));
-                await hub.Clients.Caller.SendAsync(sendMethod, errorWrapper);
+
+                await context.Hub.Clients.Caller.SendAsync("ReceiveError", ReturnError(ex));
                 return null;
             }
         }
@@ -34,8 +32,8 @@ namespace Chat.Web.Filters
         {
             return ex switch
             {
-                ValidationException => Errors.ValidationFailed(ex.Message),
-                KeyNotFoundException => Errors.NotFound(ex.Message),
+                ValidationException => Errors.ValidationFailed(),
+                KeyNotFoundException => Errors.NotFound(),
                 _ => Errors.Unpredictable()
             };
         }
