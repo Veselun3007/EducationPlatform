@@ -49,13 +49,10 @@ namespace CourseService.Application.Services
 
         public async Task<CourseUserOutDTO> UpdateCourseuserAsync(UpdateCourseuserDTO request)
         {
-            var courseuser = await _unitOfWork.CourseuserRepository
-                .FindAnyAsync(cu => cu.Id == request.CourseuserId);
+            var courseuser = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu => cu.Id == request.CourseuserId);
             var admin = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu =>
-                (cu.UserId == request.UserId) &&
-                (cu.Role == Roles.Admin) &&
-                (cu.CourseId == courseuser.CourseId) &&
-                (cu.UserId != courseuser.UserId)) ??
+                (cu.UserId == request.UserId) && (cu.Role == Roles.Admin) &&
+                (cu.CourseId == courseuser.CourseId) && (cu.UserId != courseuser.UserId)) ??
                 throw new UnauthorizedAccessException("You do not have permission to update this user.");
 
             courseuser.Role = request.Role;

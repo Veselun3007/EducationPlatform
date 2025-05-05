@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
     public abstract class MinRepository<T, TKey> : IMinRepository<T, TKey>
-        where T : AggregateRoot<TKey>
+        where T : BaseEntity<TKey>
     {
         protected readonly EducationPlatformContext _dbContext;
         protected readonly DbSet<T> _dbSet;

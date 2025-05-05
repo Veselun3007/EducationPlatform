@@ -2,7 +2,7 @@
 
 namespace CourseContent.Domain.Entities
 {
-    public class Materialfile : AggregateRoot<int>
+    public class Materialfile : BaseEntity<int>
     {
         public int MaterialId { get; set; }
 

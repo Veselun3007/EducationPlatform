@@ -2,7 +2,7 @@
 
 namespace CourseContent.Domain.Entities
 {
-    public class Assignmentlink : AggregateRoot<int>
+    public class Assignmentlink : BaseEntity<int>
     {
         public int AssignmentId { get; set; }
 

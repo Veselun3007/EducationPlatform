@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 namespace CourseContent.Infrastructure.Repositories.GenericRepositories
 {
     public abstract class ContentRepository<T, TKey> : EntityRepository<T, TKey>, IContentRepository<T, TKey>
-        where T : AggregateRoot<TKey>
+        where T : BaseEntity<TKey>
     {
         protected ContentRepository(EducationPlatformContext dbContext) : base(dbContext) { }
 

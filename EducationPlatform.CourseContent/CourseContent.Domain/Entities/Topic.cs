@@ -2,7 +2,7 @@
 
 namespace CourseContent.Domain.Entities
 {
-    public class Topic : AggregateRoot<int>
+    public class Topic : BaseEntity<int>
     {
         public int CourseId { get; set; }
 

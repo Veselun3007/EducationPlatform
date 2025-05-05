@@ -2,7 +2,7 @@
 
 namespace CourseContent.Domain.Entities
 {
-    public class Materiallink : AggregateRoot<int>
+    public class Materiallink : BaseEntity<int>
     {
         public int MaterialId { get; set; }
 

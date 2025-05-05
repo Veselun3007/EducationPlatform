@@ -23,13 +23,11 @@ namespace CourseService.Application.Services
                 c => c.Courseusers.Any(u => u.UserId == userId),
                 c => c.Courseusers
             );
-
             List<CourseInfoOutDTO> response = new List<CourseInfoOutDTO>();
 
             foreach(var course in courses)
             {
                 (Courseuser? courseuser, User? admin) = await GetAdminInfo(userId, course);
-
                 CourseInfoOutDTO courseInfo = await _mapper.From(course, courseuser, admin);
                 response.Add(courseInfo);
             }
@@ -53,8 +51,8 @@ namespace CourseService.Application.Services
         private async Task<(Courseuser? courseuser, User? admin)> GetAdminInfo(string userId, Course course)
         {
             var courseuser = course.Courseusers.FirstOrDefault(cu => cu.UserId == userId);
-            var admin_courseuser = course.Courseusers.FirstOrDefault(cu => cu.Role == Roles.Admin);
-            var admin = await _unitOfWork.UserRepository.GetByIdAsync(admin_courseuser.UserId);
+            var adminCourseuser = course.Courseusers.FirstOrDefault(cu => cu.Role == Roles.Admin);
+            var admin = await _unitOfWork.UserRepository.GetByIdAsync(adminCourseuser.UserId);
             return (courseuser, admin);
         }
 
@@ -100,9 +98,7 @@ namespace CourseService.Application.Services
                 await _unitOfWork.CommitAsync();
             }
 
-            CourseInfoOutDTO courseInfo = await _mapper.From(course, courseuser, admin);
-
-            return courseInfo;
+            return await _mapper.From(course, courseuser, admin);
         }
     }
 }

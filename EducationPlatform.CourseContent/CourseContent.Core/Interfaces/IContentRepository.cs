@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace CourseContent.Core.Interfaces
 {
-    public interface IContentRepository<T, TKey> : IEntityRepository<T, TKey> where T : AggregateRoot<TKey>
+    public interface IContentRepository<T, TKey> : IEntityRepository<T, TKey> where T : BaseEntity<TKey>
     {
         Task RemoveRange(List<TKey> entities);
 
