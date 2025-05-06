@@ -25,11 +25,7 @@ namespace Identity.Web.Controllers
             var userSub = await _identityService.SignUpAsync(model.Email, model.Password);
             if(userSub is not null)
             {
-                var user = await _userService.AddAsync(model, userSub);
-                if(user is null)
-                {
-                    return BadRequest();
-                }
+                await _userService.AddAsync(model, userSub);
             }
             return Ok();
         }

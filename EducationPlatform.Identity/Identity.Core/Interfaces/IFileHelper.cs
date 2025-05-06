@@ -2,9 +2,9 @@
 
 namespace Identity.Core.Interfaces
 {
-    public interface IFileService
+    public interface IAwsFileService
     {
-        Task<string> AddFileAsync(IFormFile file);
+        Task<string?> AddFileAsync(IFormFile file);
         Task DeleteFileAsync(string name);
         Task<string> GetFileLink(string fileName);
     }

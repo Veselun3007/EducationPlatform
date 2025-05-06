@@ -61,7 +61,7 @@ namespace CourseService.Infrastructure.Repositories.Generic
                 query = query.Include(include);
             }
 
-            return await query.FirstOrDefaultAsync(filter);
+            return await query.SingleOrDefaultAsync(filter);
         }
     }
 }

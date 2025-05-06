@@ -55,7 +55,7 @@ namespace Identity.Infrastructure
             });
 
             builder.Services.AddScoped<IBaseDbOperation<User>, DbOperation>();
-            builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<IAwsFileService, AwsFileService>();
             builder.Services.AddScoped<IIdentityService, IdentityService>();
 
             return awsOptions;

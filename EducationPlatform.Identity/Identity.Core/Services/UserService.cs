@@ -9,9 +9,9 @@ namespace Identity.Core.Services
     {
         private readonly IBaseDbOperation<User> _dbOperation;
         private readonly IIdentityService _identityService;
-        private readonly IFileService _filesHelper;
+        private readonly IAwsFileService _filesHelper;
 
-        public UserService(IBaseDbOperation<User> dbOperation, IIdentityService identityService, IFileService filesHelper)
+        public UserService(IBaseDbOperation<User> dbOperation, IIdentityService identityService, IAwsFileService filesHelper)
         {
             _dbOperation = dbOperation;
             _identityService = identityService;

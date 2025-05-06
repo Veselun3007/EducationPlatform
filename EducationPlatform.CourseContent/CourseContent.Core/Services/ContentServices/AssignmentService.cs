@@ -54,7 +54,10 @@ namespace CourseContent.Core.Services.ContentServices
             foreach(var file in files)
             {
                 var fileLink = await _fileService.AddFileAsync(file);
-                await _unitOfWork.AssignmentfileRepository.AddAsync(NativeMapper.ToAssignmentFile(entity.Id, fileLink));
+                if(fileLink is not null)
+                {
+                    await _unitOfWork.AssignmentfileRepository.AddAsync(NativeMapper.ToAssignmentFile(entity.Id, fileLink));
+                }
             }
             await _unitOfWork.CommitAsync();
         }

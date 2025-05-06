@@ -24,20 +24,21 @@ namespace CourseService.Application.Services
             return await Task.WhenAll(assignments.Select(cu => _mapper.FromCourseuser(cu)));
         }
 
-        public async Task<CourseInfoOutDTO> CreateAdminAsync(AdminDTO request)
+        public async Task<CourseInfoOutDTO> CreateAdminAsync(AdminDTO adminDTO)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(request.UserId);
-            var courseuser = NativeMapper.ToCourseuser(Roles.Admin, request.Course, user);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(adminDTO.UserId);
+            var courseuser = NativeMapper.ToCourseuser(Roles.Admin, adminDTO.Course, user);
+            
             courseuser = await _unitOfWork.CourseuserRepository.AddAsync(courseuser);
             await _unitOfWork.CommitAsync();
 
-            return await _mapper.From(request.Course, courseuser, user);
+            return await _mapper.From(adminDTO.Course, courseuser, user);
         }
 
-        public async Task CreateStudentAsync(StudentDTO student)
+        public async Task CreateStudentAsync(StudentDTO studentDTO)
         {
-            var course = await _unitOfWork.CourseRepository.FindAnyAsync(c => c.CourseLink == student.CourseLink);
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(student.UserId);
+            var course = await _unitOfWork.CourseRepository.FindAnyAsync(c => c.CourseLink == studentDTO.CourseLink);
+            var user = await _unitOfWork.UserRepository.GetByIdAsync(studentDTO.UserId);
 
             if(!await _unitOfWork.CourseuserRepository.AnyAsync(cu => cu.UserId == user.Id && cu.CourseId == course.Id))
             {
@@ -47,15 +48,21 @@ namespace CourseService.Application.Services
             }
         }
 
-        public async Task<CourseUserOutDTO> UpdateCourseuserAsync(UpdateCourseuserDTO request)
+        public async Task<CourseUserOutDTO> UpdateCourseuserAsync(UpdateCourseuserDTO courseuserDTO)
         {
-            var courseuser = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu => cu.Id == request.CourseuserId);
+            var courseuser = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu => cu.Id == courseuserDTO.CourseuserId);
             var admin = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu =>
-                (cu.UserId == request.UserId) && (cu.Role == Roles.Admin) &&
-                (cu.CourseId == courseuser.CourseId) && (cu.UserId != courseuser.UserId)) ??
-                throw new UnauthorizedAccessException("You do not have permission to update this user.");
+                (cu.UserId == courseuserDTO.UserId) && 
+                (cu.Role == Roles.Admin) &&
+                (cu.CourseId == courseuser.CourseId) && 
+                (cu.UserId != courseuser.UserId));
 
-            courseuser.Role = request.Role;
+            if(admin is null)
+            {
+                throw new UnauthorizedAccessException("You do not have permission to update this user.");
+            }
+
+            courseuser.Role = courseuserDTO.Role;
             courseuser = await _unitOfWork.CourseuserRepository.UpdateAsync(courseuser.Id, courseuser);
             await _unitOfWork.CommitAsync();
             return await _mapper.FromCourseuser(courseuser);
@@ -64,11 +71,21 @@ namespace CourseService.Application.Services
         public async Task DeleteCourseuserAsync(string userId, int id)
         {
             var userToDelete = await _unitOfWork.CourseuserRepository.GetByIdAsync(id);
-            var issuer = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu =>
-                (cu.CourseId == userToDelete.CourseId) && (cu.UserId == userId));
+            if(userToDelete is null)
+            {
+                return;
+            }
 
-            if((issuer.Id == userToDelete.Id && userToDelete.Role != Roles.Admin) ||
-               (issuer.Role == Roles.Admin && userToDelete.Role != Roles.Admin))
+            var issuer = await _unitOfWork.CourseuserRepository.FindAnyAsync(cu =>
+                cu.CourseId == userToDelete.CourseId && cu.UserId == userId);
+            if(issuer is null)
+            {
+                return;
+            }
+
+            bool isSelfRemoval = issuer.Id == userToDelete.Id && userToDelete.Role != Roles.Admin;
+            bool isAdminRemovingNonAdmin = issuer.Role == Roles.Admin && userToDelete.Role != Roles.Admin;
+            if(isSelfRemoval || isAdminRemovingNonAdmin)
             {
                 await _unitOfWork.CourseuserRepository.DeleteAsync(id);
                 await _unitOfWork.CommitAsync();

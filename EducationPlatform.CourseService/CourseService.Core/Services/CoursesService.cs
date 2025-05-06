@@ -71,29 +71,29 @@ namespace CourseService.Application.Services
             }
         }
 
-        public async Task<AdminDTO> CreateCourseAsync(CourseDTO request)
+        public async Task<AdminDTO> CreateCourseAsync(CourseDTO courseDTO)
         {
-            string courseLink = $"{request.CourseName[..Math.Min(30, request.CourseName.Length)]}-{Guid.NewGuid()}";
+            string courseLink = $"{courseDTO.CourseName[..Math.Min(30, courseDTO.CourseName.Length)]}-{Guid.NewGuid()}";
 
-            var course = NativeMapper.ToCourse(request, courseLink);
+            var course = NativeMapper.ToCourse(courseDTO, courseLink);
             course = await _unitOfWork.CourseRepository.AddAsync(course);
             await _unitOfWork.CommitAsync();
 
             return new AdminDTO { Course = course };
         }
 
-        public async Task<CourseInfoOutDTO> UpdateCourseAsync(UpdateCourseDTO request)
+        public async Task<CourseInfoOutDTO> UpdateCourseAsync(UpdateCourseDTO updateDTO)
         {
             var course = await _unitOfWork.CourseRepository.FindAnyAsync(
-                c => c.Id == request.CourseId,
+                c => c.Id == updateDTO.CourseId,
                 c => c.Courseusers
             );
-            (Courseuser? courseuser, User? admin) = await GetAdminInfo(request.UserId, course);
+            (Courseuser? courseuser, User? admin) = await GetAdminInfo(updateDTO.UserId, course);
 
-            if(admin != null && courseuser != null && admin.Id == request.UserId)
+            if(admin != null && courseuser != null && admin.Id == updateDTO.UserId)
             {
-                course.CourseName = request.CourseName;
-                course.CourseDescription = request.CourseDescription;
+                course.CourseName = updateDTO.CourseName;
+                course.CourseDescription = updateDTO.CourseDescription;
                 course = await _unitOfWork.CourseRepository.UpdateAsync(course.Id, course);
                 await _unitOfWork.CommitAsync();
             }

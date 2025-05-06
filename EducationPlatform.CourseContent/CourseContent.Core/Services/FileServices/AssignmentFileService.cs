@@ -1,7 +1,6 @@
 ﻿using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
 using CourseContent.Core.Mappings;
-using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services.FileServices
@@ -17,10 +16,14 @@ namespace CourseContent.Core.Services.FileServices
             _fileService = fileService;
         }
 
-        public async Task<AssignmentfileOutDTO> AddFileAsync(IFormFile formFile, int id)
+        public async Task<AssignmentfileOutDTO?> AddFileAsync(IFormFile formFile, int id)
         {
             var fileLink = await _fileService.AddFileAsync(formFile);
-            Assignmentfile assignmentFile = NativeMapper.ToAssignmentFile(id, fileLink);
+            if(fileLink is null)
+            {
+                return null;
+            }
+            var assignmentFile = NativeMapper.ToAssignmentFile(id, fileLink);
             var addedFile = await _unitOfWork.AssignmentfileRepository.AddAsync(assignmentFile);
             await _unitOfWork.CommitAsync();
 
@@ -30,7 +33,7 @@ namespace CourseContent.Core.Services.FileServices
         public async Task DeleteFileAsync(int fileId)
         {
             var assignmentFile = await _unitOfWork.AssignmentfileRepository.GetByIdAsync(fileId);
-            if(assignmentFile is not null && assignmentFile.AssignmentFile is not null)
+            if(assignmentFile?.AssignmentFile is not null)
             {
                 await _fileService.DeleteFileAsync(assignmentFile.AssignmentFile);
             }
@@ -40,6 +43,10 @@ namespace CourseContent.Core.Services.FileServices
         public async Task<string?> GetFileByIdAsync(int fileId)
         {
             var assignmentFile = await _unitOfWork.AssignmentfileRepository.GetByIdAsync(fileId);
+            if(assignmentFile?.AssignmentFile is null)
+            { 
+                return null; 
+            }
             return await _fileService.GetFileLink(assignmentFile.AssignmentFile);
         }
     }

@@ -162,7 +162,7 @@ namespace CourseContent.Core.Mappings
             };
         }
 
-        public static MaterialOutDTO FromMaterial(Material material)
+        public static MaterialOutDTO FromMaterial(Material? material)
         {
             return new MaterialOutDTO
             {

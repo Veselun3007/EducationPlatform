@@ -6,9 +6,9 @@ namespace CourseService.Application.Mappings
 {
     public class SpecificMapper
     {
-        private readonly IFileService _fileService;
+        private readonly IAwsFileService _fileService;
 
-        public SpecificMapper(IFileService fileService)
+        public SpecificMapper(IAwsFileService fileService)
         {
             _fileService = fileService;
         }
@@ -36,7 +36,7 @@ namespace CourseService.Application.Mappings
             return imageLink;
         }
 
-        public async Task<CourseInfoOutDTO> From(Course course, Courseuser courseUser, User admin)
+        internal async Task<CourseInfoOutDTO> From(Course course, Courseuser courseUser, User admin)
         {
             return new CourseInfoOutDTO
             {
@@ -47,7 +47,7 @@ namespace CourseService.Application.Mappings
             };
         }
 
-        public async Task<CourseUserOutDTO> FromCourseuser(Courseuser courseuser)
+        internal async Task<CourseUserOutDTO> FromCourseuser(Courseuser courseuser)
         {
             string imageLink = await SetImage(courseuser.User?.UserImage);
 

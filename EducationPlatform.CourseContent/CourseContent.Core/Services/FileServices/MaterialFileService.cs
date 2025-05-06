@@ -1,7 +1,6 @@
 ﻿using CourseContent.Core.DTO.Responses;
 using CourseContent.Core.Interfaces;
 using CourseContent.Core.Mappings;
-using CourseContent.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
 namespace CourseContent.Core.Services.FileServices
@@ -17,11 +16,15 @@ namespace CourseContent.Core.Services.FileServices
             _fileService = fileService;
         }
 
-        public async Task<MaterialfileOutDTO> AddFileAsync(IFormFile formFile, int id)
+        public async Task<MaterialfileOutDTO?> AddFileAsync(IFormFile formFile, int id)
         {
             var fileLink = await _fileService.AddFileAsync(formFile);
-            Materialfile MaterialFile = NativeMapper.ToMaterialFile(id, fileLink);
-            var addedFile = await _unitOfWork.MaterialfileRepository.AddAsync(MaterialFile);
+            if(fileLink is null)
+            {
+                return null;
+            }
+            var materialFile = NativeMapper.ToMaterialFile(id, fileLink);
+            var addedFile = await _unitOfWork.MaterialfileRepository.AddAsync(materialFile);
             await _unitOfWork.CommitAsync();
 
             return NativeMapper.FromMaterialFile(addedFile);
@@ -29,18 +32,22 @@ namespace CourseContent.Core.Services.FileServices
 
         public async Task DeleteFileAsync(int fileId)
         {
-            var MaterialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(fileId);
-            if(MaterialFile is not null && MaterialFile.MaterialFile is not null)
+            var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(fileId);
+            if(materialFile?.MaterialFile is not null)
             {
-                await _fileService.DeleteFileAsync(MaterialFile.MaterialFile);
+                await _fileService.DeleteFileAsync(materialFile.MaterialFile);
             }
             await _unitOfWork.MaterialfileRepository.DeleteAsync(fileId);
         }
 
         public async Task<string?> GetFileByIdAsync(int fileId)
         {
-            var MaterialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(fileId);
-            return await _fileService.GetFileLink(MaterialFile.MaterialFile);
+            var materialFile = await _unitOfWork.MaterialfileRepository.GetByIdAsync(fileId);
+            if(materialFile?.MaterialFile is null)
+            {
+                return null;
+            }
+            return await _fileService.GetFileLink(materialFile.MaterialFile);
         }
     }
 }

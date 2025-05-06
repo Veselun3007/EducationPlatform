@@ -27,8 +27,11 @@ namespace CourseContent.Core.Services.ContentServices
 
         public async Task<MaterialOutDTO?> GetByIdAsync(int id)
         {
-            var entity = await _unitOfWork.MaterialRepository
-                .GetByIdAsync(id, a => a.Materialfiles, a => a.Materiallinks);
+            var entity = await _unitOfWork.MaterialRepository.GetByIdAsync(id, a => a.Materialfiles, a => a.Materiallinks);
+            if(entity is null)
+            { 
+                return null; 
+            }
             return NativeMapper.FromMaterial(entity);
         }
 
@@ -54,7 +57,10 @@ namespace CourseContent.Core.Services.ContentServices
             foreach(var file in files)
             {
                 var fileLink = await _fileService.AddFileAsync(file);
-                await _unitOfWork.MaterialfileRepository.AddAsync(NativeMapper.ToMaterialFile(entity.Id, fileLink));
+                if(fileLink is not null)
+                {
+                    await _unitOfWork.MaterialfileRepository.AddAsync(NativeMapper.ToMaterialFile(entity.Id, fileLink));
+                }
             }
             await _unitOfWork.CommitAsync();
         }

@@ -29,7 +29,7 @@ namespace CourseService.Infrastructure.Repositories.Generic
                 }
             }
 
-            return query.FirstOrDefaultAsync(x => x.Id.Equals(id));
+            return query.SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
     }
 }

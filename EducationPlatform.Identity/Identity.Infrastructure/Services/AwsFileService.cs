@@ -1,28 +1,29 @@
 ﻿using Amazon.S3;
-using CourseService.Application.Interfaces;
-using CourseService.Infrastructure.Helpers;
-using CourseService.Infrastructure.Options;
+using Identity.Core.Interfaces;
+using Identity.Infrastructure.Helpers;
+using Identity.Infrastructure.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace CourseService.Infrastructure.Services
+namespace Identity.Infrastructure.Services
 {
-    public class FileService : IFileService
+    internal class AwsFileService : IAwsFileService
     {
         private readonly AwsOptions _options;
         private readonly AwsHelper _awsHelper;
+        private const float PresignedUrlExpiryHours = 1;
 
-        public FileService(IOptions<AwsOptions> options, IAmazonS3 s3Client)
+        public AwsFileService(IOptions<AwsOptions> options, IAmazonS3 s3Client)
         {
             _options = options.Value;
             _awsHelper = new(s3Client);
         }
 
-        public async Task<string> AddFileAsync(IFormFile file)
+        public async Task<string?> AddFileAsync(IFormFile file)
         {
             string objectName = Guid.NewGuid().ToString() + "_" + file.FileName;
             bool uploadSuccess = await _awsHelper.PostObjectAsync(_options.BucketName, objectName, file);
-            return uploadSuccess ? objectName : string.Empty;
+            return uploadSuccess ? objectName : null;
         }
 
         public async Task DeleteFileAsync(string name)
@@ -32,7 +33,7 @@ namespace CourseService.Infrastructure.Services
 
         public async Task<string> GetFileLink(string fileName)
         {
-            return await _awsHelper.GeneratePresignedURLAsync(_options.BucketName, fileName, 0.05);
+            return await _awsHelper.GeneratePresignedUrlAsync(_options.BucketName, fileName, PresignedUrlExpiryHours);
         }
     }
 }

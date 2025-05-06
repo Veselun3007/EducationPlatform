@@ -15,21 +15,21 @@ namespace CourseService.Web.Middlewares
 
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
-            _logger.LogError(exception, "Exception occurred: {Message}", exception.Message);
-            var problemDetails = BuildProblemDetails(exception);
-
-            httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
+            _logger.LogError(exception, "Exception occurred: {Message}. StackTrace: {StackTrace}", 
+                exception.Message, exception.StackTrace);
+            
+            var problemDetails = CreateProblemDetails(exception);
             httpContext.Response.ContentType = "application/json";
             await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
             return true;
         }
-        private static ProblemDetails BuildProblemDetails(Exception exception) => exception switch
+        private static ProblemDetails CreateProblemDetails(Exception exception) => exception switch
         {
             KeyNotFoundException => new ProblemDetails
             {
                 Status = StatusCodes.Status404NotFound,
-                Title = "Not found",
+                Title = "Not Found",
                 Detail = exception.Message
             },
             ValidationException => new ProblemDetails
@@ -38,11 +38,17 @@ namespace CourseService.Web.Middlewares
                 Title = "Bad Request",
                 Detail = exception.Message
             },
+            UnauthorizedAccessException => new ProblemDetails
+            {
+                Status = StatusCodes.Status403Forbidden,
+                Title = "Access Denied",
+                Detail = exception.Message
+            },
             _ => new ProblemDetails
             {
                 Status = StatusCodes.Status500InternalServerError,
-                Title = "Interanl server error",
-                Detail = "An unexpected error occurred. Please try again later."
+                Title = "Internal Server Error",
+                Detail = "Something went wrong, contact support team to resolve the problem."
             }
         };
     }

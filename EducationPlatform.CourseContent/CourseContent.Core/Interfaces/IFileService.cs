@@ -6,7 +6,7 @@ namespace CourseContent.Core.Interfaces
     {
         Task<string?> GetFileByIdAsync(int fileId);
 
-        Task<FOutDTO> AddFileAsync(IFormFile formFile, int id);
+        Task<FOutDTO?> AddFileAsync(IFormFile formFile, int id);
 
         Task DeleteFileAsync(int fileId);
     }

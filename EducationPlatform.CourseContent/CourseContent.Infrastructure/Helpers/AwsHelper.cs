@@ -30,7 +30,7 @@ namespace CourseContent.Infrastructure.Helpers
                    deleteResponse.HttpStatusCode == HttpStatusCode.NoContent;
         }
 
-        public async Task<string> GeneratePresignedURLAsync(string bucketName, string objectKey, double duration)
+        public async Task<string> GeneratePresignedUrlAsync(string bucketName, string objectKey, double duration)
         {
             GetPreSignedUrlRequest request = CreateGetPreSignedUrlRequest(bucketName, objectKey, duration);
             return await _s3Client.GetPreSignedURLAsync(request);

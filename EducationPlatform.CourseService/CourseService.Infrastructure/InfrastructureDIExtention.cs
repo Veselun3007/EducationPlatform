@@ -50,7 +50,7 @@ namespace CourseService.Infrastructure
             {
                 options.UseNpgsql(dbOptions.ConnectionString);
             });
-            builder.Services.AddScoped<IFileService, FileService>();
+            builder.Services.AddScoped<IAwsFileService, AwsFileService>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return awsOptions;
