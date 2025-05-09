@@ -1,11 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using StudentResult.Domain.Base;
 
 namespace StudentResult.Domain.Entities;
 
-public partial class Comment {
-    public int CommentId { get; set; }
-
-    public int StudentassignmentId { get; set; }
+public class Comment : BaseEntity<int>
+{
+    public int StudentAssignmentId { get; set; }
 
     public int CourseUserId { get; set; }
 
@@ -13,9 +12,7 @@ public partial class Comment {
 
     public string? CommentText { get; set; }
 
-    [JsonIgnore]
     public virtual CourseUser CourseUser { get; set; } = null!;
 
-    [JsonIgnore]
     public virtual StudentAssignment Studentassignment { get; set; } = null!;
 }

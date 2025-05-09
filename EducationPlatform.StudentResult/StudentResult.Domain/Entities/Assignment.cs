@@ -1,8 +1,9 @@
-﻿namespace StudentResult.Domain.Entities;
+﻿using StudentResult.Domain.Base;
 
-public partial class Assignment {
-    public int AssignmentId { get; set; }
+namespace StudentResult.Domain.Entities;
 
+public class Assignment : BaseEntity<int>
+{
     public int CourseId { get; set; }
 
     public int? TopicId { get; set; }

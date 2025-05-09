@@ -1,13 +1,12 @@
-﻿using CourseService.Application.Interfaces;
-using CourseService.Domain.Base;
-using CourseService.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using StudentResult.Application.Interfaces;
+using StudentResult.Domain.Base;
+using StudentResult.Infrastructure.Context;
 using System.Linq.Expressions;
 
-namespace CourseService.Infrastructure.Repositories.Generic
-{
+namespace StudentResult.Infrastructure.Repositories.Generic {
     internal class Repository<TKey, TEntity> : MinRepository<TKey, TEntity>,
-        IRepository<TKey, TEntity> where TEntity : AggregateRoot<TKey>
+        IRepository<TKey, TEntity> where TEntity : BaseEntity<TKey>
     {
         public Repository(EducationPlatformContext dbContext) : base(dbContext) { }
 
@@ -34,6 +33,20 @@ namespace CourseService.Infrastructure.Repositories.Generic
                 _dbContext.Entry(existingEntity).CurrentValues.SetValues(entity);
             }
             return existingEntity;
+        }
+
+        public Task<TEntity?> GetByIdAsync(TKey id, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
+            if(includes is not null)
+            {
+                foreach(var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            return query.SingleOrDefaultAsync(x => x.Id.Equals(id));
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync(

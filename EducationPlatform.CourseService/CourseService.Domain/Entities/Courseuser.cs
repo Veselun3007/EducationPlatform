@@ -1,6 +1,5 @@
 ﻿using CourseService.Domain.Base;
 using CourseService.Domain.Enums;
-using System.Text.Json.Serialization;
 
 namespace CourseService.Domain.Entities
 {
@@ -12,10 +11,8 @@ namespace CourseService.Domain.Entities
 
         public Roles Role { get; set; }
 
-        [JsonIgnore]
         public virtual Course Course { get; set; } = null!;
 
-        [JsonIgnore]
         public virtual User User { get; set; } = null!;
     }
 }

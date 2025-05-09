@@ -1,10 +1,9 @@
-﻿using System.Text.Json.Serialization;
+﻿using StudentResult.Domain.Base;
 
 namespace StudentResult.Domain.Entities;
 
-public partial class StudentAssignment {
-    public int StudentassignmentId { get; set; }
-
+public class StudentAssignment : BaseEntity<int>
+{
     public int AssignmentId { get; set; }
 
     public int StudentId { get; set; }
@@ -15,15 +14,11 @@ public partial class StudentAssignment {
 
     public bool? IsDone { get; set; }
 
-    [JsonIgnore]
     public virtual Assignment Assignment { get; set; } = null!;
 
-    [JsonIgnore]
     public virtual ICollection<AttachedFile> AttachedFiles { get; set; } = new List<AttachedFile>();
 
-    [JsonIgnore]
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
-    [JsonIgnore]
     public virtual CourseUser Student { get; set; } = null!;
 }

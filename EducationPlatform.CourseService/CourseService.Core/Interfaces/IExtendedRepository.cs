@@ -1,5 +1,4 @@
-﻿using CourseService.Application.Interfaces.Base;
-using CourseService.Domain.Base;
+﻿using CourseService.Domain.Base;
 using System.Linq.Expressions;
 
 namespace CourseService.Application.Interfaces

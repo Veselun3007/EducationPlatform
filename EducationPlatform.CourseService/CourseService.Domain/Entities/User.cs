@@ -1,5 +1,4 @@
 ﻿using CourseService.Domain.Base;
-using System.Text.Json.Serialization;
 
 namespace CourseService.Domain.Entities
 {
@@ -11,7 +10,6 @@ namespace CourseService.Domain.Entities
 
         public string? UserImage { get; set; }
 
-        [JsonIgnore]
         public virtual ICollection<Courseuser> Courseusers { get; set; } = new List<Courseuser>();
     }
 }

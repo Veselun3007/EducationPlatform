@@ -1,43 +1,39 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using StudentResult.Infrastructure.Interfaces;
+﻿using StudentResult.Application.Interfaces;
+using StudentResult.Domain.Entities;
+using StudentResult.Infrastructure.Context;
 
-namespace StudentResult.Infrastructure.Repositories {
-    public class UnitOfWork<TContext> : IUnitOfWork<TContext> where TContext : DbContext {
-        public TContext DbContext { get; }
-        private Dictionary<Type, object>? _repositories;
-        public UnitOfWork(TContext context) {
-            DbContext = context ?? throw new ArgumentNullException(nameof(context));
+namespace StudentResult.Infrastructure.Repositories
+{
+    public class UnitOfWork : IUnitOfWork
+    {
+        private readonly EducationPlatformContext _dbContext;
+
+        public UnitOfWork(EducationPlatformContext dbContext)
+        {
+            _dbContext = dbContext;
+            UserRepository = new UserRepository(_dbContext);
+            CommentRepository = new CommentRepository(_dbContext);
+            CourseuserRepository = new CourseuserRepository(_dbContext);
+            AssignmentRepository = new AssignmentRepository(_dbContext);
+            AttachedFileRepository = new AttachedFileRepository(_dbContext);
+            StudentAssignmentRepository = new StudentAssignmentRepository(_dbContext);
         }
 
-        public IRepository<TEntity> GetRepository<TEntity>(bool hasCustomRepository = true) where TEntity : class {
-            if (hasCustomRepository) {
-                try {
-                    var customRepo = DbContext.GetService<IRepository<TEntity>>();
-                    if (customRepo != null) {
-                        return customRepo;
-                    }
-                }
-                catch { }
-            }
+        public IRepository<int, StudentAssignment> StudentAssignmentRepository { get; private set; }
 
-            _repositories ??= new Dictionary<Type, object>();
-            var type = typeof(TEntity);
-            if (!_repositories.ContainsKey(type)) {
-                _repositories[type] = new Repository<TEntity>(DbContext);
-            }
-            return (IRepository<TEntity>)_repositories[type];
-        }
+        public IRepository<int, AttachedFile> AttachedFileRepository { get; private set; }
 
-        public int SaveChanges() {
-            return DbContext.SaveChanges();
-        }
-        public async Task<int> SaveChangesAsync() {
-            return await DbContext.SaveChangesAsync();
-        }
+        public IRepository<int, CourseUser> CourseuserRepository { get; private set; }
 
-        public void Dispose() {
-            DbContext.Dispose();
+        public IRepository<int, Comment> CommentRepository { get; private set; }
+
+        public IMinRepository<string, User> UserRepository { get; private set; }
+
+        public IMinRepository<int, Assignment> AssignmentRepository { get; private set; }  
+
+        public async Task<int> CommitAsync()
+        {
+            return await _dbContext.SaveChangesAsync();
         }
     }
 }

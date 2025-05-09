@@ -1,13 +1,13 @@
-﻿using CourseService.Application.Interfaces;
-using CourseService.Domain.Base;
-using CourseService.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using StudentResult.Application.Interfaces;
+using StudentResult.Domain.Base;
+using StudentResult.Infrastructure.Context;
 using System.Linq.Expressions;
 
-namespace CourseService.Infrastructure.Repositories.Generic
+namespace StudentResult.Infrastructure.Repositories.Generic
 {
     public abstract class MinRepository<TKey, TEntity> :
-        IMinRepository<TKey, TEntity> where TEntity : AggregateRoot<TKey>
+        IMinRepository<TKey, TEntity> where TEntity : BaseEntity<TKey>
     {
         protected readonly EducationPlatformContext _dbContext;
         protected readonly DbSet<TEntity> _dbSet;

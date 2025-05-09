@@ -1,69 +1,58 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using StudentResult.Infrastructure.Context;
-using StudentResult.Infrastructure.Repositories;
-using StudentResult.Infrastructure.AWS;
-using StudentResult.Application;
-using StudentResult.Domain.Entities;
 using StudentResult.Web.Middlewares;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
+using StudentResult.Infrastructure;
+using Swashbuckle.AspNetCore.Filters;
+using StudentResult.Application;
 
 namespace StudentResult.Web {
-    public class Program {
-        public static void Main(string[] args) {
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
             var builder = WebApplication.CreateBuilder(args);
             var _configuration = builder.Configuration;
 
+            builder.AddCoreServices();
+            var awsOptions = builder.AddInfrastructure(_configuration);
+            ServiceExtensions.AddJwtValidation(builder, awsOptions);
+
             builder.Services.AddControllers();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddApplication();
-            builder.Services.AddS3();
-
-            builder.Services.AddScoped<ExceptionHandlingMiddleware>();
-
-            string ep_connection = _configuration.GetConnectionString("EducationPlatformConnection") ?? "defaultConnectionString";
-            builder.Services
-                .AddDbContext<EducationPlatformContext>(opt => opt.UseNpgsql(ep_connection))
-                .AddUnitOfWork<EducationPlatformContext>()
-                .AddCustomRepository<CourseUser, CourseuserRepository>()
-                .AddCustomRepository<StudentAssignment, StudentAssignmentRepository>();
-            builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder => {
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "StudentResult", Version = "v2" });
+                options.OperationFilter<SecurityRequirementsOperationFilter>(true, "Bearer");
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Authentication Token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JsonWebToken",
+                    Scheme = "Bearer"
+                });
+            });
+            builder.Services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.Authority = $"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PlemC1CS5";
-                options.TokenValidationParameters = new()
-                {
-                    ValidateIssuer = true,
-                    ValidIssuer = $"https://cognito-idp.us-east-1.amazonaws.com/us-east-1_PlemC1CS5",
-                    ValidateLifetime = true,
-                    LifetimeValidator = (before, expires, token, param) => expires > DateTime.UtcNow,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateAudience = false
-                };
-            });
 
             var app = builder.Build();
             app.UseCors("AllowAll");
-            if (app.Environment.IsDevelopment()) {
+            if(app.Environment.IsDevelopment())
+            {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseHttpsRedirection();
+            app.UseExceptionHandler();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
-            app.MapControllers();
+
+            app.MapDefaultControllerRoute();
             app.Run();
         }
     }

@@ -1,5 +1,4 @@
 ﻿using CourseService.Application.Interfaces;
-using CourseService.Application.Interfaces.Base;
 using CourseService.Domain.Entities;
 using CourseService.Infrastructure.Context;
 using CourseService.Infrastructure.Repositories.SpecificRepositories;

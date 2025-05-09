@@ -1,5 +1,4 @@
-﻿using CourseService.Application.Interfaces.Base;
-using CourseService.Domain.Entities;
+﻿using CourseService.Domain.Entities;
 
 namespace CourseService.Application.Interfaces
 {
